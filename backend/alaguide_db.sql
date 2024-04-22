@@ -1,11 +1,11 @@
-DROP DATABASE IF EXISTS 'alaguide_db';
+DROP DATABASE IF EXISTS alaguide_db;
 
-CREATE DATABASE 'alaguide_db';
+CREATE DATABASE alaguide_db;
 
-USE 'alaguide_db';
+USE alaguide_db;
 
 SET
-    NAMES utf8;
+    NAMES utf8mb4;
 
 SET
     character_set_client = utf8mb4;
@@ -53,6 +53,15 @@ CREATE TABLE
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
+-- Table for users (if required)
+CREATE TABLE
+    Users (
+        user_id INT PRIMARY KEY AUTO_INCREMENT,
+        username VARCHAR(100) NOT NULL,
+        email VARCHAR(100) NOT NULL,
+        password VARCHAR(100) NOT NULL
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
 -- Table for user reviews
 CREATE TABLE
     UserReviews (
@@ -66,15 +75,6 @@ CREATE TABLE
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
--- Table for users (if required)
-CREATE TABLE
-    Users (
-        user_id INT PRIMARY KEY AUTO_INCREMENT,
-        username VARCHAR(100) NOT NULL,
-        email VARCHAR(100) NOT NULL,
-        password VARCHAR(100) NOT NULL
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
 -- Table for likes and raitings (if required)
 CREATE TABLE
     LikesRatings (
@@ -84,7 +84,7 @@ CREATE TABLE
         type ENUM ('like', 'rating'),
         date_liked_or_rated DATE,
         FOREIGN KEY (user_id) REFERENCES Users (user_id),
-        FOREIGN KEY (landmark_id) REFERENCES Landmark (landmark_id)
+        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for tags (if required)
