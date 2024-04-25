@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+ADMIN_JS = True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,18 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-turgufs_96v_e!&mbi2#g(8pt_c8_g1kzt-#oel#9ss1(uhrol"
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = ["localhost"]
+SITE_ID = 1
 
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -37,22 +37,68 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+    # Database init / app-module
+    "core",
+    # JWT
     "rest_framework",
     "rest_framework.authtoken",
-    "users",
-    "django.contrib.sites",
-    # The following apps are required:
+    # AllAuth
     "allauth",
     "allauth.account",
-    # Optional -- requires install using `django-allauth[socialacocunt]`.
     "allauth.socialaccount",
-    # ... include the providers you want  to enable:
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.github",
     "allauth.socialaccount.providers.facebook",
+    # Templates
+    "crispy_forms",
+    "crispy_bootstrap4",
+    # "django_crispy_bulma",
 ]
 
-SITE_ID = 1
+# Provider specific settings
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+        "OAUTH_PKCE_ENABLED": True,
+    },
+    "facebook": {
+        "METHOD": "oauth2",  # Set to 'js_sdk' to use the Facebook connect SDK
+        #'SDK_URL': '//connect.facebook.net/{locale}/sdk.js',
+        "SCOPE": ["email", "public_profile"],
+        "AUTH_PARAMS": {"auth_type": "reauthenticate"},
+        "INIT_PARAMS": {"cookie": True},
+        "FIELDS": [
+            "id",
+            "first_name",
+            "last_name",
+            "middle_name",
+            "name",
+            "name_format",
+            "picture",
+            "short_name",
+        ],
+        "EXCHANGE_TOKEN": True,
+        #'LOCALE_FUNC': 'path.to.callable',
+        "VERIFIED_EMAIL": False,
+        "VERSION": "v13.0",
+        "GRAPH_API_URL": "https://graph.facebook.com/v13.0",
+    },
+    "github": {
+        "SCOPE": [
+            "user",
+            "repo",
+            "read:org",
+        ],
+    },
+}
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -67,12 +113,10 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = "server.urls"
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -86,11 +130,15 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = "server.wsgi.application"
+ROOT_URLCONF = "server.urls"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+
+# DATABASE_FILE = BASE_DIR / "server" / "database" / "alaguide_db"
 
 DATABASES = {
     "default": {
@@ -103,6 +151,7 @@ DATABASES = {
     }
 }
 
+SILENCED_SYSTEM_CHECKS = ["models.W036"]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -138,7 +187,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -147,8 +198,34 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 AUTHENTICATION_BACKENDS = [
-    # Needed to login by username in Django admin, regardless of `allauth`
     "django.contrib.auth.backends.ModelBackend",
-    # `allauth` specific authentication methods, such as login by email
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
+
+# Email File Based Test
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "emails"
+
+
+# AllAuth settings
+LOGIN_REDIRECT_URL = "home"
+
+LOGOUT_REDIRECT_URL = "login"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+ACCOUNT_LOGOUT_REDIRECT_URL = "account_login"
+
+ACCOUNT_EMAIL_REQUIRED = True
+
+ACCOUNT_LOGOUT_ON_GET = True
+
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+SOCIALACCOUNT_QUERY_EMAIL = True
+
+ACCOUNT_SESSION_REMEMBER = True
+
+SOCIALACCOUNT_STORE_TOKENS = True
