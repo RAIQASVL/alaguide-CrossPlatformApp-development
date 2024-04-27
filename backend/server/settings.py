@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
 ADMIN_JS = True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

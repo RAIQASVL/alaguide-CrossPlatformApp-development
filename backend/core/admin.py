@@ -1,9 +1,24 @@
 from django.contrib import admin
-from .models import GoogleSocialApp
+from .models import (
+    Country,
+    City,
+    Landmark,
+    AudioBook,
+    User,
+    UserReview,
+    LikeRating,
+    Tag,
+    LandmarkTag,
+    SocialProvider,
+)
 
-# Register your models here.
-
-
-@admin.register(GoogleSocialApp)
-class GoogleSocialAppAdmin(admin.ModelAdmin):
-    list_display = ("client_id", "secret", "key")
+admin.site.register(Country)
+admin.site.register(City)
+admin.site.register(Landmark)
+admin.site.register(AudioBook)
+admin.site.register(User)
+admin.site.register(UserReview)
+admin.site.register(LikeRating)
+admin.site.register(Tag)
+admin.site.register(LandmarkTag)
+admin.site.register(SocialProvider)

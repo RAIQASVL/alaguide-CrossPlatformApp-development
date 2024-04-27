@@ -58,6 +58,8 @@ CREATE TABLE
     Users (
         user_id INT PRIMARY KEY AUTO_INCREMENT,
         username VARCHAR(100) NOT NULL,
+        first_name VARCHAR(100) NOT NULL,
+        last_name VARCHAR(100) NOT NULL,
         email VARCHAR(100) NOT NULL,
         password VARCHAR(100) NOT NULL
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
@@ -102,4 +104,17 @@ CREATE TABLE
         PRIMARY KEY (landmark_id, tag_id),
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id),
         FOREIGN KEY (tag_id) REFERENCES Tags (tag_id)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+-- Table for AllAuth SocialProviders
+CREATE TABLE
+    SocialProvider (
+        provider VARCHAR(50),
+        client_id VARCHAR(255),
+        secret VARCHAR(255),
+        key_jwt VARCHAR(255),
+        user_id INT,
+        landmark_id INT,
+        FOREIGN KEY (user_id) REFERENCES Users (user_id),
+        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
