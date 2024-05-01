@@ -29,6 +29,13 @@ CREATE TABLE
         FOREIGN KEY (country_id) REFERENCES Countries (country_id)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
+-- Table for Category
+CREATE TABLE
+    LandmarksCategory (
+        category_id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(255) NOT NULL UNIQUE
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
 -- Table for landmarks
 CREATE TABLE
     Landmarks (
@@ -39,7 +46,10 @@ CREATE TABLE
         latitude DECIMAL(9, 6),
         longitude DECIMAL(9, 6),
         city_id INT,
-        FOREIGN KEY (city_id) REFERENCES Cities (city_id)
+        FOREIGN KEY (city_id) REFERENCES Cities (city_id),
+        category_id INT,
+        FOREIGN KEY (category_id) REFERENCES LandmarksCategory (category_id) -- Corrected table name
+        ON DELETE CASCADE -- Clause for automatic deletion on cascade
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for audiobooks
@@ -49,7 +59,7 @@ CREATE TABLE
         title VARCHAR(255) NOT NULL,
         description TEXT,
         audio_url VARCHAR(255),
-        landmark_id INT,
+        landmark_id INT NOT NULL,
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -118,3 +128,11 @@ CREATE TABLE
         FOREIGN KEY (user_id) REFERENCES Users (user_id),
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+-- Table for Google Maps
+CREATE TABLE
+    MapData (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) DEFAULT NULL,
+        data JSON NOT NULL
+    );

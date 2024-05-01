@@ -1,6 +1,9 @@
 import os
 from google.cloud import kms
 
+# Set environment variables 
+project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+key_name = os.environ.get("GOOGLE_CLOUD_KMS_KEY_NAME")
 
 def get_api_key():
     """Retrieves the Google Maps API key securely from Google Cloud KMS."""

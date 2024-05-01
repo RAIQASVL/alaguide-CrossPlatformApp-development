@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     # Templates
     "crispy_forms",
     "crispy_bootstrap4",
-    # "django_crispy_bulma",
+    # Google Maps API
+    "googlemaps",
 ]
 
 # Provider specific settings
@@ -118,7 +119,10 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [
+            BASE_DIR / "templates",
+            BASE_DIR / "templates/map",  # Your custom template directory
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -190,8 +194,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    BASE_DIR / "static/assets/map/js",
+]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
