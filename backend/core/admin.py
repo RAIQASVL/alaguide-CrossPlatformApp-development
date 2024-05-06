@@ -1,3 +1,5 @@
+import os
+from django.conf import settings
 from django.contrib import admin
 from .models import (
     Country,
@@ -11,6 +13,7 @@ from .models import (
     Tag,
     LandmarkTag,
     SocialProvider,
+    Venue
 )
 
 admin.site.register(Country)
@@ -24,3 +27,23 @@ admin.site.register(LikeRating)
 admin.site.register(Tag)
 admin.site.register(LandmarkTag)
 admin.site.register(SocialProvider)
+
+@admin.register(Venue)
+class VenueAdmin(admin.ModelAdmin):
+    list_display = ('name', 'latitude', 'longitude',)
+    search_fields = ('name',)
+    
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'latitude', 'longitude',)
+        }),
+    )
+    
+    class Media:
+        if hasattr(settings, 'api_key') and settings.api_key:
+            css = {
+                'STATICFILES_DIRS': ("admin/css/location_picker.css",),
+            }
+            js = ('https://maps.googleapis.com/maps/api/js?key={}'.format(settings.api_key),
+                'STATICFILES_DIRS/admin/js/location_picker.js',
+                )

@@ -13,9 +13,8 @@
       src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&v=weekly">
     </script>
     <script type="text/javascript">
-      function initialize(results) {
+      function initialize() {
         var mapOptions = {
-          center: new google.maps.LatLng(results[0].geometry.location),
           zoom: 8,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };

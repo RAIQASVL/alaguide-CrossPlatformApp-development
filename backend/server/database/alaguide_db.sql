@@ -26,7 +26,7 @@ CREATE TABLE
         latitude DECIMAL(9, 6),
         longitude DECIMAL(9, 6),
         country_id INT,
-        FOREIGN KEY (country_id) REFERENCES Countries (country_id)
+        FOREIGN KEY (country_id) REFERENCES Countries (country_id) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for Category
@@ -46,7 +46,7 @@ CREATE TABLE
         latitude DECIMAL(9, 6),
         longitude DECIMAL(9, 6),
         city_id INT,
-        FOREIGN KEY (city_id) REFERENCES Cities (city_id),
+        FOREIGN KEY (city_id) REFERENCES Cities (city_id) ON DELETE CASCADE,
         category_id INT,
         FOREIGN KEY (category_id) REFERENCES LandmarksCategory (category_id) -- Corrected table name
         ON DELETE CASCADE -- Clause for automatic deletion on cascade
@@ -60,7 +60,25 @@ CREATE TABLE
         description TEXT,
         audio_url VARCHAR(255),
         landmark_id INT NOT NULL,
-        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id)
+        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE,
+        INDEX alaguideobject_ibfk_3_idx (audio_url)
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+-- Table for landmarks with audio
+CREATE TABLE
+    AlaguideObjects (
+        ala_object_id INT PRIMARY KEY AUTO_INCREMENT,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        city_id INT,
+        FOREIGN KEY (city_id) REFERENCES Cities (city_id) ON DELETE CASCADE,
+        category_id INT,
+        FOREIGN KEY (category_id) REFERENCES LandmarksCategory (category_id) ON DELETE CASCADE,
+        latitude DECIMAL(9, 6),
+        longitude DECIMAL(9, 6),
+        image_url VARCHAR(255),
+        audio_url VARCHAR(255),
+        FOREIGN KEY (audio_url) REFERENCES AudioBooks (audio_url) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for users (if required)
@@ -83,8 +101,8 @@ CREATE TABLE
         date_posted DATE,
         user_id INT, -- If user authentication is required
         landmark_id INT,
-        FOREIGN KEY (user_id) REFERENCES Users (user_id), -- If there is a users table
-        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id)
+        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE, -- If there is a users table
+        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for likes and raitings (if required)
@@ -95,8 +113,8 @@ CREATE TABLE
         landmark_id INT,
         type ENUM ('like', 'rating'),
         date_liked_or_rated DATE,
-        FOREIGN KEY (user_id) REFERENCES Users (user_id),
-        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id)
+        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
+        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for tags (if required)
@@ -112,8 +130,8 @@ CREATE TABLE
         landmark_id INT,
         tag_id INT,
         PRIMARY KEY (landmark_id, tag_id),
-        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id),
-        FOREIGN KEY (tag_id) REFERENCES Tags (tag_id)
+        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE,
+        FOREIGN KEY (tag_id) REFERENCES Tags (tag_id) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for AllAuth SocialProviders
@@ -125,8 +143,8 @@ CREATE TABLE
         key_jwt VARCHAR(255),
         user_id INT,
         landmark_id INT,
-        FOREIGN KEY (user_id) REFERENCES Users (user_id),
-        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id)
+        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
+        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for Google Maps

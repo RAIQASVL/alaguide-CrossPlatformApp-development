@@ -11,7 +11,7 @@ class Country(models.Model):
         return self.name
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "Countries"
 
 
@@ -27,7 +27,7 @@ class City(models.Model):
         return self.name
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "Cities"
 
 
@@ -40,7 +40,7 @@ class Category(models.Model):
         return self.name
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "LandmarksCategory"
 
 
@@ -75,8 +75,28 @@ class AudioBook(models.Model):
         return self.name
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "AudioBooks"
+
+
+# Model for main objects
+class AlaguideObject(models.Model):
+    ala_object_id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    image_url = models.CharField(max_length=255)
+    audio_url = models.ForeignKey(AudioBook, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        managed = False
+        db_table = "AlaguideObjects"
 
 
 class User(models.Model):
@@ -91,7 +111,7 @@ class User(models.Model):
         return self.name
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "Users"
 
 
@@ -107,7 +127,7 @@ class UserReview(models.Model):
         return self.name
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "UserReviews"
 
 
@@ -122,7 +142,7 @@ class LikeRating(models.Model):
         return self.name
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "LikesRatings"
 
 
@@ -134,7 +154,7 @@ class Tag(models.Model):
         return self.name
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "Tags"
 
 
@@ -146,7 +166,7 @@ class LandmarkTag(models.Model):
         return self.name
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "LandmarkTags"
         unique_together = (("landmark", "tag"),)
 
@@ -164,7 +184,7 @@ class SocialProvider(models.Model):
         return self.provider
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "SocialProvider"
 
 
@@ -179,5 +199,18 @@ class MapData(models.Model):
         return self.name
 
     class Meta:
-        managed = True
+        managed = False
         db_table = "MapData"
+
+
+class Venue(models.Model):
+    name = models.CharField(max_length=255)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        managed = True
+        db_table = "Venues"    

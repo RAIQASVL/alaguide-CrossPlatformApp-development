@@ -30,6 +30,9 @@ DEBUG = True
 ALLOWED_HOSTS = ["localhost"]
 SITE_ID = 1
 
+api_key = "GOOGLE_CLOUD_API_KEY"
+
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -151,7 +154,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "alaguide_db",
         "USER": "root",
-        "PASSWORD": "aquonelocal108",
+        "PASSWORD": os.environ.get('DB_PASSWORD'),  # Use environment variable
         "HOST": "127.0.0.1",
         "PORT": "3306",
     }
