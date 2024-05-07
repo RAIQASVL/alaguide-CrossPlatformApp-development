@@ -156,7 +156,7 @@ DATABASES = {
         "USER": "aquonelocal",
         "PASSWORD": os.environ.get('DB_PASSWORD'),  # Use environment variable
         "HOST": "185.22.64.41",
-        "PORT": "22",
+        "PORT": "3306",
     }
 }
 
