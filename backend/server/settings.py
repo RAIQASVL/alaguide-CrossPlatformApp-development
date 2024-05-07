@@ -153,7 +153,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "alaguide_db",
-        "USER": "root",
+        "USER": "aquonelocal",
         "PASSWORD": os.environ.get('DB_PASSWORD'),  # Use environment variable
         "HOST": "185.22.64.41",
         "PORT": "22",
