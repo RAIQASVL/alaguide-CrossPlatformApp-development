@@ -147,7 +147,7 @@ ROOT_URLCONF = "server.urls"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASE_FILE = BASE_DIR / "server" / "database" / "alaguide_db"
+DATABASE_FILE = BASE_DIR / "server" / "database" / "alaguide_db"
 
 DATABASES = {
     "default": {
