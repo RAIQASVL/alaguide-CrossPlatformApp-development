@@ -155,8 +155,8 @@ DATABASES = {
         "NAME": "alaguide_db",
         "USER": "root",
         "PASSWORD": os.environ.get('DB_PASSWORD'),  # Use environment variable
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
+        "HOST": "185.22.64.41",
+        "PORT": "22",
     }
 }
 
