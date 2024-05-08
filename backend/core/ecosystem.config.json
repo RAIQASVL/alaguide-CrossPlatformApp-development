@@ -1,0 +1,13 @@
+{
+    "apps": [
+      {
+        "name": "core",
+        "script": "manage.py",
+        "args": "runserver 185.22.64.41:22",
+        "instances": 1,
+        "exec_mode": "fork_mode",
+        "auto_restart": true,
+        "watch": true
+      }
+    ]
+  }
