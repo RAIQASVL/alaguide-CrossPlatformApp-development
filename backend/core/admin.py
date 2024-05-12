@@ -7,12 +7,14 @@ from .models import (
     Category,
     Landmark,
     AudioBook,
+    AlaguideObject,
     User,
     UserReview,
     LikeRating,
     Tag,
     LandmarkTag,
     SocialProvider,
+    MapData,
     Venue
 )
 
@@ -21,12 +23,14 @@ admin.site.register(City)
 admin.site.register(Category)
 admin.site.register(Landmark)
 admin.site.register(AudioBook)
+admin.site.register(AlaguideObject)
 admin.site.register(User)
 admin.site.register(UserReview)
 admin.site.register(LikeRating)
 admin.site.register(Tag)
 admin.site.register(LandmarkTag)
 admin.site.register(SocialProvider)
+admin.site.register(MapData)
 
 @admin.register(Venue)
 class VenueAdmin(admin.ModelAdmin):
