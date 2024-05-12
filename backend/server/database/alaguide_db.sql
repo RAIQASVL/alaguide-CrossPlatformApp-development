@@ -33,7 +33,7 @@ CREATE TABLE
 CREATE TABLE
     LandmarksCategory (
         category_id INT PRIMARY KEY AUTO_INCREMENT,
-        name VARCHAR(255) NOT NULL UNIQUE
+        categoryname VARCHAR(255) NOT NULL UNIQUE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for landmarks
