@@ -213,10 +213,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 =======
 >>>>>>> 8f0e574 (Project Sync; Prepare to API)
+=======
+=======
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+>>>>>>> 97b9969 (New Branch for Server Deployment: PM2 (added core-app, gunicorn), Static Sync; Project Synced)
+>>>>>>> 199a09c (New Branch for Server Deployment: PM2 (added core-app, gunicorn), Static Sync; Project Synced)
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 

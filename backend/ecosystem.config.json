@@ -1,5 +1,6 @@
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "apps": [
       {
         "name": "core",
@@ -31,6 +32,8 @@
     ]
   }
 =======
+=======
+>>>>>>> 199a09c (New Branch for Server Deployment: PM2 (added core-app, gunicorn), Static Sync; Project Synced)
   "apps": [
     {
       "name": "core",
@@ -61,4 +64,39 @@
     }
   ]
 }
+<<<<<<< HEAD
 >>>>>>> 8f0e574 (Project Sync; Prepare to API)
+=======
+=======
+    "apps": [
+      {
+        "name": "core",
+        "script": "alaguide_arc/backend/manage.py",
+        "args": "runserver 185.22.64.41:8000",
+        "env": {
+	"PYTHONPATH": "/root/alaguide_arc/backend/"
+      },
+        "instances": 1,
+        "exec_mode": "fork_mode",
+        "auto_restart": true,
+        "watch": true
+      },
+      {
+        "name": "gunicorn",
+        "script": "/root/alaguide_venv/bin/gunicorn",
+        "args": "-c conf/gunicorn_config.py server.wsgi --bind 185.22.64.41:8000",
+        "cwd": "/root/alaguide_arc/backend/",
+        "instances": 3,
+        "exec_mode": "fork",
+        "autorestart": true,
+        "watch": false,
+        "max_memory_restart": "5G",
+        "log_date_format": "YYYY-MM-DD HH:mm Z",
+        "error_file": "/root/alaguide_arc/backend/logs/gunicorn_error.log",
+        "out_file": "/root/alaguide_arc/backend/logs/gunicorn_access.log",
+        "pid_file": "/root/alaguide_arc/backend/logs/gunicorn.pid"
+      }
+    ]
+  }
+>>>>>>> 97b9969 (New Branch for Server Deployment: PM2 (added core-app, gunicorn), Static Sync; Project Synced)
+>>>>>>> 199a09c (New Branch for Server Deployment: PM2 (added core-app, gunicorn), Static Sync; Project Synced)
