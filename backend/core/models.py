@@ -33,8 +33,8 @@ class City(models.Model):
 
 class Category(models.Model):
     """Model for categorizing landmarks."""
-
-    name = models.CharField(max_length=50, unique=True)
+    category_id = models.AutoField(primary_key=True)
+    categoryname = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
@@ -65,11 +65,11 @@ class Landmark(models.Model):
 
 
 class AudioBook(models.Model):
-    audiobook_id = models.AutoField(primary_key=True)
+    audiobook_id = models.AutoField(primary_key=True,)
     title = models.CharField(max_length=255)
     description = models.TextField()
     audio_url = models.CharField(max_length=255)
-    landmark_id = models.ForeignKey(Landmark, on_delete=models.CASCADE, default=1)
+    landmark_id = models.ForeignKey(Landmark, on_delete=models.CASCADE, db_column="landmark_id")
 
     def __str__(self):
         return self.name
@@ -89,7 +89,7 @@ class AlaguideObject(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     image_url = models.CharField(max_length=255)
-    audio_url = models.ForeignKey(AudioBook, on_delete=models.CASCADE)
+    audio_url = models.ForeignKey(AudioBook, on_delete=models.CASCADE, db_column="audio_url")
     
     def __str__(self):
         return self.name

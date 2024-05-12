@@ -44,8 +44,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "whitenoise.runserver_nostatic",
     "django.contrib.sites",
-    # Database init / app-module
-    "core",
+    # App - Modules
+    "apis.apps.ApisConfig",
+    "core.apps.CoreConfig",
     # JWT
     "rest_framework",
     "rest_framework.authtoken",
@@ -156,7 +157,7 @@ DATABASES = {
         "NAME": "alaguide_db",
         "USER": "aquonelocal",
         "PASSWORD": os.environ.get('DB_PASSWORD'),  # Use environment variable
-        "HOST": "185.22.64.41",
+        "HOST": "localhost",
         "PORT": "3306",
     }
 }
@@ -180,6 +181,12 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CALSSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
 
 
 # Internationalization
