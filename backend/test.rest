@@ -18,5 +18,17 @@ Authorization: token xxx
 
 ### TEST REST API
 
-GET http://localhost:8000/guide/objects
+GET http://localhost:8000/guide/objects/
+Connent-Type: application/json
+
+###
+GET http://localhost:8000/guide/menu/
+Connent-Type: application/json
+
+###
+GET http://localhost:8000/guide/menu/location
+Connent-Type: application/json
+
+###
+GET http://localhost:8000/guide/menu/content
 Connent-Type: application/json
