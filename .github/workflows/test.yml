@@ -1,0 +1,58 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+      - server_deployment
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12.3
+
+      - name: Install dependencies
+        run: |
+                python -m pip install --upgrade pip
+                pip install -r requirements.txt
+      
+      - name: Set up test database
+        run: |
+          mysql -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "CREATE DATABASE IF NOT EXISTS test_alaguide_db"
+
+      - name: Run tests
+        run: |
+          python manage.py test
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.12.2'
+      
+      - name: Install Dependencies
+        run: npm install
+        
+      - name: Build
+        run: npm run build
+
+      - name: Install Nginx
+        run: sudo apt-get update && sudo apt-get install nginx -y
+
+      - name: Configure Nginx
+        run: |
+          sudo cp /etc/nginx/nginx.conf  
+          sudo systemctl restart nginx
+      
+      - name: Install PM2
+        run: npm install pm2@latest -g
+
+      - name: Start with PM2
+        run: pm2 start backend/ecosystem.config.json

@@ -163,6 +163,16 @@ DATABASES = {
     }
 }
 
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'test_alaguide_db',
+        'USER': 'aquonelocal',
+        'PASSWORD': os.environ.get('DB_PASSWORD'),  # Use environment variable
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+
 SILENCED_SYSTEM_CHECKS = ["models.W036"]
 
 # Password validation

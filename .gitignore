@@ -1,2 +1,3 @@
 venv/
-db.sqlite3
+alaguide_db.sql
+test_alaguide_db.sql

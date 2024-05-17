@@ -1,3 +1,5 @@
+### JWT TEST
+
 POST http://127.0.0.1:8000/signup 
 Content-Type: application/json
 
@@ -30,5 +32,9 @@ GET http://localhost:8000/guide/menu/location
 Connent-Type: application/json
 
 ###
-GET http://localhost:8000/guide/menu/content
+GET http://localhost:8000/guide/menu/
+Connent-Type: application/json
+
+###
+POST http://localhost:8000/guide/menu/feedback/
 Connent-Type: application/json
