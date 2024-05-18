@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-turgufs_96v_e!&mbi2#g(8pt_c8_g1kzt-#oel#9ss1(uhrol"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-ALLOWED_HOSTS = ["localhost"]
+ALLOWED_HOSTS = ["185.22.64.41"]
 SITE_ID = 1
 
 api_key = "GOOGLE_CLOUD_API_KEY"
@@ -158,7 +158,7 @@ DATABASES = {
         "NAME": "alaguide_db",
         "USER": "aquonelocal",
         "PASSWORD": os.environ.get('DB_PASSWORD'),  # Use environment variable
-        "HOST": "localhost",
+        "HOST": "185.22.64.41",
         "PORT": "3306",
     }
 }
@@ -169,7 +169,7 @@ if 'test' in sys.argv:
         'NAME': 'test_alaguide_db',
         'USER': 'aquonelocal',
         'PASSWORD': os.environ.get('DB_PASSWORD'),  # Use environment variable
-        'HOST': 'localhost',
+        'HOST': '185.22.64.41',
         'PORT': '3306',
     }
 
