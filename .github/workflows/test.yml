@@ -35,7 +35,7 @@ jobs:
       
       - name: Set up test database
         run: |
-          mysql -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -h alaguidehost -S /var/run/mysqld/mysqld.sock -e "CREATE DATABASE IF NOT EXISTS test_alaguide_db"
+          mysql -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -h 185.22.64.41 -S /var/run/mysqld/mysqld.sock -e "CREATE DATABASE IF NOT EXISTS test_alaguide_db"
 
       - name: Run tests
         run: |
