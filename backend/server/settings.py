@@ -26,13 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-turgufs_96v_e!&mbi2#g(8pt_c8_g1kzt-#oel#9ss1(uhrol"
 # SECURITY WARNING: don't run with debug turned on in production!
-<<<<<<< HEAD
 DEBUG = True
 ALLOWED_HOSTS = ["localhost"]
-=======
-DEBUG = False
-ALLOWED_HOSTS = ["185.22.64.41"]
->>>>>>> 802c86af742df5db1f0cbce42dea646969b10d21
 SITE_ID = 1
 
 api_key = "GOOGLE_CLOUD_API_KEY"
