@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  backend:
+    restart: always
+    build:
+      context: ./backend # django service folder
+    image: backend:latest
+
+  mysql-db:
+    restart: always
+    image: mysql:latest
+
+    env_file: ./mysql-db/.mysql-env
+    ports:
+      - "3306:3306"
