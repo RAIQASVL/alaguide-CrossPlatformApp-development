@@ -18,9 +18,8 @@ from .views import (
 
 urlpatterns = [
     # 1. Authentication and Authorization - Django Allauth
-    path(
-        "home/", TemplateView.as_view(template_name="dashboard/home.html"), name="home"
-    ),
+    path("home/", TemplateView.as_view(template_name="dashboard/home.html"), name="home"),
+    path("accounts/", include("allauth.urls")),
     path("accounts/login/", LoginView.as_view(), name="account_login"),
     path("accounts/signup/", SignupView.as_view(), name="account_signup"),
     path("accounts/logout/", LogoutView.as_view(), name="account_logout"),
@@ -43,8 +42,9 @@ urlpatterns = [
     path("guideLanguageSelection/", LanguageSelectionView.as_view()),
     # 5. Feedback | Role-Based Access Control (RBAC)
     path("guidePostFeedback/", FeedbackView.as_view(), name="feedback"),
+]
+
     # Google Maps API
     # path("map/", views.map_view, name="map-view"),
     # path("api/landmarks/", views.get_landmark, name="landmarks-api"),
     # Other URL patterns for your core app
-]
