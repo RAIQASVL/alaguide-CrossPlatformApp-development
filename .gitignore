@@ -1,9 +1,12 @@
-github/
-venv/
-alaguide_db.sql
-test_alaguide_db.sql
 <<<<<<< Updated upstream
 =======
+# GitHub
+github/
+.github
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
 # Flask stuff:
 instance/
@@ -108,6 +111,9 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# MacOs
+.DS_Store
 
 # Zero | Bin 
 zero/

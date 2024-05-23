@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+
 import sys
 import os
 from pathlib import Path
@@ -26,8 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = local_vars.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-ALLOWED_HOSTS = ['localhost']
+DEBUG = True
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 SITE_ID = 1
 
 
@@ -42,7 +43,7 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "django.contrib.sites",
     # App - Modules
-    "apis.apps.ApisConfig",
+    "api.apps.ApisConfig",
     "core.apps.CoreConfig",
     # JWT
     "rest_framework",
@@ -118,14 +119,15 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-ROOT_URLCONF = 'server.urls'
+ROOT_URLCONF = "server.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            BASE_DIR / "templates",
-            BASE_DIR / "templates/map",  # Your custom template directory
+            BASE_DIR / "backend" / "src" /  "templates",
+            BASE_DIR / "backend" / "src" /  "templates" / "map",  # Your custom template directory
+            BASE_DIR / "backend" / "src" /  "templates" / "dashboard",  # Your custom template directory
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -148,7 +150,7 @@ ROOT_URLCONF = "server.urls"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASE_FILE = BASE_DIR / "server" / "database" / "alaguide_db"
+DATABASE_FILE = BASE_DIR / "backend" / "src" / "server" / "database" / "alaguide_db"
 
 DATABASES = {
     "default": {
@@ -156,19 +158,19 @@ DATABASES = {
         "NAME": local_vars.MYSQL_NAME,
         "USER": local_vars.MYSQL_USER,
         "PASSWORD": local_vars.MYSQL_PASSWORD,  # Use environment variable
-        "HOST": local_vars.MYSQL_HOST,
+        "HOST": "localhost",
         "PORT": "3306",
     }
 }
 
-if 'test' in sys.argv:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': local_vars.MYSQL_TEST_NAME,
-        'USER': local_vars.MYSQL_USER,
-        'PASSWORD': local_vars.MYSQL_PASSWORD, # Use environment variable
-        'HOST': local_vars.MYSQL_HOST,
-        'PORT': '3306',
+if "test" in sys.argv:
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": local_vars.MYSQL_TEST_NAME,
+        "USER": local_vars.MYSQL_USER,
+        "PASSWORD": local_vars.MYSQL_PASSWORD,  # Use environment variable
+        "HOST": local_vars.MYSQL_HOST,
+        "PORT": "3306",
     }
 
 SILENCED_SYSTEM_CHECKS = ["models.W036"]
@@ -192,8 +194,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CALSSES': [
-        'rest_framework.permissions.AllowAny',
+    "DEFAULT_PERMISSION_CALSSES": [
+        "rest_framework.permissions.AllowAny",
     ]
 }
 
@@ -216,19 +218,19 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'backend' / 'src' / 'static',
-    BASE_DIR / 'backend' / 'src' / 'static' / 'admin',
-    BASE_DIR / 'backend' / 'src' / 'static' / 'assets',
-    BASE_DIR / 'backend' / 'src' / 'static' / 'images',
-    BASE_DIR / 'backend' / 'src' / 'static' / 'rest_framework',
+    BASE_DIR / "backend" / "src" / "static",
+    BASE_DIR / "backend" / "src" / "static" / "admin",
+    BASE_DIR / "backend" / "src" / "static" / "assets",
+    BASE_DIR / "backend" / "src" / "static" / "images",
+    BASE_DIR / "backend" / "src" / "static" / "rest_framework",
 ]
 
-STATIC_ROOT = BASE_DIR / 'backend' / 'src' / 'staticfiles'
+STATIC_ROOT = BASE_DIR / "backend" / "src" / "staticfiles"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'backend' / 'src' / 'media'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "backend" / "src" / "media"
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 
 AUTHENTICATION_BACKENDS = [
@@ -256,10 +258,16 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 ACCOUNT_LOGOUT_ON_GET = True
 
-ACCOUNT_EMAIL_VERIFICATION = "none"
+#ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
+ACCOUNT_CONFIRM_EMAIL_ON_GET = False
 
 SOCIALACCOUNT_QUERY_EMAIL = True
 
 ACCOUNT_SESSION_REMEMBER = True
 
 SOCIALACCOUNT_STORE_TOKENS = True
+
+# Other App Configurations
+DEFAULT_COUNTRY_ID = 1
+DEFAULT_CITY_ID = 1
