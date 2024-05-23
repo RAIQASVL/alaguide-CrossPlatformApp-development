@@ -1,3 +1,8 @@
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
 
 # Database Models
@@ -33,6 +38,7 @@ class City(models.Model):
 
 class Category(models.Model):
     """Model for categorizing landmarks."""
+
     category_id = models.AutoField(primary_key=True)
     categoryname = models.CharField(max_length=50, unique=True)
 
@@ -65,11 +71,15 @@ class Landmark(models.Model):
 
 
 class AudioBook(models.Model):
-    audiobook_id = models.AutoField(primary_key=True,)
+    audiobook_id = models.AutoField(
+        primary_key=True,
+    )
     title = models.CharField(max_length=255)
     description = models.TextField()
     audio_url = models.CharField(max_length=255)
-    landmark_id = models.ForeignKey(Landmark, on_delete=models.CASCADE, db_column="landmark_id")
+    landmark_id = models.ForeignKey(
+        Landmark, on_delete=models.CASCADE, db_column="landmark_id"
+    )
 
     def __str__(self):
         return self.name
@@ -89,29 +99,67 @@ class AlaguideObject(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     image_url = models.CharField(max_length=255)
-    audio_url = models.ForeignKey(AudioBook, on_delete=models.CASCADE, db_column="audio_url")
-    
+    audio_url = models.ForeignKey(
+        AudioBook, on_delete=models.CASCADE, db_column="audio_url"
+    )
+
     def __str__(self):
         return self.name
-    
+
     class Meta:
         managed = False
         db_table = "AlaguideObjects"
 
 
-class User(models.Model):
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("The Email field must be set")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(email, password, **extra_fields)
+
+    class Meta:
+        managed = True
+        db_table = "CustomUsers"
+
+
+class AccountUser(models.Model):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=100)
+    default_country_id = models.IntegerField(default=1)
+    default_city_id = models.IntegerField(default=1)
+    preferred_language = models.CharField(max_length=10, default="en")
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
     def __str__(self):
         return self.name
 
     class Meta:
-        managed = False
+        managed = True
         db_table = "Users"
 
 
@@ -120,20 +168,20 @@ class UserReview(models.Model):
     text = models.TextField()
     rating = models.DecimalField(max_digits=3, decimal_places=1)
     date_posted = models.DateField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(AccountUser, on_delete=models.CASCADE)
+    landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.text
 
     class Meta:
-        managed = False
+        managed = True
         db_table = "UserReviews"
 
 
 class LikeRating(models.Model):
     like_rating_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(AccountUser, on_delete=models.CASCADE, null=True)
     landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE, null=True)
     type = models.CharField(max_length=5)
     date_liked_or_rated = models.DateField()
@@ -142,7 +190,7 @@ class LikeRating(models.Model):
         return self.name
 
     class Meta:
-        managed = False
+        managed = True
         db_table = "LikesRatings"
 
 
@@ -177,7 +225,7 @@ class SocialProvider(models.Model):
     client_id = models.CharField(max_length=255)
     secret = models.CharField(max_length=255)
     key = models.CharField(max_length=255, blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(AccountUser, on_delete=models.CASCADE, null=True)
     landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -201,16 +249,3 @@ class MapData(models.Model):
     class Meta:
         managed = False
         db_table = "MapData"
-
-
-class Venue(models.Model):
-    name = models.CharField(max_length=255)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    
-    def __str__(self):
-        return self.name
-    
-    class Meta:
-        managed = True
-        db_table = "Venues"    
