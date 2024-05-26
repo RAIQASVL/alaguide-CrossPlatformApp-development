@@ -13,6 +13,11 @@ static/
 staticfiles/
 media/
 
+# But keep these specific files
+!static/images/
+!staticfiles/images/
+!media/
+
 # Flask stuff:
 instance/
 .webassets-cache

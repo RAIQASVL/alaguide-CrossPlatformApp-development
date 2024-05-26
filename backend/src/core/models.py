@@ -121,27 +121,15 @@ class Landmark(models.Model):
 
 
 class AudioBook(models.Model):
-    audiobook_id = models.AutoField(
-        primary_key=True,
-    )
+    audiobook_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
     description = models.TextField()
     audio_file = models.FileField(upload_to=(BASE_DIR / "media" / "audio"))
-    landmark_id = models.ForeignKey(
-        Landmark, on_delete=models.CASCADE, db_column="landmark_id"
-    )
+    landmark_id = models.ForeignKey(Landmark, on_delete=models.CASCADE, db_column="landmark_id")
 
     def __str__(self):
         return self.title
     
-    @property
-    def image_url(self):
-        return self.image.image_file.url if self.image else None
-
-    @property
-    def audio_url(self):
-        return self.audio.audio_file.url if self.audio else None
-
     class Meta:
         managed = False
         db_table = "AudioBooks"
@@ -156,12 +144,25 @@ class AlaguideObject(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    image = models.ForeignKey(Landmark, on_delete=models.CASCADE, db_column="image", null=True)
-    audio = models.ForeignKey(AudioBook, on_delete=models.CASCADE, db_column="audio", null=True)
+    image = models.ForeignKey(
+        Landmark, on_delete=models.CASCADE, 
+        db_column="image", related_name='alaguide_objects', null=True
+        )
+    audio = models.ForeignKey(
+        AudioBook, on_delete=models.CASCADE, 
+        db_column="audio", related_name='alaguide_objects', null=True
+        )
 
     def __str__(self):
         return self.title
 
+    @property
+    def image_url(self):
+        return self.image.image_file.url if self.image else None
+
+    @property
+    def audio_url(self):
+        return self.audio.audio_file.url if self.audio else None
     class Meta:
         managed = False
         db_table = "AlaguideObjects"
