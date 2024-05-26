@@ -82,43 +82,6 @@ CREATE TABLE
         FOREIGN KEY (audio) REFERENCES AudioBooks (audio_file) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
-CREATE TABLE IF NOT EXISTS 
-    Users (
-        user_id INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(100),
-        first_name VARCHAR(100),
-        last_name VARCHAR(100),
-        email VARCHAR(100),
-        password VARCHAR(100),
-        default_country_id INT DEFAULT 1,
-        default_city_id INT DEFAULT 1,
-        preferred_language VARCHAR(10) DEFAULT 'en',
-        is_active BOOLEAN DEFAULT TRUE,
-        is_staff BOOLEAN DEFAULT FALSE
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
-CREATE TABLE IF NOT EXISTS 
-    UserReviews (
-        review_id INT AUTO_INCREMENT PRIMARY KEY,
-        text TEXT,
-        rating DECIMAL(4, 1),
-        date_posted DATE,
-        user_id INT,
-        landmark_id INT,
-        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
-        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;    
-
-CREATE TABLE 
-    LikesRatings (
-        like_rating_id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT,
-        landmark_id INT,
-        type VARCHAR(5),
-        date_liked_or_rated DATE,
-        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
-        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for tags (if required)
 CREATE TABLE
@@ -126,6 +89,7 @@ CREATE TABLE
         tag_id INT PRIMARY KEY AUTO_INCREMENT,
         tagname VARCHAR(255) NOT NULL
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
 
 -- Table for many-to-many ralationship between landmarks and tags (if required)
 CREATE TABLE
@@ -137,19 +101,6 @@ CREATE TABLE
         FOREIGN KEY (tag_id) REFERENCES Tags (tag_id) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
-
--- Table for AllAuth SocialProviders
-CREATE TABLE
-    SocialProvider (
-        provider VARCHAR(50),
-        client_id VARCHAR(255),
-        secret VARCHAR(255),
-        key_jwt VARCHAR(255),
-        user_id INT,
-        landmark_id INT,
-        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
-        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for Google Maps
 CREATE TABLE
