@@ -32,9 +32,21 @@ class PublicScopeAccountUserSerializer(serializers.ModelSerializer):
         fields = ["user_id", "username", "first_name", "last_name", "email"]
         read_only_fields = fields
 
+# AudioBooks for AlaguideObject  
+class AudioBookSerializer(serializers.ModelSerializer):
+    audio_url = serializers.SerializerMethodField()
+    class Meta:
+        model = models.AudioBook
+        fields = '__all__'
+    
+    def get_audio_url(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.audio_file.url) if obj.audio_file else None    
 
-# The Main AlaguideObject View ("guide/objects/")
+# The Main AlaguideObject ("guideObjectList/") & ("guideObjectList/<int:pk>/")
 class AlaguideObjectSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+    audio_url = serializers.SerializerMethodField()
     class Meta:
         model = models.AlaguideObject
         fields = (
@@ -46,11 +58,19 @@ class AlaguideObjectSerializer(serializers.ModelSerializer):
             "latitude",
             "longitude",
             "image",
+            "image_url",
             "audio",
+            "audio_url"
         )
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.image.image_file.url) if obj.image else None
+    
+    def get_audio_url(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(odj.audio.audio_file.url) if obj.audio else None
 
-
-# Menu View: Sub Category "Location" ("guide/menu/location/")
+# 
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Country
@@ -80,10 +100,6 @@ class LandmarkSerializer(serializers.ModelSerializer):
         model = models.Landmark
         fields = '__all__'
         
-class AudioBookSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.AudioBook
-        fields = '__all__'        
 
 class UserReviewSerializer(serializers.ModelSerializer):
     class Meta:
