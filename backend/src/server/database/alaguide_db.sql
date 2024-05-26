@@ -42,14 +42,14 @@ CREATE TABLE
         landmark_id INT PRIMARY KEY AUTO_INCREMENT,
         landmarkname VARCHAR(100) NOT NULL,
         description TEXT,
-        image_url VARCHAR(255),
+        image_file VARCHAR(255),
         latitude DECIMAL(9, 6),
         longitude DECIMAL(9, 6),
         city_id INT,
         FOREIGN KEY (city_id) REFERENCES Cities (city_id) ON DELETE CASCADE,
         category_id INT,
-        FOREIGN KEY (category_id) REFERENCES LandmarksCategory (category_id) -- Corrected table name
-        ON DELETE CASCADE -- Clause for automatic deletion on cascade
+        FOREIGN KEY (category_id) REFERENCES LandmarksCategory (category_id) ON DELETE CASCADE,
+        INDEX alaguideobject_ibfk_3_idx (image_file)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for audiobooks
@@ -58,10 +58,10 @@ CREATE TABLE
         audiobook_id INT PRIMARY KEY AUTO_INCREMENT,
         title VARCHAR(255) NOT NULL,
         description TEXT,
-        audio_url VARCHAR(255),
+        audio_file VARCHAR(255),
         landmark_id INT NOT NULL,
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE,
-        INDEX alaguideobject_ibfk_3_idx (audio_url)
+        INDEX alaguideobject_ibfk_3_idx (audio_file)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for landmarks with audio
@@ -76,9 +76,48 @@ CREATE TABLE
         FOREIGN KEY (category_id) REFERENCES LandmarksCategory (category_id) ON DELETE CASCADE,
         latitude DECIMAL(9, 6),
         longitude DECIMAL(9, 6),
-        image_url VARCHAR(255),
-        audio_url VARCHAR(255),
-        FOREIGN KEY (audio_url) REFERENCES AudioBooks (audio_url) ON DELETE CASCADE
+        image VARCHAR(255),
+        audio VARCHAR(255),
+        FOREIGN KEY (image) REFERENCES Landmarks (image_file) ON DELETE CASCADE,
+        FOREIGN KEY (audio) REFERENCES AudioBooks (audio_file) ON DELETE CASCADE
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS 
+    Users (
+        user_id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(100),
+        first_name VARCHAR(100),
+        last_name VARCHAR(100),
+        email VARCHAR(100),
+        password VARCHAR(100),
+        default_country_id INT DEFAULT 1,
+        default_city_id INT DEFAULT 1,
+        preferred_language VARCHAR(10) DEFAULT 'en',
+        is_active BOOLEAN DEFAULT TRUE,
+        is_staff BOOLEAN DEFAULT FALSE
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS 
+    UserReviews (
+        review_id INT AUTO_INCREMENT PRIMARY KEY,
+        text TEXT,
+        rating DECIMAL(4, 1),
+        date_posted DATE,
+        user_id INT,
+        landmark_id INT,
+        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
+        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE
+    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;    
+
+CREATE TABLE 
+    LikesRatings (
+        like_rating_id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT,
+        landmark_id INT,
+        type VARCHAR(5),
+        date_liked_or_rated DATE,
+        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
+        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for tags (if required)
@@ -97,6 +136,7 @@ CREATE TABLE
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE,
         FOREIGN KEY (tag_id) REFERENCES Tags (tag_id) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
 
 -- Table for AllAuth SocialProviders
 CREATE TABLE

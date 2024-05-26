@@ -1,11 +1,11 @@
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
-from django.shortcuts import render
+from rest_framework import status, viewsets
+from django.shortcuts import render, get_object_or_404
 from rest_framework import generics
 from core import models
 from api import serializers
@@ -35,11 +35,12 @@ class MeApiHandler(RetrieveUpdateAPIView):
 
 
 # The Main AlaguideObject View ("guideObjectList/")
-class ListAlaguideObject(generics.ListCreateAPIView):
+class ListAlaguideObject(viewsets.ModelViewSet):
+    queryset = models.AlaguideObject.objects.all()
     serializer_class = serializers.AlaguideObjectSerializer
 
     def get_queryset(self):
-        queryset = models.AlaguideObject.objects.all()
+        queryset = super().get_queryset()
         country_id = self.request.query_params.get(
             "country_id", settings.DEFAULT_COUNTRY_ID
         )
@@ -55,7 +56,7 @@ class ListAlaguideObject(generics.ListCreateAPIView):
         return queryset
 
 
-class DetailAlaguideObject(generics.RetrieveUpdateDestroyAPIView):
+class DetailAlaguideObject(viewsets.ModelViewSet):
     queryset = models.AlaguideObject.objects.all()
     serializer_class = serializers.AlaguideObjectSerializer
 
@@ -99,3 +100,45 @@ class FeedbackView(APIView):
         feedback_data = request.data  # Assume that feedback data is sent in JSON format
         # Here you can perform additional actions such as saving to the database and sending notifications to the administrator
         return Response({"message": "Feedback received successfully"})
+
+
+# ViewSets for CRUD operations
+class CountryViewSet(viewsets.ModelViewSet):
+    queryset = models.Country.objects.all()
+    serializer_class = serializers.CountrySerializer
+
+class CityViewSet(viewsets.ModelViewSet):
+    queryset = models.City.objects.all()
+    serializer_class = serializers.CitySerializer
+    
+class UserReviewViewSet(viewsets.ModelViewSet):
+    queryset = models.UserReview.objects.all()
+    serializer_class = serializers.UserReviewSerializer
+    
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = models.Category.objects.all()
+    serializer_class = serializers.CategorySerializer
+    
+class LandmarkViewSet(viewsets.ModelViewSet):
+    queryset = models.Landmark.objects.all()
+    serializer_class = serializers.LandmarkSerializer
+
+class LandmarkTagViewSet(viewsets.ModelViewSet):
+    queryset = models.LandmarkTag.objects.all()
+    serializer_class = serializers.LandmarkTagSerializer
+    
+class AudioBookViewSet(viewsets.ModelViewSet):
+    queryset = models.AudioBook.objects.all()
+    serializer_class = serializers.AudioBookSerializer
+
+class AccountUserViewSet(viewsets.ModelViewSet):
+    queryset = models.AccountUser.objects.all()
+    serializer_class = serializers.AccountUserSerializer
+
+class LikeRatingViewSet(viewsets.ModelViewSet):
+    queryset = models.LikeRating.objects.all()
+    serializer_class = serializers.LikeRatingSerializer
+
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = models.Tag.objects.all()
+    serializer_class = serializers.TagSerializer

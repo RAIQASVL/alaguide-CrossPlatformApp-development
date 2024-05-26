@@ -218,17 +218,18 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
-    BASE_DIR / "backend" / "src" / "static",
-    BASE_DIR / "backend" / "src" / "static" / "admin",
-    BASE_DIR / "backend" / "src" / "static" / "assets",
-    BASE_DIR / "backend" / "src" / "static" / "images",
-    BASE_DIR / "backend" / "src" / "static" / "rest_framework",
+    BASE_DIR / "static",
+    BASE_DIR / "static" / "admin",
+    BASE_DIR / "static" / "assets",
+    BASE_DIR / "static" / "images",
+    BASE_DIR / "static" / "rest_framework",
 ]
 
-STATIC_ROOT = BASE_DIR / "backend" / "src" / "staticfiles"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "backend" / "src" / "media"
+MEDIA_ROOT = BASE_DIR / "media" 
+
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
