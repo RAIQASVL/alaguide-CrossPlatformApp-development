@@ -1,13 +1,17 @@
 from django.urls import path, include
 from . import views
 from django.views.generic import TemplateView
-from allauth.account.views import LoginView, SignupView, LogoutView
-from allauth.account.views import PasswordSetView
-from allauth.account.views import PasswordChangeView
-from allauth.account.views import PasswordResetView
-from allauth.account.views import PasswordResetFromKeyView
-from allauth.account.views import EmailView
-from allauth.account.views import ConfirmEmailView
+from allauth.account.views import (
+    LoginView,
+    SignupView,
+    LogoutView,
+    PasswordSetView,
+    PasswordChangeView,
+    PasswordResetView,
+    PasswordResetFromKeyView,
+    EmailView,
+    ConfirmEmailView,
+)
 from .views import (
     ListAlaguideObject,
     DetailAlaguideObject,
@@ -15,6 +19,7 @@ from .views import (
     LanguageSelectionView,
     FeedbackView,
 )
+
 
 urlpatterns = [
     # 1. Authentication and Authorization - Django Allauth
@@ -36,8 +41,8 @@ urlpatterns = [
     path("me/", MeApiHandler.as_view(), name="api_accounts_me"),
     # 3. Resource-based URLs
     # | The Main AlaguideObject View ("guideObjectList/")
-    path("guideObjectList/", ListAlaguideObject.as_view()),
-    path("guideObjectList/<int:pk>/", DetailAlaguideObject.as_view()),
+    path("guideObjectList/", ListAlaguideObject.as_view(actions={'get': 'list', 'post': 'create', 'delete': 'destroy'})),
+    path("guideObjectList/<int:pk>/", DetailAlaguideObject.as_view(actions={'get': 'list'})),
     # 4. Language Selection
     path("guideLanguageSelection/", LanguageSelectionView.as_view()),
     # 5. Feedback | Role-Based Access Control (RBAC)

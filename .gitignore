@@ -8,6 +8,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Static & Media
+static/
+staticfiles/
+media/
+
 # Flask stuff:
 instance/
 .webassets-cache

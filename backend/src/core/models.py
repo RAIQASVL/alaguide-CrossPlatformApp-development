@@ -1,116 +1,13 @@
+from django.db import models
+from django.core.files import File
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
-from django.db import models
+from server.settings import BASE_DIR
 
 # Database Models
-
-
-class Country(models.Model):
-    country_id = models.AutoField(primary_key=True)
-    countryname = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        managed = False
-        db_table = "Countries"
-
-
-class City(models.Model):
-    city_id = models.AutoField(primary_key=True)
-    cityname = models.CharField(max_length=100)
-    description = models.TextField()
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        managed = False
-        db_table = "Cities"
-
-
-class Category(models.Model):
-    """Model for categorizing landmarks."""
-
-    category_id = models.AutoField(primary_key=True)
-    categoryname = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        managed = False
-        db_table = "LandmarksCategory"
-
-
-class Landmark(models.Model):
-    landmark_id = models.AutoField(primary_key=True)
-    landmarkname = models.CharField(max_length=100)
-    description = models.TextField()
-    image_url = models.CharField(max_length=255)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)
-    category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, null=True
-    )  # Category relationship
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        managed = False
-        db_table = "Landmarks"
-
-
-class AudioBook(models.Model):
-    audiobook_id = models.AutoField(
-        primary_key=True,
-    )
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    audio_url = models.CharField(max_length=255)
-    landmark_id = models.ForeignKey(
-        Landmark, on_delete=models.CASCADE, db_column="landmark_id"
-    )
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        managed = False
-        db_table = "AudioBooks"
-
-
-# Model for main objects
-class AlaguideObject(models.Model):
-    ala_object_id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    image_url = models.CharField(max_length=255)
-    audio_url = models.ForeignKey(
-        AudioBook, on_delete=models.CASCADE, db_column="audio_url"
-    )
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        managed = False
-        db_table = "AlaguideObjects"
-
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -135,7 +32,6 @@ class CustomUserManager(BaseUserManager):
     class Meta:
         managed = True
         db_table = "CustomUsers"
-
 
 class AccountUser(models.Model):
     user_id = models.AutoField(primary_key=True)
@@ -162,14 +58,122 @@ class AccountUser(models.Model):
         managed = True
         db_table = "Users"
 
+class Country(models.Model):
+    country_id = models.AutoField(primary_key=True)
+    countryname = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.countryname
+
+    class Meta:
+        managed = False
+        db_table = "Countries"
+
+
+class City(models.Model):
+    city_id = models.AutoField(primary_key=True)
+    cityname = models.CharField(max_length=100)
+    description = models.TextField()
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.cityname
+
+    class Meta:
+        managed = False
+        db_table = "Cities"
+
+
+class Category(models.Model):
+    """Model for categorizing landmarks."""
+
+    category_id = models.AutoField(primary_key=True)
+    categoryname = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.categoryname
+
+    class Meta:
+        managed = False
+        db_table = "LandmarksCategory"
+
+
+class Landmark(models.Model):
+    landmark_id = models.AutoField(primary_key=True)
+    landmarkname = models.CharField(max_length=100)
+    description = models.TextField()
+    image_file = models.FileField(upload_to=(BASE_DIR / "media" / "img" ))
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, null=True
+    )  # Category relationship
+
+    def __str__(self):
+        return self.landmarkname
+
+    class Meta:
+        managed = False
+        db_table = "Landmarks"
+
+
+class AudioBook(models.Model):
+    audiobook_id = models.AutoField(
+        primary_key=True,
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    audio_file = models.FileField(upload_to=(BASE_DIR / "media" / "audio"))
+    landmark_id = models.ForeignKey(
+        Landmark, on_delete=models.CASCADE, db_column="landmark_id"
+    )
+
+    def __str__(self):
+        return self.title
+    
+    @property
+    def image_url(self):
+        return self.image.image_file.url if self.image else None
+
+    @property
+    def audio_url(self):
+        return self.audio.audio_file.url if self.audio else None
+
+    class Meta:
+        managed = False
+        db_table = "AudioBooks"
+
+
+# Model for main objects
+class AlaguideObject(models.Model):
+    ala_object_id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    image = models.ForeignKey(Landmark, on_delete=models.CASCADE, db_column="image", null=True)
+    audio = models.ForeignKey(AudioBook, on_delete=models.CASCADE, db_column="audio", null=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        managed = False
+        db_table = "AlaguideObjects"
+
+# Other Models
 class UserReview(models.Model):
     review_id = models.AutoField(primary_key=True)
     text = models.TextField()
     rating = models.DecimalField(max_digits=3, decimal_places=1)
     date_posted = models.DateField()
-    user = models.ForeignKey(AccountUser, on_delete=models.CASCADE)
-    landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE)
+    user = models.ForeignKey(AccountUser, on_delete=models.CASCADE, null=True)
+    landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.text
@@ -187,7 +191,7 @@ class LikeRating(models.Model):
     date_liked_or_rated = models.DateField()
 
     def __str__(self):
-        return self.name
+        return self.type
 
     class Meta:
         managed = True
@@ -199,7 +203,7 @@ class Tag(models.Model):
     tagname = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.tagname
 
     class Meta:
         managed = False
@@ -211,14 +215,14 @@ class LandmarkTag(models.Model):
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.name
+        return self.landmark
 
     class Meta:
         managed = False
         db_table = "LandmarkTags"
         unique_together = (("landmark", "tag"),)
-
-
+        
+        
 # AllAuth
 class SocialProvider(models.Model):
     provider = models.CharField(max_length=50)

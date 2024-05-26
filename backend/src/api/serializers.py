@@ -45,8 +45,8 @@ class AlaguideObjectSerializer(serializers.ModelSerializer):
             "category",
             "latitude",
             "longitude",
-            "image_url",
-            "audio_url",
+            "image",
+            "audio",
         )
 
 
@@ -67,3 +67,39 @@ class CitySerializer(serializers.ModelSerializer):
 class LanguageSerializer(serializers.Serializer):
     language_code = serializers.CharField()
     language_name = serializers.CharField()
+    
+
+# SerializersSets for CRUD operations
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Category
+        fields = '__all__'
+        
+class LandmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Landmark
+        fields = '__all__'
+        
+class AudioBookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AudioBook
+        fields = '__all__'        
+
+class UserReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserReview
+        fields = '__all__'
+class LikeRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.LikeRating
+        fields = '__all__'
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Tag
+        fields = '__all__'        
+        
+class LandmarkTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.LandmarkTag
+        fields = '__all__'    
