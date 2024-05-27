@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width,
+    initial-scale=1.0'>
+    <title>Audio Player</title>
+</head>
+<body>
+    <h1>Audio Guide Player</h1>
+    <div id='audio-player-container'>
+        <!-- Audio player element -->
+        <audio id='audio-player' controls>
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    
+    <!-- List of audio guides -->
+    <ul id='audio-list'>
+        <!-- Audio guides will be dynamically inserted here -->
+    </ul>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const audioList = document.getElementById('audio-list');
+            const audioPlayer = document.getElementById('audio-player')
+                ;
+            
+            // Fetch audio guides from the API
+            fetch('/api/v1/guide-audiobooks/')
+                .then(respone => response.json())
+                .then(data => {
+                    data.forEach(audioBook => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = audioBook.title;
+                        listItem.addEventListener('click', () => {
+                            audioPlayer.src = audioBook.audio_url;
+                            audioPlayer.play();
+                        });
+                        audioList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching audio books:', eror));
+        }); 
+    </script>
+</body>
+</html>
