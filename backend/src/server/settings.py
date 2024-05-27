@@ -29,7 +29,11 @@ SECRET_KEY = local_vars.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 SITE_ID = 1
+
 
 
 # Application definition
@@ -42,6 +46,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "whitenoise.runserver_nostatic",
     "django.contrib.sites",
+    # SimpleUI
+    "simpleui",
+    # CORS
+    "corsheaders",
     # App - Modules
     "api.apps.ApisConfig",
     "core.apps.CoreConfig",
@@ -115,9 +123,12 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    # CORS
+    "corsheaders.middleware.CorsMiddleware",
     # Add the account middleware:
     "allauth.account.middleware.AccountMiddleware",
 ]
+
 
 ROOT_URLCONF = "server.urls"
 
@@ -125,9 +136,9 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            BASE_DIR / "backend" / "src" /  "templates",
-            BASE_DIR / "backend" / "src" /  "templates" / "map",  # Your custom template directory
-            BASE_DIR / "backend" / "src" /  "templates" / "dashboard",  # Your custom template directory
+            BASE_DIR / "templates",
+            BASE_DIR / "templates" / "map",  # Your custom template directory
+            BASE_DIR / "templates" / "dashboard",  # Your custom template directory
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -145,6 +156,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "server.wsgi.application"
 ROOT_URLCONF = "server.urls"
+
+# SIMPLE UI
+SIMPLEUI_CONFIG = {
+    'system_keep': True,  
+    'menu_display': ['auth', 'api', 'core', 'server'],  
+    'dynamic': True,  
+}
+
+SIMPLEUI_HOME_INFO = False  # Отключить домашнюю страницу SimpleUI
 
 
 # Database
