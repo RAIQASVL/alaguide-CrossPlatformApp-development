@@ -14,70 +14,80 @@ SET
 CREATE TABLE
     Countries (
         country_id INT PRIMARY KEY AUTO_INCREMENT,
-        countryname VARCHAR(100) NOT NULL
+        country VARCHAR(100) NOT NULL UNIQUE,
+        INDEX idx_country (country)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for cities
 CREATE TABLE
     Cities (
         city_id INT PRIMARY KEY AUTO_INCREMENT,
-        cityname VARCHAR(100) NOT NULL,
+        city VARCHAR(100) NOT NULL UNIQUE,
         description TEXT,
         latitude DECIMAL(9, 6),
         longitude DECIMAL(9, 6),
-        country_id INT,
-        FOREIGN KEY (country_id) REFERENCES Countries (country_id) ON DELETE CASCADE
+        country VARCHAR(100),
+        FOREIGN KEY (country) REFERENCES Countries (country) ON DELETE CASCADE,
+        INDEX idx_city (city)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for Category
 CREATE TABLE
     LandmarksCategory (
         category_id INT PRIMARY KEY AUTO_INCREMENT,
-        categoryname VARCHAR(255) NOT NULL UNIQUE
+        category VARCHAR(255) NOT NULL UNIQUE,
+        INDEX idx_category (category)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for landmarks
 CREATE TABLE
     Landmarks (
         landmark_id INT PRIMARY KEY AUTO_INCREMENT,
-        landmarkname VARCHAR(100) NOT NULL,
+        landmark VARCHAR(255) NOT NULL UNIQUE,
         description TEXT,
-        image_url VARCHAR(255),
-        latitude DECIMAL(9, 6),
-        longitude DECIMAL(9, 6),
-        city_id INT,
-        FOREIGN KEY (city_id) REFERENCES Cities (city_id) ON DELETE CASCADE,
-        category_id INT,
-        FOREIGN KEY (category_id) REFERENCES LandmarksCategory (category_id) -- Corrected table name
-        ON DELETE CASCADE -- Clause for automatic deletion on cascade
+        image_url VARCHAR(255) UNIQUE,
+        latitude DECIMAL(9, 6) UNIQUE,
+        longitude DECIMAL(9, 6) UNIQUE,
+        city VARCHAR(100),
+        category VARCHAR(255),
+        FOREIGN KEY (city) REFERENCES Cities (city) ON DELETE CASCADE,
+        FOREIGN KEY (category) REFERENCES LandmarksCategory (category) ON DELETE CASCADE,
+        INDEX idx_landmark (landmark),
+        INDEX idx_image_url (image_url),
+        INDEX idx_latitude (latitude),
+        INDEX idx_longitude (longitude)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for audiobooks
 CREATE TABLE
     AudioBooks (
         audiobook_id INT PRIMARY KEY AUTO_INCREMENT,
+        landmark_id INT NOT NULL,
         title VARCHAR(255) NOT NULL,
         description TEXT,
-        audio_url VARCHAR(255),
-        landmark_id INT NOT NULL,
+        audio_url VARCHAR(255) UNIQUE,
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE,
-        INDEX alaguideobject_ibfk_3_idx (audio_url)
+        INDEX idx_audio_url (audio_url)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for landmarks with audio
 CREATE TABLE
     AlaguideObjects (
         ala_object_id INT PRIMARY KEY AUTO_INCREMENT,
-        title VARCHAR(255) NOT NULL,
+        landmark VARCHAR(255),
         description TEXT,
-        city_id INT,
-        FOREIGN KEY (city_id) REFERENCES Cities (city_id) ON DELETE CASCADE,
-        category_id INT,
-        FOREIGN KEY (category_id) REFERENCES LandmarksCategory (category_id) ON DELETE CASCADE,
+        city VARCHAR(100),
+        category VARCHAR(255),
         latitude DECIMAL(9, 6),
         longitude DECIMAL(9, 6),
         image_url VARCHAR(255),
         audio_url VARCHAR(255),
+        FOREIGN KEY (landmark) REFERENCES Landmarks (landmark) ON DELETE CASCADE,
+        FOREIGN KEY (city) REFERENCES Cities (city) ON DELETE CASCADE,
+        FOREIGN KEY (category) REFERENCES LandmarksCategory (category) ON DELETE CASCADE,
+        FOREIGN KEY (latitude) REFERENCES Landmarks (latitude) ON DELETE CASCADE,
+        FOREIGN KEY (longitude) REFERENCES Landmarks (longitude) ON DELETE CASCADE,
+        FOREIGN KEY (image_url) REFERENCES Landmarks (image_url) ON DELETE CASCADE,
         FOREIGN KEY (audio_url) REFERENCES AudioBooks (audio_url) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -85,7 +95,7 @@ CREATE TABLE
 CREATE TABLE
     Tags (
         tag_id INT PRIMARY KEY AUTO_INCREMENT,
-        tagname VARCHAR(255) NOT NULL
+        tag VARCHAR(255) NOT NULL
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for many-to-many ralationship between landmarks and tags (if required)
@@ -96,19 +106,6 @@ CREATE TABLE
         PRIMARY KEY (landmark_id, tag_id),
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE,
         FOREIGN KEY (tag_id) REFERENCES Tags (tag_id) ON DELETE CASCADE
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
--- Table for AllAuth SocialProviders
-CREATE TABLE
-    SocialProvider (
-        provider VARCHAR(50),
-        client_id VARCHAR(255),
-        secret VARCHAR(255),
-        key_jwt VARCHAR(255),
-        user_id INT,
-        landmark_id INT,
-        FOREIGN KEY (user_id) REFERENCES Users (user_id) ON DELETE CASCADE,
-        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for Google Maps
