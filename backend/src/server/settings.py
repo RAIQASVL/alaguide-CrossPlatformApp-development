@@ -35,7 +35,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 SITE_ID = 1
 
 
-
 # Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -137,8 +136,12 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             BASE_DIR / "templates",
-            BASE_DIR / "templates" / "map",  # Your custom template directory
+            BASE_DIR / "templates" / "account",
+            BASE_DIR / "templates" / "audioplayer",
             BASE_DIR / "templates" / "dashboard",  # Your custom template directory
+            BASE_DIR / "templates" / "map",  # Your custom template directory
+            BASE_DIR / "templates" / "socialaccount",  # Your custom template directory
+            
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -159,12 +162,12 @@ ROOT_URLCONF = "server.urls"
 
 # SIMPLE UI
 SIMPLEUI_CONFIG = {
-    'system_keep': True,  
-    'menu_display': ['auth', 'api', 'core', 'server'],  
-    'dynamic': True,  
+    "system_keep": True,
+    "menu_display": ["auth", "api", "core", "server"],
+    "dynamic": True,
 }
 
-SIMPLEUI_HOME_INFO = False  # Отключить домашнюю страницу SimpleUI
+SIMPLEUI_HOME_INFO = False  # SimpleUI
 
 
 # Database
@@ -250,7 +253,7 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media" 
+MEDIA_ROOT = BASE_DIR / "media"
 
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
@@ -281,7 +284,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 ACCOUNT_LOGOUT_ON_GET = True
 
-#ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = False
 
@@ -292,5 +295,7 @@ ACCOUNT_SESSION_REMEMBER = True
 SOCIALACCOUNT_STORE_TOKENS = True
 
 # Other App Configurations
+DEFAULT_COUNTRY = "Kazakhstan"
 DEFAULT_COUNTRY_ID = 1
+DEFAULT_CITY = "Almaty"
 DEFAULT_CITY_ID = 1

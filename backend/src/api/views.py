@@ -12,16 +12,19 @@ from api import serializers
 
 # Create your views here.
 
+
 class IsAdminOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow admins to edit or delete.
     """
+
     def has_permission(self, request, view):
         return bool(
-            request.method in permissions.SAFE_METHODS or
-            request.user and
-            request.user.is_staff
+            request.method in permissions.SAFE_METHODS
+            or request.user
+            and request.user.is_staff
         )
+
 
 # 1. User Profile API ("me/") & AcountUser
 class MeApiHandler(RetrieveUpdateAPIView):
@@ -34,61 +37,70 @@ class MeApiHandler(RetrieveUpdateAPIView):
     parser_classes = [FormParser, MultiPartParser, JSONParser]
     serializer_class = serializers.AccountUserSerializer
 
+    def get(self, request):
+        if request.user.is_authenticated:
+            user = request.user
+            return Response({"username": user.username, "email": user.email})
+        else:
+            return Response({"error": "User is not authenticated"}, status=401)
+
     def get_object(self):
-        return self.request.user
+        return get_object_or_404(models.AccountUser, user_id=self.request.user.id)
 
     def retrieve(self, request):
-        user_settings = models.AccountUser.objects.get(user_id=request.user.user_id)
+        user_settings = models.AccountUser.objects.get(user_id=request.user.id)
         serializer = serializers.AccountUserSerializer(user_settings)
 
         return Response(serializer.data)
-    
+
+
 # 2. AccountUser ("users/")
 class AccountUserViewSet(viewsets.ModelViewSet):
     queryset = models.AccountUser.objects.all()
     serializer_class = serializers.AccountUserSerializer
     permission_classes = [IsAdminOrReadOnly]
-    
+
     def get_serializer_class(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action in ["list", "retrieve"]:
             return serializers.PublicScopeAccountUserSerializer
         return serializers.AccountUserSerializer
-    
-    
-# 3. Country 
+
+
+# 3. Country
 class CountryViewSet(viewsets.ModelViewSet):
     queryset = models.Country.objects.all()
     serializer_class = serializers.CountrySerializer
     permission_classes = [IsAdminOrReadOnly]
-    
-    
+
+
 # 4. City
 class CityViewSet(viewsets.ModelViewSet):
     queryset = models.City.objects.all()
     serializer_class = serializers.CitySerializer
     permission_classes = [IsAdminOrReadOnly]
-    
 
-# 5. Category   
+
+# 5. Category
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = models.Category.objects.all()
     serializer_class = serializers.CategorySerializer
     permission_classes = [IsAdminOrReadOnly]
-    
-    
+
+
 # 6. Landmark
 class LandmarkViewSet(viewsets.ModelViewSet):
     queryset = models.Landmark.objects.all()
     serializer_class = serializers.LandmarkSerializer
     permission_classes = [IsAdminOrReadOnly]
 
+
 # 7. AudioBooks ("guideAudioBooks/")
 class AudioBookViewSet(viewsets.ModelViewSet):
     queryset = models.AudioBook.objects.all()
     serializer_class = serializers.AudioBookSerializer
     permission_classes = [IsAdminOrReadOnly]
-    
-    
+
+
 # 8. The Main AlaguideObject View ("guideObjectList/")
 class ListAlaguideObject(viewsets.ModelViewSet):
     queryset = models.AlaguideObject.objects.all()
@@ -97,17 +109,18 @@ class ListAlaguideObject(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        country_id = self.request.query_params.get("country_id", settings.DEFAULT_COUNTRY_ID)
-        city_id = self.request.query_params.get("city_id", settings.DEFAULT_CITY_ID)
-        if country_id and city_id:
-            queryset = queryset.filter(city__country_id=country_id, city_id=city_id)
-        elif country_id:
-            queryset = queryset.filter(city__country_id=country_id)
-        elif city_id:
-            queryset = queryset.filter(city_id=city_id)
+        country = self.request.query_params.get("country", settings.DEFAULT_COUNTRY)
+        city = self.request.query_params.get("city", settings.DEFAULT_CITY)
+        if country and city:
+            queryset = queryset.filter(city__country=country, city_id=city)
+        elif country:
+            queryset = queryset.filter(city__country=country)
+        elif city:
+            queryset = queryset.filter(city_id=city)
         return queryset
-    
-# 8.1 Details of the AlaguideObjects   
+
+
+# 8.1 Details of the AlaguideObjects
 class DetailAlaguideObject(viewsets.ModelViewSet):
     queryset = models.AlaguideObject.objects.all()
     serializer_class = serializers.AlaguideObjectSerializer
@@ -142,8 +155,10 @@ class LanguageSelectionView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 # 10. ViewSets for CRUD operations
+
 
 # 10.1
 class UserReviewViewSet(viewsets.ModelViewSet):
@@ -151,23 +166,27 @@ class UserReviewViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UserReviewSerializer
     permission_classes = [IsAdminOrReadOnly]
 
-# 10.2    
+
+# 10.2
 class LikeRatingViewSet(viewsets.ModelViewSet):
     queryset = models.LikeRating.objects.all()
     serializer_class = serializers.LikeRatingSerializer
     permission_classes = [IsAdminOrReadOnly]
-    
+
+
 # 10.3
 class TagViewSet(viewsets.ModelViewSet):
     queryset = models.Tag.objects.all()
     serializer_class = serializers.TagSerializer
     permission_classes = [IsAdminOrReadOnly]
-    
+
+
 # 10.4
 class LandmarkTagViewSet(viewsets.ModelViewSet):
     queryset = models.LandmarkTag.objects.all()
     serializer_class = serializers.LandmarkTagSerializer
     permission_classes = [IsAdminOrReadOnly]
+
 
 # 11. Feedback - Role-Based Access Control (RBAC)
 class FeedbackView(APIView):
@@ -179,4 +198,3 @@ class FeedbackView(APIView):
         # Create an appropriate model and serialiser to store the feedback
         # Processing example:
         return Response({"message": "Feedback received successfully"})
-

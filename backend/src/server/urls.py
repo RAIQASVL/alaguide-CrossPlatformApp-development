@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static 
+from api import allauth_module_urls, allauth_routers
+
 
 urlpatterns = [
     # Django Admin
@@ -9,7 +11,8 @@ urlpatterns = [
     # API v1 URLS
     path('api/v1/', include('api.urls')),
     # Authentication and Authorization - Django Allauth
-    path('api/v1/authorization/', include('allauth.urls')),
+    path('api/v1/authorization/', include('api.allauth_routers')),
+    path('api/v1/authorization/', include('api.allauth_module_urls')),
 ]
 
 if settings.DEBUG:
