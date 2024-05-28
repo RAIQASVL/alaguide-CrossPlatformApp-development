@@ -103,9 +103,9 @@ class Category(models.Model):
 
 class Landmark(models.Model):
     landmark_id = models.AutoField(primary_key=True, null=False, default=None)
-    landmarkname = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
     description = models.TextField()
-    image_url = models.FileField()
+    image_url = models.FileField(upload_to="landmarks")
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     city_id = models.ForeignKey(City, db_column="city_id", on_delete=models.CASCADE, null=False, default=None)
@@ -120,10 +120,10 @@ class Landmark(models.Model):
 
 class AudioBook(models.Model):
     audiobook_id = models.AutoField(primary_key=True, null=False, default=None)
+    landmark_id = models.ForeignKey(Landmark, db_column="landmark_id", on_delete=models.CASCADE, null=False, default=None)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    audio_url = models.FileField(upload_to=(BASE_DIR / "media" / "audio"))
-    landmark_id = models.ForeignKey(Landmark, db_column="landmark_id", on_delete=models.CASCADE, null=False, default=None)
+    audio_url = models.FileField(upload_to="audio")
 
     def __str__(self):
         return self.title
@@ -136,6 +136,7 @@ class AudioBook(models.Model):
 # Model for main objects
 class AlaguideObject(models.Model):
     ala_object_id = models.AutoField(primary_key=True, null=False, default=None)
+    landmark_id = models.ForeignKey(Landmark, db_column="landmark_id", on_delete=models.CASCADE, null=False, default=None)
     title = models.CharField(max_length=255)
     description = models.TextField()
     city_id = models.ForeignKey(City, db_column="city_id", on_delete=models.CASCADE, null=False, default=None)
@@ -146,7 +147,7 @@ class AlaguideObject(models.Model):
         Landmark, on_delete=models.CASCADE, 
         db_column="image_url", related_name='alaguide_objects', null=False, default=None
         )
-    audio = models.ForeignKey(
+    audio_url = models.ForeignKey(
         AudioBook, on_delete=models.CASCADE, 
         db_column="audio_url", related_name='alaguide_objects', null=False, default=None
         )
