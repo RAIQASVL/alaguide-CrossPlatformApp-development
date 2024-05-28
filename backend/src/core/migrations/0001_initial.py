@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
             name='Landmark',
             fields=[
                 ('landmark_id', models.AutoField(default=None, primary_key=True, serialize=False)),
-                ('landmarkname', models.CharField(max_length=100)),
+                ('title', models.CharField(max_length=100)),
                 ('description', models.TextField()),
                 ('image_url', models.FileField(upload_to='')),
                 ('latitude', models.DecimalField(decimal_places=6, max_digits=9, null=True)),

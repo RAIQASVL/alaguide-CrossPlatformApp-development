@@ -41,7 +41,7 @@ class AudioBookSerializer(serializers.ModelSerializer):
     
     def get_audio_url(self, obj):
         request = self.context.get('request')
-        return request.build_absolute_uri(obj.audio_file.url) if obj.audio_file else None    
+        return request.build_absolute_uri(obj.audio_url.url) if obj.audio_url else None    
 
 # The Main AlaguideObject ("guideObjectList/") & ("guideObjectList/<int:pk>/")
 class AlaguideObjectSerializer(serializers.ModelSerializer):
@@ -51,24 +51,24 @@ class AlaguideObjectSerializer(serializers.ModelSerializer):
         model = models.AlaguideObject
         fields = (
             "ala_object_id",
+            "landmark_id",
             "title",
             "description",
-            "city",
-            "category",
+            "city_id",
+            "category_id",
             "latitude",
             "longitude",
-            "image",
             "image_url",
-            "audio",
             "audio_url"
         )
-    def get_image_url(self, obj):
+
+    def get_image(self, obj):
         request = self.context.get('request')
-        return request.build_absolute_uri(obj.image.image_file.url) if obj.image else None
+        return request.build_absolute_uri(obj.image_url.image_url.url) if obj.image_url else None
     
-    def get_audio_url(self, obj):
+    def get_audio(self, obj):
         request = self.context.get('request')
-        return request.build_absolute_uri(odj.audio.audio_file.url) if obj.audio else None
+        return request.build_absolute_uri(obj.audio_url.audio_url.url) if obj.audio_url else None
 
 # 
 class CountrySerializer(serializers.ModelSerializer):

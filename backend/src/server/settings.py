@@ -242,6 +242,8 @@ STATICFILES_DIRS = [
     BASE_DIR / "static" / "admin",
     BASE_DIR / "static" / "assets",
     BASE_DIR / "static" / "images",
+    BASE_DIR / "static" / "images" / "landmarks",
+    BASE_DIR / "static" / "images" / "socialproviders",
     BASE_DIR / "static" / "rest_framework",
 ]
 
