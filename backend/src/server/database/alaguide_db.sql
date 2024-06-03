@@ -95,7 +95,7 @@ CREATE TABLE
 CREATE TABLE
     Tags (
         tag_id INT PRIMARY KEY AUTO_INCREMENT,
-        tag VARCHAR(255) NOT NULL,
+        tag VARCHAR(255) NOT NULL UNIQUE,
         INDEX idx_tag (tag)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
