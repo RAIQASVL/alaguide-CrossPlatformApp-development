@@ -20,8 +20,15 @@ media/audio/*
 media/landmarks/*
 
 # But keep the directories
-!media/audio
-!media/landmarks
+!media/audio/
+!media/landmarks/
+
+# Don't ignore all subdirectories and .gitkeep files in them
+!media/audio/**/
+!media/audio/.gitkeep
+
+!media/landmarks/**/
+!media/landmarks/.gitkeep
 
 # But keep these specific files
 
