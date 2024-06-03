@@ -13,11 +13,12 @@ __pycache__/
 # staticfiles/
 # media/
 
-# Ignore all files in media/audio
-media/audio/*
+# Ignore all .wav files in media/audio
+media/audio/*.wav
 
-# Ignore all files in media/landmarks
-media/landmarks/*
+# Ignore all .jpeg files in media/landmarks
+media/landmarks/*.jpeg
+
 
 # But keep the directories
 !media/audio/
