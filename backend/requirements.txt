@@ -11,7 +11,9 @@ Django==5.0.6
 django-allauth==0.62.1
 django-bootstrap4==24.3
 django-clearcache==1.2.1
+django-cors-headers==4.3.1
 django-crispy-forms==2.1
+django-simpleui==2024.4.1
 djangorestframework==3.15.1
 google-api-core==2.18.0
 google-auth==2.29.0
