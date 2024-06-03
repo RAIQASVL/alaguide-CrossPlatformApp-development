@@ -9,14 +9,12 @@ __pycache__/
 *$py.class
 
 # Static & Media
-static/
-staticfiles/
-media/
+# static/
+# staticfiles/
+# media/
 
 # But keep these specific files
-!static/images/
-!staticfiles/images/
-!media/
+
 
 # Flask stuff:
 instance/

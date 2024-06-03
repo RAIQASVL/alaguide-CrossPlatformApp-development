@@ -95,17 +95,18 @@ CREATE TABLE
 CREATE TABLE
     Tags (
         tag_id INT PRIMARY KEY AUTO_INCREMENT,
-        tag VARCHAR(255) NOT NULL
+        tag VARCHAR(255) NOT NULL,
+        INDEX idx_tag (tag)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for many-to-many ralationship between landmarks and tags (if required)
 CREATE TABLE
     LandmarkTags (
-        landmark_id INT,
-        tag_id INT,
-        PRIMARY KEY (landmark_id, tag_id),
-        FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE,
-        FOREIGN KEY (tag_id) REFERENCES Tags (tag_id) ON DELETE CASCADE
+        landmark_tag_id INT PRIMARY KEY AUTO_INCREMENT,
+        landmark VARCHAR(255),
+        tag VARCHAR(100),
+        FOREIGN KEY (landmark) REFERENCES Landmarks (landmark) ON DELETE CASCADE,
+        FOREIGN KEY (tag) REFERENCES Tags (tag) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for Google Maps
