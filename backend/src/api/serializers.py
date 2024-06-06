@@ -1,4 +1,4 @@
-from server import settings
+from django.conf import settings
 from rest_framework import serializers
 from core import models
 
