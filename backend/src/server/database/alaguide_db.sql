@@ -90,29 +90,3 @@ CREATE TABLE
         FOREIGN KEY (image_url) REFERENCES Landmarks (image_url) ON DELETE CASCADE,
         FOREIGN KEY (audio_url) REFERENCES AudioBooks (audio_url) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
--- Table for tags (if required)
-CREATE TABLE
-    Tags (
-        tag_id INT PRIMARY KEY AUTO_INCREMENT,
-        tag VARCHAR(255) NOT NULL UNIQUE,
-        INDEX idx_tag (tag)
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
--- Table for many-to-many ralationship between landmarks and tags (if required)
-CREATE TABLE
-    LandmarkTags (
-        landmark_tag_id INT PRIMARY KEY AUTO_INCREMENT,
-        landmark VARCHAR(255),
-        tag VARCHAR(100),
-        FOREIGN KEY (landmark) REFERENCES Landmarks (landmark) ON DELETE CASCADE,
-        FOREIGN KEY (tag) REFERENCES Tags (tag) ON DELETE CASCADE
-    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
-
--- Table for Google Maps
-CREATE TABLE
-    MapData (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) DEFAULT NULL,
-        data JSON NOT NULL
-    );

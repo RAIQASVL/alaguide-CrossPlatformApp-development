@@ -1,33 +1,57 @@
 from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from rest_framework import serializers
+from core.models import (
+    User,
+    Country,
+    City,
+    Category,
+    Landmark,
+    AudioBook, 
+    AlaguideObject
+)
 from core import models
 
 
-class AccountUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.AccountUser
-        fields = [
-            "user_id",
-            "username",
-            "first_name",
-            "last_name",
-            "email",
-            "default_country_id",
-            "default_city_id",
-            "preferred_language",
-        ]
+        model = User
+        fields = "__all__"
+        
 
-        read_only_fields = [
-            "user_id",
-            "username",
-        ]
-
-
-class PublicScopeAccountUserSerializer(serializers.ModelSerializer):
+class CountrySerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.AccountUser
-        fields = ["user_id", "username", "first_name", "last_name", "email"]
-        read_only_fields = fields
+        model = Country
+        fields = ["country_id", "country"]
+
+
+class CitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = ["city_id", "city"]
+
+# Language Selector Logic
+class LanguageSerializer(serializers.Serializer):
+    language_code = serializers.CharField()
+    language_name = serializers.CharField()
+    
+class PreferredLanguageUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['preferred_language']
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = "__all__"
+
+
+class LandmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Landmark
+        fields = "__all__"
 
 
 # AudioBooks for AlaguideObject
@@ -35,7 +59,7 @@ class AudioBookSerializer(serializers.ModelSerializer):
     audio_url = serializers.SerializerMethodField()
 
     class Meta:
-        model = models.AudioBook
+        model = AudioBook
         fields = "__all__"
 
     def get_audio_url(self, obj):
@@ -64,7 +88,7 @@ class AlaguideObjectSerializer(serializers.ModelSerializer):
             return None
 
     class Meta:
-        model = models.AlaguideObject
+        model = AlaguideObject
         fields = (
             "ala_object_id",
             "landmark",
@@ -77,58 +101,3 @@ class AlaguideObjectSerializer(serializers.ModelSerializer):
             "audio_url",
         )
 
-
-#
-class CountrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Country
-        fields = ["country_id", "country"]
-
-
-class CitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.City
-        fields = ["city_id", "city"]
-
-
-# Menu View: Sub Category "Language" ("guide/menu/language/")
-class LanguageSerializer(serializers.Serializer):
-    language_code = serializers.CharField()
-    language_name = serializers.CharField()
-
-
-# SerializersSets for CRUD operations
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Category
-        fields = "__all__"
-
-
-class LandmarkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Landmark
-        fields = "__all__"
-
-
-class UserReviewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.UserReview
-        fields = "__all__"
-
-
-class LikeRatingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.LikeRating
-        fields = "__all__"
-
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Tag
-        fields = "__all__"
-
-
-class LandmarkTagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.LandmarkTag
-        fields = "__all__"
