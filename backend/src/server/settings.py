@@ -13,61 +13,71 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import sys
 import os
 from pathlib import Path
-from server import local_vars
+from decouple import config
+
+
+# Import local variables from local_vars.py
+from server.local_vars import (
+    SECRET_KEY,
+    MYSQL_NAME,
+    MYSQL_TEST_NAME,
+    MYSQL_USER,
+    MYSQL_PASSWORD,
+    MYSQL_HOST
+)
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
-
-ADMIN_JS = True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = local_vars.SECRET_KEY
+SECRET_KEY = SECRET_KEY
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
 SITE_ID = 1
 
-
 # Application definition
 INSTALLED_APPS = [
+    # Django apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    # Third-party apps
     "whitenoise.runserver_nostatic",
     "django.contrib.sites",
-    # SimpleUI
-    "simpleui",
-    # CORS
-    "corsheaders",
-    # App - Modules
-    "api.apps.ApisConfig",
-    "core.apps.CoreConfig",
-    # JWT
+    "django_filters",
     "rest_framework",
     "rest_framework.authtoken",
-    # AllAuth
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.github",
     "allauth.socialaccount.providers.facebook",
-    # Templates
     "crispy_forms",
     "crispy_bootstrap4",
-    # Google Maps API
     "googlemaps",
+
+    # Local apps
+    "api.apps.ApiConfig",
+    "core.apps.CoreConfig",
+    "identity.apps.IdentityConfig",
 ]
+
+AUTH_USER_MODEL = 'core.User'
 
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
@@ -83,7 +93,6 @@ SOCIALACCOUNT_PROVIDERS = {
     },
     "facebook": {
         "METHOD": "oauth2",  # Set to 'js_sdk' to use the Facebook connect SDK
-        #'SDK_URL': '//connect.facebook.net/{locale}/sdk.js',
         "SCOPE": ["email", "public_profile"],
         "AUTH_PARAMS": {"auth_type": "reauthenticate"},
         "INIT_PARAMS": {"cookie": True},
@@ -98,7 +107,6 @@ SOCIALACCOUNT_PROVIDERS = {
             "short_name",
         ],
         "EXCHANGE_TOKEN": True,
-        #'LOCALE_FUNC': 'path.to.callable',
         "VERIFIED_EMAIL": False,
         "VERSION": "v13.0",
         "GRAPH_API_URL": "https://graph.facebook.com/v13.0",
@@ -112,7 +120,7 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
-
+# Middleware settings
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -122,15 +130,14 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # CORS
     "corsheaders.middleware.CorsMiddleware",
-    # Add the account middleware:
     "allauth.account.middleware.AccountMiddleware",
 ]
 
-
+# URL configuration
 ROOT_URLCONF = "server.urls"
 
+# Template configuration
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -138,16 +145,14 @@ TEMPLATES = [
             BASE_DIR / "templates",
             BASE_DIR / "templates" / "account",
             BASE_DIR / "templates" / "audioplayer",
-            BASE_DIR / "templates" / "dashboard",  # Your custom template directory
-            BASE_DIR / "templates" / "map",  # Your custom template directory
-            BASE_DIR / "templates" / "socialaccount",  # Your custom template directory
-            
+            BASE_DIR / "templates" / "dashboard",
+            BASE_DIR / "templates" / "map",
+            BASE_DIR / "templates" / "socialaccount",
         ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
-                # `allauth` needs this from django
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -156,51 +161,35 @@ TEMPLATES = [
     },
 ]
 
-
+# WSGI application
 WSGI_APPLICATION = "server.wsgi.application"
 ROOT_URLCONF = "server.urls"
 
-# SIMPLE UI
-SIMPLEUI_CONFIG = {
-    "system_keep": True,
-    "menu_display": ["auth", "api", "core", "server"],
-    "dynamic": True,
-}
 
-SIMPLEUI_HOME_INFO = False  # SimpleUI
-
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASE_FILE = BASE_DIR / "backend" / "src" / "server" / "database" / "alaguide_db"
-
+# Database configuration
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": local_vars.MYSQL_NAME,
-        "USER": local_vars.MYSQL_USER,
-        "PASSWORD": local_vars.MYSQL_PASSWORD,  # Use environment variable
+        "NAME": MYSQL_NAME,
+        "USER": MYSQL_USER,
+        "PASSWORD": MYSQL_PASSWORD,
         "HOST": "localhost",
         "PORT": "3306",
     }
 }
 
+# Test database configuration
 if "test" in sys.argv:
     DATABASES["default"] = {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": local_vars.MYSQL_TEST_NAME,
-        "USER": local_vars.MYSQL_USER,
-        "PASSWORD": local_vars.MYSQL_PASSWORD,  # Use environment variable
-        "HOST": local_vars.MYSQL_HOST,
+        "NAME": MYSQL_TEST_NAME,
+        "USER": MYSQL_USER,
+        "PASSWORD": MYSQL_PASSWORD,
+        "HOST": MYSQL_HOST,
         "PORT": "3306",
     }
 
-SILENCED_SYSTEM_CHECKS = ["models.W036"]
-
 # Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -216,30 +205,108 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Rest Framework Configurations
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CALSSES": [
-        "rest_framework.permissions.AllowAny",
-    ]
+    'DEFAULT_AUTHENTICATION_CLASSES': 
+    [
+    'rest_framework.authentication.SessionAuthentication',
+    'rest_framework.authentication.BasicAuthentication',
+    'rest_framework.authentication.TokenAuthentication',    
+    ],
+    'DEFAULT_PERMISSION_CALSSES': 
+    [
+    'rest_framework.permissions.AllowAny',
+    'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
+REST_AUTH = {
+    'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
+    'TOKEN_SERIALIZER': 'dj_rest_auth.serializers.TokenSerializer',
+    'JWT_SERIALIZER': 'dj_rest_auth.serializers.JWTSerializer',
+    'JWT_SERIALIZER_WITH_EXPIRATION': 'dj_rest_auth.serializers.JWTSerializerWithExpiration',
+    'JWT_TOKEN_CLAIMS_SERIALIZER': 'rest_framework_simplejwt.serializers.TokenObtainPairSerializer',
+    'USER_DETAILS_SERIALIZER': 'dj_rest_auth.serializers.UserDetailsSerializer',
+    'PASSWORD_RESET_SERIALIZER': 'dj_rest_auth.serializers.PasswordResetSerializer',
+    'PASSWORD_RESET_CONFIRM_SERIALIZER': 'dj_rest_auth.serializers.PasswordResetConfirmSerializer',
+    'PASSWORD_CHANGE_SERIALIZER': 'dj_rest_auth.serializers.PasswordChangeSerializer',
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
+    'REST_AUTH_REGISTER_VIEW' : 'dj_rest_auth.registration.views.RegisterView',
+    'REGISTER_SERIALIZER': 'dj_rest_auth.registration.serializers.RegisterSerializer',
 
-LANGUAGE_CODE = "en-us"
+    'REGISTER_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
 
-TIME_ZONE = "UTC"
+    'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',
+    'TOKEN_CREATOR': 'dj_rest_auth.utils.default_create_token',
 
-USE_I18N = True
+    'PASSWORD_RESET_USE_SITES_DOMAIN': False,
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'LOGOUT_ON_PASSWORD_CHANGE': False,
+    'SESSION_LOGIN': True,
+    'USE_JWT': False,
 
-USE_TZ = True
+    'JWT_AUTH_COOKIE': None,
+    'JWT_AUTH_REFRESH_COOKIE': None,
+    'JWT_AUTH_REFRESH_COOKIE_PATH': '/',
+    'JWT_AUTH_SECURE': False,
+    'JWT_AUTH_HTTPONLY': True,
+    'JWT_AUTH_SAMESITE': 'Lax',
+    'JWT_AUTH_RETURN_EXPIRATION': False,
+    'JWT_AUTH_COOKIE_USE_CSRF': False,
+    'JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED': False,
+}
+
+REST_AUTH_TOKEN_EXPIRATION = 604800 # 1 week
+REST_AUTH_TOKEN_LIFESPAN = 604800  # 1 week
+
+# JWT Settings
+# from datetime import timedelta
+
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+#     'ROTATE_REFRESH_TOKENS': False,
+#     'BLACKLIST_AFTER_ROTATION': True,
+#     'AUTH_HEADER_TYPES': ('Bearer',),
+# }
+
+# AllAuth settings
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_CONFIRM_EMAIL_ON_GET = False
+ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGOUT_ON_GET = True
+
+ACCOUNT_LOGOUT_REDIRECT_URL = "account_login"
+ACCOUNT_SESSION_REMEMBER = True
+
+# LOGIN_REDIRECT_URL = "home"
+# LOGOUT_REDIRECT_URL = "http://localhost:8000/admin/logout/"
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_STORE_TOKENS = True
+
+# Crispy Forms Settings
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = config("EMAIL_HOST_USER")
 
+# BASE_URL = 'http://localhost:8000'
+# ACTIVATION_URL = f'{BASE_URL}/activate'
+
+TOKEN_EXPIRED_AFTER_DAYS = 7
+
+# Static files settings
 STATIC_URL = "/static/"
-
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     BASE_DIR / "static" / "admin",
@@ -249,53 +316,45 @@ STATICFILES_DIRS = [
     BASE_DIR / "static" / "images" / "socialproviders",
     BASE_DIR / "static" / "rest_framework",
 ]
-
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
-]
+# Media files settings
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
-# Email File Based Test
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_FILE_PATH = BASE_DIR / "emails"
+# Internationalization settings
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
+USE_I18N = True
+USE_TZ = True
 
-
-# AllAuth settings
-LOGIN_REDIRECT_URL = "home"
-
-LOGOUT_REDIRECT_URL = "login"
-
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
-
-CRISPY_TEMPLATE_PACK = "bootstrap4"
-
-ACCOUNT_LOGOUT_REDIRECT_URL = "account_login"
-
-ACCOUNT_EMAIL_REQUIRED = True
-
-ACCOUNT_LOGOUT_ON_GET = True
-
-# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-
-ACCOUNT_CONFIRM_EMAIL_ON_GET = False
-
-SOCIALACCOUNT_QUERY_EMAIL = True
-
-ACCOUNT_SESSION_REMEMBER = True
-
-SOCIALACCOUNT_STORE_TOKENS = True
-
-# Other App Configurations
+# Additional App Configurations
 DEFAULT_COUNTRY = "Kazakhstan"
 DEFAULT_COUNTRY_ID = 1
 DEFAULT_CITY = "Almaty"
 DEFAULT_CITY_ID = 1
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+    "core.models.EmailBackend",
+]
+
+# SimpleUI Configuration (if applicable)
+SIMPLEUI_CONFIG = {
+    "system_keep": True,
+    "menu_display": ["auth", "api", "core", "server"],
+    "dynamic": True,
+}
+
+SIMPLEUI_HOME_INFO = False  # SimpleUI
+
+# Silence warnings related to models
+SILENCED_SYSTEM_CHECKS = ["models.W036"]
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True

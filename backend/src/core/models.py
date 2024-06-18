@@ -1,67 +1,100 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.base_user import BaseUserManager
 from django.core.files import File
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
 from django.utils.translation import gettext_lazy as _
+from rest_framework.authtoken.models import Token
 
-# from django.utils import timezone
 
-
-# Database Models
+# User Model 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
+    def _create_user(self, username, first_name, last_name, email, password, **extra_fields):
         if not email:
-            raise ValueError("The Email field must be set")
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+            raise ValueError("Email must be provided")
+        if not password:
+            raise ValueError('Password is not provided')
+
+        user = self.model(
+            username = username,
+            first_name = first_name,
+            last_name = last_name,
+            email = self.normalize_email(email),
+            **extra_fields
+        )
+
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("is_active", True)
+    def create_user(self, username, first_name, last_name, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff',True)
+        extra_fields.setdefault('is_active',True)
+        extra_fields.setdefault('is_superuser',False)
+        return self._create_user(username, first_name, last_name, email, password, **extra_fields)
 
-        if extra_fields.get("is_staff") is not True:
-            raise ValueError("Superuser must have is_staff=True.")
-        if extra_fields.get("is_superuser") is not True:
-            raise ValueError("Superuser must have is_superuser=True.")
-
-        return self.create_user(email, password, **extra_fields)
-
-    class Meta:
-        managed = True
-        db_table = "CustomUsers"
+    def create_superuser(self, username, first_name, last_name, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        return self.create_user(username, first_name, last_name, email, password, **extra_fields)
 
 
-class AccountUser(models.Model):
-    user_id = models.AutoField(primary_key=True, null=False, default=None)
-    username = models.CharField(max_length=100)
+class User(AbstractBaseUser, PermissionsMixin):
+    user_id = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
-    password = models.CharField(max_length=100)
-    default_country_id = models.IntegerField(default=1)
-    default_city_id = models.IntegerField(default=1)
-    preferred_language = models.CharField(max_length=10, default="en")
+    email = models.EmailField(_('Email Address'), max_length=100, unique=True)
+    email_is_verified = models.BooleanField(default=False)
+    password = models.CharField(max_length=128, blank=False, null=False)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    birth_date = models.DateField(blank=True, null=True)
+    default_country_id = models.IntegerField(default=1, null=True)
+    default_city_id = models.IntegerField(default=1, null=True)
+    preferred_language = models.CharField(max_length=10, default="en", null=True)
+    
+    is_staff = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
+
+    USERNAME_FIELD = 'username'
+    EMAIL_FIELD = 'email'
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
 
     objects = CustomUserManager()
-
+    
     def __str__(self):
         return self.username
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
     class Meta:
         managed = True
         db_table = "Users"
+
+# Email Backend
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import ModelBackend
+
+class EmailBackend(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        UserModel = get_user_model()
+        try:
+            user = UserModel.objects.get(username=username)
+        except UserModel.DoesNotExist:
+            try:
+                user = UserModel.objects.get(email=username)
+            except UserModel.DoesNotExist:
+                UserModel().set_password(password)
+                return None
+
+        if user.check_password(password) and self.user_can_authenticate(user):
+            return user
+        return None
+                        
 
 
 class Country(models.Model):
@@ -124,6 +157,14 @@ class Landmark(models.Model):
     longitude = models.DecimalField(
         max_digits=9, decimal_places=6, unique=True, null=True
     )
+    country = models.ForeignKey(
+        Country,
+        db_column="country",
+        to_field="country",
+        on_delete=models.CASCADE,
+        null=False,
+        default=None,
+    )    
     city = models.ForeignKey(
         City,
         db_column="city",
@@ -182,6 +223,14 @@ class AlaguideObject(models.Model):
         null=False,
     )
     description = models.TextField()
+    country = models.ForeignKey(
+        Country,
+        db_column="country",
+        to_field="country",
+        on_delete=models.CASCADE,
+        null=False,
+        default=None,
+    ) 
     city = models.ForeignKey(
         City,
         db_column="city",
@@ -237,136 +286,3 @@ class AlaguideObject(models.Model):
     class Meta:
         managed = False
         db_table = "AlaguideObjects"
-
-
-# Other Models
-class UserReview(models.Model):
-    review_id = models.AutoField(primary_key=True, null=False, default=None)
-    text = models.TextField()
-    rating = models.DecimalField(max_digits=3, decimal_places=1)
-    date_posted = models.DateField(default=None)
-    user_id = models.ForeignKey(
-        AccountUser,
-        db_column="user_id",
-        on_delete=models.CASCADE,
-        null=False,
-        default=None,
-    )
-    landmark_id = models.ForeignKey(
-        Landmark,
-        db_column="landmark_id",
-        on_delete=models.CASCADE,
-        null=False,
-        default=None,
-    )
-
-    def __str__(self):
-        return self.text
-
-    class Meta:
-        managed = True
-        db_table = "UserReviews"
-
-
-class LikeRating(models.Model):
-    like_rating_id = models.AutoField(primary_key=True, null=False)
-    user_id = models.ForeignKey(
-        AccountUser,
-        db_column="user_id",
-        on_delete=models.CASCADE,
-        null=False,
-        default=None,
-    )
-    landmark_id = models.ForeignKey(
-        Landmark,
-        db_column="landmark_id",
-        on_delete=models.CASCADE,
-        null=False,
-        default=None,
-    )
-    type = models.CharField(max_length=5, default="like")
-    date_liked_or_rated = models.DateField(default=None)
-
-    def __str__(self):
-        return self.type
-
-    class Meta:
-        managed = True
-        db_table = "LikesRatings"
-
-
-class Tag(models.Model):
-    tag_id = models.AutoField(primary_key=True, default=None, null=False)
-    tag = models.CharField(max_length=255, unique=True)
-
-    def __str__(self):
-        return self.tag
-
-    class Meta:
-        managed = False
-        db_table = "Tags"
-
-
-class LandmarkTag(models.Model):
-    landmark_tag_id = models.AutoField(primary_key=True, null=False)
-    landmark = models.ForeignKey(
-        Landmark,
-        db_column="landmark",
-        to_field="landmark",
-        on_delete=models.CASCADE,
-        null=False,
-        default=None,
-    )
-    tag = models.ForeignKey(
-        Tag,
-        db_column="tag",
-        to_field="tag",
-        on_delete=models.CASCADE,
-        null=False,
-        default=None,
-    )
-
-    def __str__(self):
-        return self.landmark
-
-    class Meta:
-        managed = False
-        db_table = "LandmarkTags"
-        unique_together = (("landmark", "tag_id"),)
-
-
-# AllAuth
-class SocialProvider(models.Model):
-    provider = models.CharField(max_length=50)
-    client_id = models.CharField(max_length=255, default=None)
-    secret = models.CharField(max_length=255, default=None)
-    key = models.CharField(max_length=255, blank=True, null=True, default=None)
-    user_id = models.ForeignKey(
-        AccountUser,
-        db_column="user_id",
-        on_delete=models.CASCADE,
-        null=False,
-        default=None,
-    )
-
-    def __str__(self):
-        return self.provider
-
-    class Meta:
-        managed = True
-        db_table = "SocialProvider"
-
-
-# Google Map
-class MapData(models.Model):
-    name = models.CharField(
-        max_length=255, blank=True, default=None
-    )  # Optional name for the map configuration
-    data = models.JSONField(default=dict)  # Stores map data in JSON format
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        managed = False
-        db_table = "MapData"
