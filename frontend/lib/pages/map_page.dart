@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:frontend/consts.dart';
@@ -7,32 +8,57 @@ import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class MapPage extends StatefulWidget {
+
+// Providers
+final currentPositionProvider = StateProvider<LatLng?>((ref) => null);
+final landmarksProvider = StateNotifierProvider<LandmarksNotifier, List<Landmark>>((ref) => LandmarksNotifier());
+final polylinesProvider = StateProvider<Map<PolylineId, Polyline>>((ref) => {});
+final markersProvider = StateProvider<Set<Marker>>((ref) => {});
+
+class LandmarksNotifier extends StateNotifier<List<Landmark>> {
+  LandmarksNotifier() : super([]);
+
+  Future<void> fetchLandmarks() async {
+    try {
+      final response = await http.get(Uri.parse('YOUR_BACKEND_API_URL/landmarks'));
+      if (response.statusCode == 200) {
+        List<dynamic> landmarksJson = json.decode(response.body);
+        state = landmarksJson.map((json) => Landmark.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load landmarks');
+      }
+    } catch (e) {
+      print('Error fetching landmarks: $e');
+      // Show error message to user
+    }
+  }
+}
+class MapPage extends ConsumerStatefulWidget {
   const MapPage({super.key});
 
   @override
-  State<MapPage> createState() => _MapPageState();
+  ConsumerState<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _MapPageState extends ConsumerState<MapPage> {
   final Location _locationController = Location();
   final Completer<GoogleMapController> _mapController = Completer<GoogleMapController>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  LatLng? _currentPosition;
-  List<Landmark> landmarks = [];
-  Map<PolylineId, Polyline> polylines = {};
-  Set<Marker> markers = {};
 
   @override
   void initState() {
     super.initState();
     getLocationUpdates();
-    fetchLandmarks();
+    ref.read(landmarksProvider.notifier).fetchLandmarks();
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentPosition = ref.watch(currentPositionProvider);
+    final landmarks = ref.watch(landmarksProvider);
+    final polylines = ref.watch(polylinesProvider);
+    final markers = ref.watch(markersProvider);
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -99,7 +125,7 @@ class _MapPageState extends State<MapPage> {
           ],
         ),
       ),
-      body: _currentPosition == null
+      body: currentPosition == null
           ? const Center(child: CircularProgressIndicator())
           : Stack(
               children: [
@@ -107,7 +133,7 @@ class _MapPageState extends State<MapPage> {
                   onMapCreated: ((GoogleMapController controller) =>
                       _mapController.complete(controller)),
                   initialCameraPosition: CameraPosition(
-                    target: _currentPosition ?? LatLng(0, 0),
+                    target: currentPosition ?? LatLng(0, 0),
                     zoom: 13,
                   ),
                   markers: markers,
@@ -147,10 +173,8 @@ class _MapPageState extends State<MapPage> {
 
     _locationController.onLocationChanged.listen((LocationData currentLocation) {
       if (currentLocation.latitude != null && currentLocation.longitude != null) {
-        setState(() {
-          _currentPosition = LatLng(currentLocation.latitude!, currentLocation.longitude!);
-          _updateCameraPosition(_currentPosition!);
-        });
+        ref.read(currentPositionProvider.notifier).state = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+        _updateCameraPosition(LatLng(currentLocation.latitude!, currentLocation.longitude!));
       }
     });
   }
@@ -164,33 +188,14 @@ class _MapPageState extends State<MapPage> {
     await controller.animateCamera(CameraUpdate.newCameraPosition(_newCameraPosition));
   }
 
-  Future<void> fetchLandmarks() async {
-    try {
-      final response = await http.get(Uri.parse('YOUR_BACKEND_API_URL/landmarks'));
-      if (response.statusCode == 200) {
-        List<dynamic> landmarksJson = json.decode(response.body);
-        setState(() {
-          landmarks = landmarksJson.map((json) => Landmark.fromJson(json)).toList();
-          _updateMarkers();
-        });
-      } else {
-        throw Exception('Failed to load landmarks');
-      }
-    } catch (e) {
-      print('Error fetching landmarks: $e');
-      // Show error message to user
-    }
-  }
-
   void _updateMarkers() {
-    setState(() {
-      markers = landmarks.map((landmark) => Marker(
+      final landmarks = ref.read(landmarksProvider);
+      ref.read(markersProvider.notifier).state = landmarks.map((landmark) => Marker(
         markerId: MarkerId(landmark.id.toString()),
         position: LatLng(landmark.latitude, landmark.longitude),
         infoWindow: InfoWindow(title: landmark.name),
         onTap: () => _showLandmarkInfo(landmark),
       )).toSet();
-    });
   }
 
   Future<void> _showLandmarkInfo(Landmark landmark) async {
@@ -223,6 +228,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _showLandmarksList() async {
+    final landmarks = ref.read(landmarksProvider);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -249,11 +255,12 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _showRoute(Landmark destination) async {
-    if (_currentPosition == null) return;
+    final currentPosition = ref.read(currentPositionProvider);
+    if (currentPosition == null) return;
 
     try {
       List<LatLng> polylineCoordinates = await getPolylinePoints(
-        _currentPosition!,
+        currentPosition!,
         LatLng(destination.latitude, destination.longitude),
       );
       _generatePolyLineFromPoints(polylineCoordinates);
@@ -294,14 +301,13 @@ class _MapPageState extends State<MapPage> {
       points: polylineCoordinates,
       width: 3,
     );
-    setState(() {
-      polylines[id] = polyline;
-    });
+    ref.read(polylinesProvider.notifier).state = {id: polyline};
   }
 
   void _goToMyLocation() async {
-    if (_currentPosition != null) {
-      _updateCameraPosition(_currentPosition!);
+    final currentPosition = ref.read(currentPositionProvider);
+    if (currentPosition != null) {
+      _updateCameraPosition(currentPosition!);
     }
   }
 }
