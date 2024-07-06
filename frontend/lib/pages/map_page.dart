@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/themes/app_theme.dart';
 import 'package:frontend/controllers/map_controller.dart';
 import 'package:frontend/providers/logic_providers.dart';
+import 'package:frontend/providers/theme_provider.dart';
 import 'package:frontend/models/landmark.dart';
 import 'package:frontend/controllers/animation_controller.dart';
 
@@ -10,7 +13,7 @@ class MapPage extends ConsumerStatefulWidget {
   const MapPage({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<MapPage> createState() => _MapPageState();
+  _MapPageState createState() => _MapPageState();
 }
 
 class _MapPageState extends ConsumerState<MapPage> {
@@ -65,66 +68,103 @@ class _MapPageState extends ConsumerState<MapPage> {
                       _mapController.goToMyLocation();
                     },
                   ),
-                )
+                ),
               ],
             ),
     );
   }
 
   Widget _buildDrawer() {
+    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
+    final theme = Theme.of(context);
+    final logoColor = theme.appBarTheme.iconTheme?.color ?? Colors.white;
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
-        children: <Widget>[
+        children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: theme.appBarTheme.backgroundColor,
             ),
-            child: Text(
-              'ALAGUIDE Menu',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
+            child: SizedBox.expand(
+              child: Center(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/alaguide_icon_graphic.svg',
+                          color: logoColor,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: FractionallySizedBox(
+                            widthFactor: 0.5,
+                            heightFactor: 0.2,
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              child: SvgPicture.asset(
+                                'assets/images/alaguide_snake_graphic.svg',
+                                color: logoColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),
           ListTile(
+            leading: Icon(Icons.home),
             title: Text('Home'),
             onTap: () {
               Navigator.pushNamed(context, '/home');
             },
           ),
           ListTile(
+            leading: Icon(Icons.pin_drop_sharp),
             title: Text('Current City'),
             onTap: () {
               // Handle navigation
             },
           ),
           ListTile(
+            leading: Icon(Icons.collections_bookmark),
             title: Text('Content'),
             onTap: () {
               _mapController.showLandmarksList();
             },
           ),
           ListTile(
+            leading: Icon(Icons.language),
             title: Text('Current Language'),
             onTap: () {
               // Handle navigation
             },
           ),
           ListTile(
+            leading: Icon(Icons.info_outline),
             title: Text('About Project'),
             onTap: () {
-            Navigator.pushNamed(context, '/');
+              Navigator.pushNamed(context, '/');
             },
           ),
           ListTile(
-            title: Text('Support'),
+            leading: Icon(Icons.attach_money_outlined),
+            title: Text('Support Project'),
             onTap: () {
               // Handle navigation
             },
           ),
           ListTile(
+            leading: Icon(Icons.markunread_rounded),
             title: Text('Feedback'),
             onTap: () {
               // Handle navigation
