@@ -8,7 +8,6 @@ import 'package:frontend/pages/forgot_password_page.dart';
 import 'package:frontend/pages/home_page.dart';
 import 'package:frontend/providers/theme_provider.dart';
 
-
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -21,7 +20,7 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp(
-      title: 'ALAGUIDE',
+      debugShowCheckedModeBanner: false,
       theme: AppThemes.lightTheme,
       darkTheme: AppThemes.darkTheme,
       themeMode: themeMode,
