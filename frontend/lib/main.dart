@@ -7,8 +7,11 @@ import 'package:frontend/pages/auth_page.dart';
 import 'package:frontend/pages/forgot_password_page.dart';
 import 'package:frontend/pages/home_page.dart';
 import 'package:frontend/providers/theme_provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   runApp(const ProviderScope(child: MyApp()));
 }
 

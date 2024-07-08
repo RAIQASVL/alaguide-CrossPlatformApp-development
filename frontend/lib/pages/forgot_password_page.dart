@@ -1,6 +1,7 @@
 import 'package:frontend/widgets/button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/services/auth_service.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
@@ -13,12 +14,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   String email = '';
 
   final _emailKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isDarkMode = brightness == Brightness.dark;
+
     return Scaffold(
       body: Center(
         child: Container(
@@ -143,7 +146,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             ],
                             onPressed: () async {
                               if (_emailKey.currentState!.validate()) {
-                                print('$email forgot password');
+                                // print('$email forgot password');
+                                await _authService.resetPassword(
+                                    email, context);
                               }
                             }),
                       ),

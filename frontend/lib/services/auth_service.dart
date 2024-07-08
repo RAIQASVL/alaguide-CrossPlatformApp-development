@@ -1,142 +1,100 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:frontend/models/user_models.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:frontend/services/api_service.dart';
 
-main() async {
-  AuthService authService = AuthService();
+class AuthService {
+  final ApiService _apiService = ApiService();
 
-  final logoutUrl = Uri.parse("http://localhost:8000/account/logout/");
-var response = await http.get(logoutUrl, headers: {
-    "Authorization": "Token 2ae42acdacf578e3f914ae7f19ad7e62a3252df0"
-  });
-}
-//   var response = await http.get(Uri.parse("http://localhost:8000/account/user/"),
-//     headers: {
-//       "Authorization": "Token 2ae42acdacf578e3f914ae7f19ad7e62a3252df0"
-//     });
-//   print(response.body);
-// }
-// 2ae42acdacf578e3f914ae7f19ad7e62a3252df0
+  Future<User?> signIn(
+      String email, String password, BuildContext context) async {
+    try {
+      final response = await _apiService.post(
+        '/account/login/',
+        {'email': email, 'password': password}, headers: null,
+        // No headers needed for this request
+      );
 
-//   LoginResponse? loginResponse = await authService.login(
-//     "raiqasvl@gmail.com",
-//     "Fylfnhf738",
-//   );
-//   if (loginResponse != null) {
-//     if (loginResponse.key != null) print(loginResponse.key);
-//     if (loginResponse.non_field_errors != null)
-//       loginResponse.non_field_errors!.forEach((element) {
-//         print(element);
-//       });
-//   }
-// }
+      if (response.statusCode == 200) {
+        final token = response.data['key'];
+        var box = await Hive.openBox('tokenBox');
+        await box.put('token', token);
 
-  // RegistrationResponse? registrationResponse = await authService.registration(
-  //     "jeanlao",
-  //     "Fylfnhf738", 
-  //     "Fylfnhf738", 
-  //     "goldwoodkiddo@gmail.com");
-
-  // if (registrationResponse != null) {
-
-  //   if (registrationResponse.username != null) {
-  //     registrationResponse.username!.forEach((element) {
-  //       print(element);
-  //     });
-  //   }
-
-  //   if (registrationResponse.email != null) {
-  //     registrationResponse.email!.forEach((element) {
-  //       print(element);
-  //     });
-  //   }
-  //   if (registrationResponse.password1 != null) {
-  //     registrationResponse.password1!.forEach((element) {
-  //       print(element);
-  //     });
-  //   }  
-  //   if (registrationResponse.non_field_errors != null) {
-  //     registrationResponse.non_field_errors!.forEach((element) {
-  //       print(element);
-  //     });
-  //   }
-  //   if (registrationResponse.key != null) {
-  //     print(registrationResponse.key!);
-  //   }
-  // }
-
-
-class AuthService{
-  final registrationUri = Uri.parse("http://localhost:8000/registration/");
-  final loginUri = Uri.parse("http://localhost:8000/account/login/");
-
-  Future<RegistrationResponse?>registration(
-      String username, String password1, String password2, String email) async {
-    var response = await http.post(registrationUri, body: {
-      "username": username,
-      "password1": password1,
-      "password2": password2,
-      "email": email,
-    });
-    /// print(response.body);
-    return RegistrationResponse.fromJson(jsonDecode(response.body));
-  } 
-
-  Future<LoginResponse?> login(
-      String usernameOremail, String password) async {
-    var response = await http.post(loginUri, body: {
-      "username": usernameOremail,
-      "password": password,
-    });
-    return LoginResponse.fromJson(jsonDecode(response.body));
-    print(response.body);
+        return await getUser(token);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: ${e.toString()}')),
+      );
+    }
+    return null;
   }
-}
 
+  Future<User?> getUser(String token) async {
+    try {
+      final response = await _apiService.get(
+        '/account/user/',
+        headers: {'Authorization': 'Token $token'},
+      );
 
-
-
-/// Our right registration response {"key":"e8055c1b4a34f3faea879167a381e65c11a13267"}
-/// response for error {"username":["User with this username already exists."]}
-/// response for error {"email":["A user is already registered with this e-mail address."]}
-/// response for error {"password1":["This password is too short. It must contain at least 8 characters.","This password is too common.","This password is entirely numeric."]}
-/// response for error {"non_field_errors":["The two password fields didn't match."]}
-
-
-class RegistrationResponse {
-  List<dynamic>? non_field_errors;
-  List<dynamic>? password1;
-  List<dynamic>? username;
-  List<dynamic>? email;
-  dynamic key;
-
-  RegistrationResponse({
-    this.non_field_errors,
-    this.password1,
-    this.username,
-    this.email,
-    this.key,
-  });
-
-  factory RegistrationResponse.fromJson(mapOfBody){
-    return RegistrationResponse(
-      non_field_errors: mapOfBody["non_field_errors"],
-      password1: mapOfBody["password1"],
-      username: mapOfBody["username"],
-      email: mapOfBody["email"],
-      key: mapOfBody["key"],
-    );
+      if (response.statusCode == 200) {
+        final user = User.fromJson(response.data);
+        user.token = token;
+        return user;
+      }
+    } catch (e) {
+      print('Failed to get user: ${e.toString()}');
+    }
+    return null;
   }
-}
 
-class LoginResponse {
-  dynamic key;
-  List<dynamic>? non_field_errors;
-  LoginResponse({this.key, this.non_field_errors});
+  Future<User?> signUp(String email, String password, String firstName,
+      String lastName, BuildContext context) async {
+    try {
+      final response = await _apiService.post(
+        '/registration/',
+        {
+          'email': email,
+          'password1': password,
+          'password2': password,
+          'first_name': firstName,
+          'last_name': lastName,
+        },
+        headers: null,
+        // No headers needed for this request
+      );
 
-  factory LoginResponse.fromJson(mapOfBody) {
-    return LoginResponse(
-      key: mapOfBody['key'],
-      non_field_errors: mapOfBody['non_field_errors'],
-    );
+      if (response.statusCode == 201) {
+        final user = User.fromJson(response.data);
+        return user;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registration failed: ${e.toString()}')),
+      );
+    }
+    return null;
+  }
+
+  Future<bool> resetPassword(String email, BuildContext context) async {
+    try {
+      final response = await _apiService.post(
+        '/account/password/reset/',
+        {'email': email}, headers: null,
+        // No headers needed for this request
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Password reset email sent')),
+        );
+        return true;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Password reset failed: ${e.toString()}')),
+      );
+    }
+    return false;
   }
 }

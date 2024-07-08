@@ -1,15 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
+import 'package:frontend/models/user_models.dart';
 
 final authStateProvider = StateProvider<bool>((ref) => false);
 
+class AuthNotifier extends StateNotifier<User?> {
+  AuthNotifier() : super(null);
 
-class AuthService {
-  void signUp(String email, String password, BuildContext context, String firstName, String lastName) {
-    // Implement sign up logic
+  void setUser(User user) {
+    state = user;
   }
 
-  void signIn(String email, String password, BuildContext context) {
-    // Implement sign in logic
+  void clearUser() {
+    state = null;
   }
 }
+
+final authProvider = StateNotifierProvider<AuthNotifier, User?>((ref) {
+  return AuthNotifier();
+});
