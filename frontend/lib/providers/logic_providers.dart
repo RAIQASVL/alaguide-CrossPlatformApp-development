@@ -4,6 +4,8 @@ import 'package:frontend/services/landmark_service.dart';
 import 'package:frontend/models/landmark.dart';
 
 final currentPositionProvider = StateProvider<LatLng?>((ref) => null);
-final landmarksProvider = StateNotifierProvider<LandmarkService, List<Landmark>>((ref) => LandmarkService());
+final landmarksProvider =
+    StateNotifierProvider<LandmarkService, List<Landmark>>(
+        (ref) => LandmarkService());
 final polylinesProvider = StateProvider<Map<PolylineId, Polyline>>((ref) => {});
 final markersProvider = StateProvider<Set<Marker>>((ref) => {});
