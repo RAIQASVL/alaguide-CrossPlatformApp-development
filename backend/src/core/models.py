@@ -6,37 +6,47 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
 
 
-# User Model 
+# User Model
 class CustomUserManager(BaseUserManager):
-    def _create_user(self, username, first_name, last_name, email, password, **extra_fields):
+    def _create_user(
+        self, username, first_name, last_name, email, password, **extra_fields
+    ):
         if not email:
             raise ValueError("Email must be provided")
         if not password:
-            raise ValueError('Password is not provided')
+            raise ValueError("Password is not provided")
 
         user = self.model(
-            username = username,
-            first_name = first_name,
-            last_name = last_name,
-            email = self.normalize_email(email),
-            **extra_fields
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=self.normalize_email(email),
+            **extra_fields,
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, first_name, last_name, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff',True)
-        extra_fields.setdefault('is_active',True)
-        extra_fields.setdefault('is_superuser',False)
-        return self._create_user(username, first_name, last_name, email, password, **extra_fields)
+    def create_user(
+        self, username, first_name, last_name, email, password=None, **extra_fields
+    ):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("is_superuser", False)
+        return self._create_user(
+            username, first_name, last_name, email, password, **extra_fields
+        )
 
-    def create_superuser(self, username, first_name, last_name, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('is_active', True)
-        return self.create_user(username, first_name, last_name, email, password, **extra_fields)
+    def create_superuser(
+        self, username, first_name, last_name, email, password=None, **extra_fields
+    ):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+        return self.create_user(
+            username, first_name, last_name, email, password, **extra_fields
+        )
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -44,7 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    email = models.EmailField(_('Email Address'), max_length=100, unique=True)
+    email = models.EmailField(_("Email Address"), max_length=100, unique=True)
     email_is_verified = models.BooleanField(default=False)
     password = models.CharField(max_length=128, blank=False, null=False)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
@@ -52,18 +62,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     default_country_id = models.IntegerField(default=1, null=True)
     default_city_id = models.IntegerField(default=1, null=True)
     preferred_language = models.CharField(max_length=10, default="en", null=True)
-    
+
     is_staff = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
 
-
-    USERNAME_FIELD = 'username'
-    EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
+    USERNAME_FIELD = "username"
+    EMAIL_FIELD = "email"
+    REQUIRED_FIELDS = ["email", "first_name", "last_name"]
 
     objects = CustomUserManager()
-    
+
     def __str__(self):
         return self.username
 
@@ -74,12 +83,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         managed = True
         db_table = "Users"
 
+
 # Email Backend
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
-class EmailBackend(ModelBackend):
+
+class EmailOrUsernameModelBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         UserModel = get_user_model()
         try:
@@ -92,9 +103,9 @@ class EmailBackend(ModelBackend):
                 return None
 
         if user.check_password(password) and self.user_can_authenticate(user):
+            user.backend = f"{self.__module__}.{self.__class__.__name__}"
             return user
         return None
-                        
 
 
 class Country(models.Model):
@@ -164,7 +175,7 @@ class Landmark(models.Model):
         on_delete=models.CASCADE,
         null=False,
         default=None,
-    )    
+    )
     city = models.ForeignKey(
         City,
         db_column="city",
@@ -230,7 +241,7 @@ class AlaguideObject(models.Model):
         on_delete=models.CASCADE,
         null=False,
         default=None,
-    ) 
+    )
     city = models.ForeignKey(
         City,
         db_column="city",
