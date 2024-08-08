@@ -23,7 +23,7 @@ from server.local_vars import (
     MYSQL_TEST_NAME,
     MYSQL_USER,
     MYSQL_PASSWORD,
-    MYSQL_HOST
+    MYSQL_HOST,
 )
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
@@ -37,7 +37,11 @@ SECRET_KEY = SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
+APP_URL_SCHEME = "http://192.168.1.235:8000/"
+
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "*", "192.168.1.216"]
+
+FRONTEND_URL = "http://192.168.1.235:8000/"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -52,11 +56,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # Third-party apps
     "whitenoise.runserver_nostatic",
     "django.contrib.sites",
-    "django_filters",
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
@@ -70,14 +72,14 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap4",
     "googlemaps",
-
     # Local apps
     "api.apps.ApiConfig",
     "core.apps.CoreConfig",
     "identity.apps.IdentityConfig",
+    "corsheaders",
 ]
 
-AUTH_USER_MODEL = 'core.User'
+AUTH_USER_MODEL = "core.User"
 
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
@@ -207,57 +209,60 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Rest Framework Configurations
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': 
-    [
-    'rest_framework.authentication.SessionAuthentication',
-    'rest_framework.authentication.BasicAuthentication',
-    'rest_framework.authentication.TokenAuthentication',    
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
     ],
-    'DEFAULT_PERMISSION_CALSSES': 
-    [
-    'rest_framework.permissions.AllowAny',
-    'rest_framework.permissions.IsAuthenticated',
+    "DEFAULT_PERMISSION_CALSSES": [
+        "rest_framework.permissions.AllowAny",
+        "rest_framework.permissions.IsAuthenticated",
     ],
 }
 
 REST_AUTH = {
-    'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
-    'TOKEN_SERIALIZER': 'dj_rest_auth.serializers.TokenSerializer',
-    'JWT_SERIALIZER': 'dj_rest_auth.serializers.JWTSerializer',
-    'JWT_SERIALIZER_WITH_EXPIRATION': 'dj_rest_auth.serializers.JWTSerializerWithExpiration',
-    'JWT_TOKEN_CLAIMS_SERIALIZER': 'rest_framework_simplejwt.serializers.TokenObtainPairSerializer',
-    'USER_DETAILS_SERIALIZER': 'dj_rest_auth.serializers.UserDetailsSerializer',
-    'PASSWORD_RESET_SERIALIZER': 'dj_rest_auth.serializers.PasswordResetSerializer',
-    'PASSWORD_RESET_CONFIRM_SERIALIZER': 'dj_rest_auth.serializers.PasswordResetConfirmSerializer',
-    'PASSWORD_CHANGE_SERIALIZER': 'dj_rest_auth.serializers.PasswordChangeSerializer',
-
-    'REST_AUTH_REGISTER_VIEW' : 'dj_rest_auth.registration.views.RegisterView',
-    'REGISTER_SERIALIZER': 'dj_rest_auth.registration.serializers.RegisterSerializer',
-
-    'REGISTER_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
-
-    'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',
-    'TOKEN_CREATOR': 'dj_rest_auth.utils.default_create_token',
-
-    'PASSWORD_RESET_USE_SITES_DOMAIN': False,
-    'OLD_PASSWORD_FIELD_ENABLED': True,
-    'LOGOUT_ON_PASSWORD_CHANGE': False,
-    'SESSION_LOGIN': True,
-    'USE_JWT': False,
-
-    'JWT_AUTH_COOKIE': None,
-    'JWT_AUTH_REFRESH_COOKIE': None,
-    'JWT_AUTH_REFRESH_COOKIE_PATH': '/',
-    'JWT_AUTH_SECURE': False,
-    'JWT_AUTH_HTTPONLY': True,
-    'JWT_AUTH_SAMESITE': 'Lax',
-    'JWT_AUTH_RETURN_EXPIRATION': False,
-    'JWT_AUTH_COOKIE_USE_CSRF': False,
-    'JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED': False,
+    "LOGIN_SERIALIZER": "core.serializers.NewLoginSerializer",
+    "TOKEN_SERIALIZER": "dj_rest_auth.serializers.TokenSerializer",
+    "JWT_SERIALIZER": "dj_rest_auth.serializers.JWTSerializer",
+    "JWT_SERIALIZER_WITH_EXPIRATION": "dj_rest_auth.serializers.JWTSerializerWithExpiration",
+    "JWT_TOKEN_CLAIMS_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+    "USER_DETAILS_SERIALIZER": "dj_rest_auth.serializers.UserDetailsSerializer",
+    "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_RETYPE": True,
+    "PASSWORD_RESET_VERIFY_URL": "password/reset/verify/",
+    "PASSWORD_RESET_SERIALIZER": "dj_rest_auth.serializers.PasswordResetSerializer",
+    "PASSWORD_RESET_CONFIRM_SERIALIZER": "identity.serializers.NewPasswordResetConfirmSerializer",
+    "PASSWORD_CHANGE_SERIALIZER": "dj_rest_auth.serializers.PasswordChangeSerializer",
+    "REST_AUTH_REGISTER_VIEW": "dj_rest_auth.registration.views.RegisterView",
+    "REGISTER_SERIALIZER": "core.serializers.NewRegisterSerializer",
+    "REGISTER_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    "TOKEN_MODEL": "rest_framework.authtoken.models.Token",
+    "TOKEN_CREATOR": "dj_rest_auth.utils.default_create_token",
+    "PASSWORD_RESET_USE_SITES_DOMAIN": False,
+    "OLD_PASSWORD_FIELD_ENABLED": True,
+    "LOGOUT_ON_PASSWORD_CHANGE": False,
+    "SESSION_LOGIN": True,
+    "USE_JWT": False,
+    "JWT_AUTH_COOKIE": None,
+    "JWT_AUTH_REFRESH_COOKIE": None,
+    "JWT_AUTH_REFRESH_COOKIE_PATH": "/",
+    "JWT_AUTH_SECURE": False,
+    "JWT_AUTH_HTTPONLY": True,
+    "JWT_AUTH_SAMESITE": "Lax",
+    "JWT_AUTH_RETURN_EXPIRATION": False,
+    "JWT_AUTH_COOKIE_USE_CSRF": False,
+    "JWT_AUTH_COOKIE_ENFORCE_CSRF_ON_UNAUTHENTICATED": False,
 }
 
-REST_AUTH_TOKEN_EXPIRATION = 604800 # 1 week
+FIREBASE_AUTH = {
+    "FIREBASE_ACCOUNT_KEY_FILE": BASE_DIR / "frontend" / "firebase.json",
+}
+
+REST_AUTH_TOKEN_EXPIRATION = 604800  # 1 week
 REST_AUTH_TOKEN_LIFESPAN = 604800  # 1 week
+
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # JWT Settings
 # from datetime import timedelta
@@ -271,11 +276,15 @@ REST_AUTH_TOKEN_LIFESPAN = 604800  # 1 week
 # }
 
 # AllAuth settings
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_CONFIRM_EMAIL_ON_GET = False
 ACCOUNT_USERNAME_REQUIRED = False
-# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
+# ACCOUNT_EMAIL_CONFIRMATION_URL = "account-confirm-email/{key}/"
+
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_LOGOUT_ON_GET = True
 
 ACCOUNT_LOGOUT_REDIRECT_URL = "account_login"
@@ -292,13 +301,15 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = config("EMAIL_HOST_USER")
+
+PASSWORD_RESET_EMAIL_TEMPLATE_NAME = "password_reset_email.html"
 
 # BASE_URL = 'http://localhost:8000'
 # ACTIVATION_URL = f'{BASE_URL}/activate'
@@ -341,7 +352,7 @@ DEFAULT_CITY_ID = 1
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
-    "core.models.EmailBackend",
+    "core.models.EmailOrUsernameModelBackend",
 ]
 
 # SimpleUI Configuration (if applicable)
@@ -357,4 +368,5 @@ SIMPLEUI_HOME_INFO = False  # SimpleUI
 SILENCED_SYSTEM_CHECKS = ["models.W036"]
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True  # Use this for development, but restrict in production
+CORS_ALLOWED_ORIGINS = ["http://*"]
