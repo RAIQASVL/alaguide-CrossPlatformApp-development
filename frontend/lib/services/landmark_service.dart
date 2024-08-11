@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/services/landmark_service.dart';
 import 'package:frontend/models/landmark.dart';
 
 

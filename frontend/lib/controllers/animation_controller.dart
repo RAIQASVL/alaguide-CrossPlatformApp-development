@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:frontend/providers/theme_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AnimatedLocationButton extends StatefulWidget {
   final VoidCallback onPressed;
 
-  AnimatedLocationButton({required this.onPressed});
+  const AnimatedLocationButton({super.key, required this.onPressed});
 
   @override
   _AnimatedLocationButtonState createState() => _AnimatedLocationButtonState();
@@ -20,7 +19,7 @@ class _AnimatedLocationButtonState extends State<AnimatedLocationButton> with Si
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 150),
       vsync: this,
     );
     _animation = Tween<double>(begin: 1.0, end: 1.2).animate(CurvedAnimation(
@@ -45,12 +44,12 @@ class _AnimatedLocationButtonState extends State<AnimatedLocationButton> with Si
       child: ScaleTransition(
         scale: _animation,
         child: Container(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.8),
             shape: BoxShape.circle,
           ),
-          child: Icon(
+          child: const Icon(
             Icons.my_location,
             color: Colors.black,
             size: 28,
@@ -65,7 +64,7 @@ class _AnimatedLocationButtonState extends State<AnimatedLocationButton> with Si
 class AnimatedMenuButton extends StatefulWidget {
   final VoidCallback onPressed;
 
-  AnimatedMenuButton({required this.onPressed});
+  const AnimatedMenuButton({super.key, required this.onPressed});
 
   @override
   _AnimatedMenuButtonState createState() => _AnimatedMenuButtonState();
@@ -79,7 +78,7 @@ class _AnimatedMenuButtonState extends State<AnimatedMenuButton> with SingleTick
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 150),
       vsync: this,
     );
     _animation = Tween<double>(begin: 1.0, end: 1.2).animate(CurvedAnimation(
@@ -104,11 +103,11 @@ class _AnimatedMenuButtonState extends State<AnimatedMenuButton> with SingleTick
       child: ScaleTransition(
         scale: _animation,
         child: Container(
-          padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.all(12),
+          decoration: const BoxDecoration(
             color: Colors.transparent,
           ),
-          child: Icon(
+          child: const Icon(
             Icons.menu,
             color: Colors.black,
             size: 28,
@@ -123,7 +122,7 @@ class _AnimatedMenuButtonState extends State<AnimatedMenuButton> with SingleTick
 class AnimationDarkLightModeButton extends StatefulWidget {
   final VoidCallback onPressed;
 
-  AnimationDarkLightModeButton({required this.onPressed});
+  const AnimationDarkLightModeButton({super.key, required this.onPressed});
 
   @override
   _AnimationDarkLightModeButtonState createState() => _AnimationDarkLightModeButtonState();

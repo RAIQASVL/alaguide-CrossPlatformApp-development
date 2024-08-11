@@ -5,7 +5,7 @@ import 'package:frontend/providers/auth_providers.dart';
 class ResetPasswordConfirmPage extends ConsumerStatefulWidget {
   final String? oobCode;
 
-  const ResetPasswordConfirmPage({Key? key, this.oobCode}) : super(key: key);
+  const ResetPasswordConfirmPage({super.key, this.oobCode});
 
   @override
   ConsumerState<ResetPasswordConfirmPage> createState() =>

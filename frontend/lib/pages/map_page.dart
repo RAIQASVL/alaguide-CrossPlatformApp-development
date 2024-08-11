@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/pages/language_selection_page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:frontend/providers/language_provider.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:frontend/themes/app_theme.dart';
 import 'package:frontend/controllers/map_controller.dart';
 import 'package:frontend/providers/logic_providers.dart';
 import 'package:frontend/providers/theme_provider.dart';
-import 'package:frontend/models/landmark.dart';
 import 'package:frontend/controllers/animation_controller.dart';
 
 class MapPage extends ConsumerStatefulWidget {
-  const MapPage({Key? key}) : super(key: key);
+  const MapPage({super.key});
 
   @override
   _MapPageState createState() => _MapPageState();
@@ -78,6 +81,7 @@ class _MapPageState extends ConsumerState<MapPage> {
     final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
     final theme = Theme.of(context);
     final logoColor = theme.appBarTheme.iconTheme?.color ?? Colors.white;
+    final currentLanguage = ref.watch(languageProvider);
 
     return Drawer(
       child: ListView(
@@ -122,50 +126,53 @@ class _MapPageState extends ConsumerState<MapPage> {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
+            leading: const Icon(Icons.home),
+            title: Text(AppLocalizations.of(context)!.home),
             onTap: () {
               Navigator.pushNamed(context, '/home');
             },
           ),
           ListTile(
-            leading: Icon(Icons.pin_drop_sharp),
-            title: Text('Current City'),
+            leading: const Icon(Icons.pin_drop_sharp),
+            title: Text(AppLocalizations.of(context)!.currentCity),
             onTap: () {
               // Handle navigation
             },
           ),
           ListTile(
-            leading: Icon(Icons.collections_bookmark),
-            title: Text('Content'),
+            leading: const Icon(Icons.collections_bookmark),
+            title: Text(AppLocalizations.of(context)!.content),
             onTap: () {
               _mapController.showLandmarksList();
             },
           ),
           ListTile(
-            leading: Icon(Icons.language),
-            title: Text('Current Language'),
+            leading: const Icon(Icons.language),
+            title: Text(AppLocalizations.of(context)!.language),
             onTap: () {
-              // Handle navigation
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => LanguageSelectionPage()));
             },
           ),
           ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text('About Project'),
+            leading: const Icon(Icons.info_outline),
+            title: Text(AppLocalizations.of(context)!.aboutProject),
             onTap: () {
               Navigator.pushNamed(context, '/');
             },
           ),
           ListTile(
-            leading: Icon(Icons.attach_money_outlined),
-            title: Text('Support Project'),
+            leading: const Icon(Icons.attach_money_outlined),
+            title: Text(AppLocalizations.of(context)!.supportProject),
             onTap: () {
               // Handle navigation
             },
           ),
           ListTile(
-            leading: Icon(Icons.markunread_rounded),
-            title: Text('Feedback'),
+            leading: const Icon(Icons.markunread_rounded),
+            title: Text(AppLocalizations.of(context)!.feedback),
             onTap: () {
               // Handle navigation
             },

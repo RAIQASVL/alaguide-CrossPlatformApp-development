@@ -1,0 +1,50 @@
+{  
+  "@@locale": "en",  
+  "language": "Language",  
+  "selectLanguage": "Select Language",  
+  "home": "Home",  
+  "currentCity": "Current City",  
+  "content": "Content",  
+  "aboutProject": "About Project",  
+  "supportProject": "Support Project",  
+  "feedback": "Feedback",
+
+  "heyThere": "Hey there,",
+  "createAccount" : "Create an Account",
+  "welcomeBack" : "Welcome Back",
+  "firstName" : "First Name",
+  "invalidFirstName": "Invalid first name",
+  "lastName": "Last Name",
+  "invalidLastName": "Invalid last name",
+  "username": "Username",
+  "invalidUsername": "Username must be at least 3 characters long",
+  "email": "Email",
+  "invalidEmail": "Invalid email",
+  "password": "Password",
+  "invalidPassword": "Password must be at least 6 characters long",
+  "confirmPassword": "Confirm Password",
+  "matchPass": "Password must match",
+  "termsAndConditions": "By creating an account, you agree to our Terms & Conditions",
+  "register": "Register",
+  "login": "Login",
+  "acceptTermsAndConditions": "Please accept the terms and conditions",
+  "alreadyHaveAnAccount": "Already have an account? ",
+  "dontHaveAnAccount": "Don't have an account? ",
+  "forgotPassword": "Forgot Password?",
+
+  "welcome": "Welcome to\nALAGUIDE\nAudio Tour Guide",
+  "discover": "Discover amazing places with our audio guides.",
+  "logoutSuccessfully": "Logout out successfully",
+  "logout": "Logout",
+  "loginAndRegister" : "Login / Register",
+  "quickActions": "Quick Actions",
+  "editProfile": "Edit Profile",
+  "favorites": "Favorites",
+  "explore": "Explore",
+  "history": "History",
+  "settings": "Settings"
+
+
+
+}
+

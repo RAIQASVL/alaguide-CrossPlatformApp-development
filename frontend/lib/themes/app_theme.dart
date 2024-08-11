@@ -21,7 +21,7 @@ class AppThemes {
     primaryColor: const Color(0xff1D1617),
     scaffoldBackgroundColor: Colors.grey[900],
     appBarTheme: const AppBarTheme(
-      color: const Color(0xff1D1617),
+      color: Color(0xff1D1617),
       iconTheme: IconThemeData(color: Colors.white),
     ),
     textTheme: const TextTheme(

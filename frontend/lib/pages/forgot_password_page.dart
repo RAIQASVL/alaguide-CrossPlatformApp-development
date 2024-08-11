@@ -8,7 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'dart:ui';
 
 class ForgotPasswordPage extends ConsumerStatefulWidget {
-  const ForgotPasswordPage({Key? key}) : super(key: key);
+  const ForgotPasswordPage({super.key});
 
   @override
   ConsumerState<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
@@ -59,7 +59,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 16.0),
                     child: Center(
-                      child: CircularProgressIndicator()
+                      child: const CircularProgressIndicator()
                           .animate()
                           .fadeIn(duration: 300.ms)
                           .scale(delay: 300.ms),
@@ -137,8 +137,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
       text: 'Send Instruction',
       backColor: isDarkMode
           ? [Colors.black, Colors.black]
-          : [Color(0xff92A3FD), Color(0xff9DCEFF)],
-      textColor: [Colors.white, Colors.white],
+          : [const Color(0xff92A3FD), const Color(0xff9DCEFF)],
+      textColor: const [Colors.white, Colors.white],
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
           setState(() {
@@ -149,7 +149,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                 .read(authProvider.notifier)
                 .resetPassword(_emailController.text);
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 content:
                     Text('Password reset email sent. Please check your inbox.'),
               ),
