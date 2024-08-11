@@ -7,8 +7,11 @@ import 'package:frontend/providers/auth_providers.dart';
 import 'package:frontend/models/user_models.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -65,7 +68,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 ref.read(themeProvider.notifier).toggleTheme();
                 _controller.forward(from: 0);
               },
-            ).animate(controller: _controller, effects: [ScaleEffect()]),
+            ).animate(controller: _controller, effects: [const ScaleEffect()]),
           ),
         ],
       ),
@@ -85,7 +88,7 @@ class _HomePageState extends ConsumerState<HomePage>
                         UserProfileWidget(user: user),
                       ] else ...[
                         Text(
-                          'Welcome to\nALAGUIDE\nAudio Tour Guide',
+                          AppLocalizations.of(context)!.welcome,
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
@@ -94,14 +97,14 @@ class _HomePageState extends ConsumerState<HomePage>
                                 fontWeight: FontWeight.bold,
                               ),
                         ).animate().fadeIn().slideY(),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         Text(
-                          'Discover amazing places with our audio guides.',
+                          AppLocalizations.of(context)!.discover,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleMedium,
                         ).animate().fadeIn().slideY(),
                       ],
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       ElevatedButton(
                         onPressed: () {
                           if (!isLoggedIn) {
@@ -111,33 +114,36 @@ class _HomePageState extends ConsumerState<HomePage>
                             ref.read(authStateProvider.notifier).state = false;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                  content: Text('Logged out successfully')),
+                                  content: Text(AppLocalizations.of(context)!
+                                      .logoutSuccessfully)),
                             );
                           }
                         },
-                        child: Text(
-                          isLoggedIn ? 'Logout' : 'Login / Register',
-                          selectionColor: Colors.black,
-                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: isLoggedIn
-                              ? Color.fromARGB(255, 151, 204, 248)
-                              : Color.fromARGB(255, 164, 246, 238),
-                          padding: EdgeInsets.symmetric(
+                              ? const Color.fromARGB(255, 151, 204, 248)
+                              : const Color.fromARGB(255, 164, 246, 238),
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
+                        child: Text(
+                          isLoggedIn
+                              ? AppLocalizations.of(context)!.logout
+                              : AppLocalizations.of(context)!.loginAndRegister,
+                          selectionColor: Colors.black,
+                        ),
                       ).animate().fadeIn().slideY(),
                       if (isLoggedIn) ...[
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         Text(
-                          'Quick Actions',
+                          AppLocalizations.of(context)!.quickActions,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        SizedBox(height: 20),
-                        QuickActionGrid(),
+                        const SizedBox(height: 20),
+                        const QuickActionGrid(),
                       ],
                     ],
                   ),
@@ -154,7 +160,7 @@ class _HomePageState extends ConsumerState<HomePage>
 class UserProfileWidget extends ConsumerWidget {
   final User user;
 
-  const UserProfileWidget({Key? key, required this.user}) : super(key: key);
+  const UserProfileWidget({super.key, required this.user});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -164,33 +170,33 @@ class UserProfileWidget extends ConsumerWidget {
           radius: 50,
           backgroundImage: user.avatarUrl != null
               ? NetworkImage(user.avatarUrl!)
-              : AssetImage('assets/default_avatar.png') as ImageProvider,
+              : const AssetImage('assets/default_avatar.png') as ImageProvider,
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         Text(
           '${user.firstName} ${user.lastName}',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           user.email ?? '',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, '/edit-profile');
           },
-          child: Text(
-            'Edit Profile',
-            selectionColor: Colors.black,
-          ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color.fromARGB(255, 247, 233, 106),
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            backgroundColor: const Color.fromARGB(255, 247, 233, 106),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
+          ),
+          child: Text(
+            AppLocalizations.of(context)!.editProfile,
+            selectionColor: Colors.black,
           ),
         ).animate().fadeIn().slideY(),
       ],
@@ -199,34 +205,36 @@ class UserProfileWidget extends ConsumerWidget {
 }
 
 class QuickActionGrid extends StatelessWidget {
+  const QuickActionGrid({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 15,
       crossAxisSpacing: 15,
       childAspectRatio: 1.5,
       children: [
         QuickActionItem(
           icon: Icons.favorite,
-          label: 'Favorites',
+          label: AppLocalizations.of(context)!.favorites,
           onTap: () => Navigator.pushNamed(context, '/favorites'),
         ),
         QuickActionItem(
           icon: Icons.map,
-          label: 'Explore',
+          label: AppLocalizations.of(context)!.explore,
           onTap: () => Navigator.pushNamed(context, '/explore'),
         ),
         QuickActionItem(
           icon: Icons.history,
-          label: 'History',
+          label: AppLocalizations.of(context)!.history,
           onTap: () => Navigator.pushNamed(context, '/history'),
         ),
         QuickActionItem(
           icon: Icons.settings,
-          label: 'Settings',
+          label: AppLocalizations.of(context)!.settings,
           onTap: () => Navigator.pushNamed(context, '/settings'),
         ),
       ],
@@ -240,11 +248,11 @@ class QuickActionItem extends StatelessWidget {
   final VoidCallback onTap;
 
   const QuickActionItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -259,7 +267,7 @@ class QuickActionItem extends StatelessWidget {
               color: Colors.grey.withOpacity(0.1),
               spreadRadius: 1,
               blurRadius: 3,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -267,7 +275,7 @@ class QuickActionItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 30),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(label, style: Theme.of(context).textTheme.bodyMedium),
           ],
         ),

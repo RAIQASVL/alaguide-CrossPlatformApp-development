@@ -26,19 +26,19 @@ class MapController {
   }
 
   Future<void> getLocationUpdates() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
 
-    _serviceEnabled = await _locationController.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await _locationController.requestService();
-      if (!_serviceEnabled) return;
+    serviceEnabled = await _locationController.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await _locationController.requestService();
+      if (!serviceEnabled) return;
     }
 
-    _permissionGranted = await _locationController.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _locationController.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) return;
+    permissionGranted = await _locationController.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await _locationController.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) return;
     }
 
     _locationController.onLocationChanged.listen((LocationData currentLocation) {
@@ -76,17 +76,17 @@ class MapController {
       context: scaffoldKey.currentContext!,
       builder: (BuildContext context) {
         return Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(landmark.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
+              Text(landmark.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
               Text(landmark.description),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => playAudio(landmark),
-                child: Text('Play Audio Guide'),
+                child: const Text('Play Audio Guide'),
               ),
             ],
           ),
@@ -106,8 +106,8 @@ class MapController {
       context: scaffoldKey.currentContext!,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Content'),
-          content: Container(
+          title: const Text('Content'),
+          content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
               itemCount: landmarks.length,
@@ -157,9 +157,9 @@ class MapController {
       googleApiKey: GOOGLE_MAPS_API_KEY,
     );
     if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
+      for (var point in result.points) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
+      }
     } else {
       throw Exception(result.errorMessage);
     }
@@ -167,7 +167,7 @@ class MapController {
   }
 
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) {
-    PolylineId id = PolylineId("poly");
+    PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
       polylineId: id,
       color: Colors.blue,

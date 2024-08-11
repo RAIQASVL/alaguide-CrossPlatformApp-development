@@ -10,8 +10,11 @@ import 'package:frontend/providers/auth_providers.dart';
 import 'package:frontend/models/user_models.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 class AuthPage extends ConsumerStatefulWidget {
-  const AuthPage({Key? key}) : super(key: key);
+  const AuthPage({super.key});
 
   @override
   ConsumerState<AuthPage> createState() => _AuthPageState();
@@ -67,7 +70,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                       children: [
                         const SizedBox(height: 40),
                         Text(
-                          'Hey there,',
+                          AppLocalizations.of(context)!.heyThere,
                           style: GoogleFonts.poppins(
                             color: isDarkMode
                                 ? Colors.white
@@ -78,7 +81,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                         ).animate().fadeIn().slideY(),
                         const SizedBox(height: 8),
                         Text(
-                          register ? 'Create an Account' : 'Welcome Back',
+                          register
+                              ? AppLocalizations.of(context)!.createAccount
+                              : AppLocalizations.of(context)!.welcomeBack,
                           style: GoogleFonts.poppins(
                             color: isDarkMode
                                 ? Colors.white
@@ -91,54 +96,79 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                         const SizedBox(height: 35),
                         if (register) ...[
                           buildTextField(
-                              "First Name", Icons.person, false, constraints,
-                              (valuename) {
-                            if (valuename == null || valuename.length <= 2)
-                              return 'Invalid name';
+                              AppLocalizations.of(context)!.firstName,
+                              Icons.person,
+                              false,
+                              constraints, (valuename) {
+                            if (valuename == null || valuename.length <= 2) {
+                              return AppLocalizations.of(context)!
+                                  .invalidFirstName;
+                            }
                             return null;
                           }, 0, isDarkMode),
                           const SizedBox(height: 15),
                           buildTextField(
-                              "Last Name", Icons.person_2, false, constraints,
-                              (valuesurname) {
+                              AppLocalizations.of(context)!.lastName,
+                              Icons.person_2,
+                              false,
+                              constraints, (valuesurname) {
                             if (valuesurname == null ||
-                                valuesurname.length <= 2)
-                              return 'Invalid last name';
+                                valuesurname.length <= 2) {
+                              return AppLocalizations.of(context)!
+                                  .invalidLastName;
+                            }
                             return null;
                           }, 1, isDarkMode),
                           const SizedBox(height: 15),
-                          buildTextField("Username", Icons.account_circle,
-                              false, constraints, (valueUsername) {
+                          buildTextField(
+                              AppLocalizations.of(context)!.username,
+                              Icons.account_circle,
+                              false,
+                              constraints, (valueUsername) {
                             if (valueUsername == null ||
-                                valueUsername.length < 3)
-                              return 'Username must be at least 3 characters long';
+                                valueUsername.length < 3) {
+                              return AppLocalizations.of(context)!
+                                  .invalidUsername;
+                            }
                             return null;
                           }, 2, isDarkMode),
                           const SizedBox(height: 15),
                         ],
                         buildTextField(
-                            "Email", Icons.email_outlined, false, constraints,
-                            (valuemail) {
+                            AppLocalizations.of(context)!.email,
+                            Icons.email_outlined,
+                            false,
+                            constraints, (valuemail) {
                           if (valuemail == null ||
                               !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                  .hasMatch(valuemail)) return 'Invalid email';
+                                  .hasMatch(valuemail))
+                            return AppLocalizations.of(context)!.invalidEmail;
                           return null;
                         }, register ? 3 : 0, isDarkMode),
                         const SizedBox(height: 15),
                         buildTextField(
-                            "Password", Icons.lock_outline, true, constraints,
-                            (valuepassword) {
-                          if (valuepassword == null || valuepassword.length < 6)
-                            return 'Password must be at least 6 characters long';
+                            AppLocalizations.of(context)!.password,
+                            Icons.lock_outline,
+                            true,
+                            constraints, (valuepassword) {
+                          if (valuepassword == null ||
+                              valuepassword.length < 6) {
+                            return AppLocalizations.of(context)!
+                                .invalidPassword;
+                          }
                           return null;
                         }, register ? 4 : 1, isDarkMode),
                         if (register) ...[
                           const SizedBox(height: 15),
-                          buildTextField("Confirm Password", Icons.lock_outline,
-                              true, constraints, (valuepassword) {
+                          buildTextField(
+                              AppLocalizations.of(context)!.confirmPassword,
+                              Icons.lock_outline,
+                              true,
+                              constraints, (valuepassword) {
                             if (valuepassword == null ||
-                                valuepassword != textfieldsStrings[4])
-                              return 'Passwords must match';
+                                valuepassword != textfieldsStrings[4]) {
+                              return AppLocalizations.of(context)!.matchPass;
+                            }
                             return null;
                           }, 5, isDarkMode),
                         ],
@@ -163,9 +193,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    "By creating an account, you agree to our Terms & Conditions",
+                                    AppLocalizations.of(context)!
+                                        .termsAndConditions,
                                     style: TextStyle(
-                                      color: const Color(0xffADA4A5),
+                                      color: Color(0xffADA4A5),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -175,7 +206,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                           ),
                         const SizedBox(height: 20),
                         ButtonWidget(
-                          text: register ? "Register" : "Login",
+                          text: register
+                              ? AppLocalizations.of(context)!.register
+                              : AppLocalizations.of(context)!.login,
                           backColor: isDarkMode
                               ? [Colors.black, Colors.black]
                               : [
@@ -205,7 +238,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                           content: Text(
-                                              'Please accept the terms and conditions')),
+                                              AppLocalizations.of(context)!
+                                                  .acceptTermsAndConditions)),
                                     );
                                     return;
                                   }
@@ -240,7 +274,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
                             child: Center(
-                              child: CircularProgressIndicator()
+                              child: const CircularProgressIndicator()
                                   .animate()
                                   .fadeIn(duration: 300.ms)
                                   .scale(delay: 300.ms),
@@ -252,8 +286,10 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                           children: [
                             Text(
                               register
-                                  ? "Already have an account? "
-                                  : "Don't have an account? ",
+                                  ? AppLocalizations.of(context)!
+                                      .alreadyHaveAnAccount
+                                  : AppLocalizations.of(context)!
+                                      .dontHaveAnAccount,
                               style: TextStyle(
                                 color: isDarkMode
                                     ? Colors.white
@@ -268,9 +304,11 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                                 });
                               },
                               child: Text(
-                                register ? "Login" : "Register",
-                                style: TextStyle(
-                                  color: const Color(0xffC58BF2),
+                                register
+                                    ? AppLocalizations.of(context)!.login
+                                    : AppLocalizations.of(context)!.register,
+                                style: const TextStyle(
+                                  color: Color(0xffC58BF2),
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -292,9 +330,9 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                                 );
                               },
                               child: Text(
-                                'Forgot Password?',
+                                AppLocalizations.of(context)!.forgotPassword,
                                 style: TextStyle(
-                                  color: const Color(0xffC58BF2),
+                                  color: Color(0xffC58BF2),
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),

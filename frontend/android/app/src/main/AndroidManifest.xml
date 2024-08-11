@@ -6,14 +6,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:label="frontend"
-        android:icon="@mipmap/ic_launcher"
+        android:label="ALAGUIDE"
+        android:icon="@mipmap/launcher_icon"
         android:allowBackup="true">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/LaunchTheme"
             android:windowSoftInputMode="adjustResize">

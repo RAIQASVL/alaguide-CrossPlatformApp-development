@@ -8,8 +8,8 @@ class ApiService {
       // baseUrl: 'http://10.0.2.2:8000',  // Use this for Android emulator
       baseUrl:
           'http://192.168.1.235:8000/', // Use this for iOS simulator or web
-      connectTimeout: Duration(seconds: 5),
-      receiveTimeout: Duration(seconds: 10),
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 10),
     ));
   }
 
@@ -19,7 +19,7 @@ class ApiService {
       final response = await _dio.get(path, options: Options(headers: headers));
       return response;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -28,7 +28,7 @@ class ApiService {
       final response = await _dio.post(path, data: data);
       return response;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
