@@ -43,19 +43,14 @@ CREATE TABLE
 CREATE TABLE
     Landmarks (
         landmark_id INT PRIMARY KEY AUTO_INCREMENT,
-        landmark VARCHAR(255) NOT NULL UNIQUE,
-        description TEXT,
-        image_url VARCHAR(255) UNIQUE,
-        latitude DECIMAL(9, 6) UNIQUE,
-        longitude DECIMAL(9, 6) UNIQUE,
         country VARCHAR(100),
         city VARCHAR(100),
-        category VARCHAR(255),
-        FOREIGN KEY (city) REFERENCES Cities (city) ON DELETE CASCADE,
+        landmark VARCHAR(255) NOT NULL UNIQUE,
+        latitude DECIMAL(9, 6) UNIQUE,
+        longitude DECIMAL(9, 6) UNIQUE,
         FOREIGN KEY (country) REFERENCES Countries (country) ON DELETE CASCADE,
-        FOREIGN KEY (category) REFERENCES LandmarksCategory (category) ON DELETE CASCADE,
+        FOREIGN KEY (city) REFERENCES Cities (city) ON DELETE CASCADE,
         INDEX idx_landmark (landmark),
-        INDEX idx_image_url (image_url),
         INDEX idx_latitude (latitude),
         INDEX idx_longitude (longitude)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
@@ -65,10 +60,12 @@ CREATE TABLE
     AudioBooks (
         audiobook_id INT PRIMARY KEY AUTO_INCREMENT,
         landmark_id INT NOT NULL,
-        title VARCHAR(255) NOT NULL,
-        description TEXT,
-        audio_url VARCHAR(255) UNIQUE,
+        title VARCHAR(255) UNIQUE NOT NULL,
+        author VARCHAR(100) NOT NULL,
+        guide VARCHAR(100) NOT NULL,
+        audio_url VARCHAR(255) UNIQUE NOT NULL,
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE,
+        INDEX idx_title (title),
         INDEX idx_audio_url (audio_url)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -76,21 +73,24 @@ CREATE TABLE
 CREATE TABLE
     AlaguideObjects (
         ala_object_id INT PRIMARY KEY AUTO_INCREMENT,
-        landmark VARCHAR(255),
-        description TEXT,
         country VARCHAR(100),
         city VARCHAR(100),
         category VARCHAR(255),
+        landmark VARCHAR(255),
+        title VARCHAR(100),
+        author VARCHAR(100),
+        guide VARCHAR(100),
+        description TEXT,
         latitude DECIMAL(9, 6),
         longitude DECIMAL(9, 6),
         image_url VARCHAR(255),
         audio_url VARCHAR(255),
-        FOREIGN KEY (landmark) REFERENCES Landmarks (landmark) ON DELETE CASCADE,
         FOREIGN KEY (country) REFERENCES Countries (country) ON DELETE CASCADE,
         FOREIGN KEY (city) REFERENCES Cities (city) ON DELETE CASCADE,
         FOREIGN KEY (category) REFERENCES LandmarksCategory (category) ON DELETE CASCADE,
+        FOREIGN KEY (landmark) REFERENCES Landmarks (landmark) ON DELETE CASCADE,
+        FOREIGN KEY (title) REFERENCES AudioBooks (title) ON DELETE CASCADE,
+        FOREIGN KEY (audio_url) REFERENCES AudioBooks (audio_url) ON DELETE CASCADE,
         FOREIGN KEY (latitude) REFERENCES Landmarks (latitude) ON DELETE CASCADE,
-        FOREIGN KEY (longitude) REFERENCES Landmarks (longitude) ON DELETE CASCADE,
-        FOREIGN KEY (image_url) REFERENCES Landmarks (image_url) ON DELETE CASCADE,
-        FOREIGN KEY (audio_url) REFERENCES AudioBooks (audio_url) ON DELETE CASCADE
+        FOREIGN KEY (longitude) REFERENCES Landmarks (longitude) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;

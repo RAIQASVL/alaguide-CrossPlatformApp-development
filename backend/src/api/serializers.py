@@ -8,8 +8,8 @@ from core.models import (
     City,
     Category,
     Landmark,
-    AudioBook, 
-    AlaguideObject
+    AudioBook,
+    AlaguideObject,
 )
 from core import models
 
@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
-        
+
 
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,17 +29,19 @@ class CountrySerializer(serializers.ModelSerializer):
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
-        fields = ["city_id", "city"]
+        fields = ["city_id", "city", "description", "latitude", "longitude", "country"]
+
 
 # Language Selector Logic
 class LanguageSerializer(serializers.Serializer):
     language_code = serializers.CharField()
     language_name = serializers.CharField()
-    
+
+
 class PreferredLanguageUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['preferred_language']
+        fields = ["preferred_language"]
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -100,4 +102,3 @@ class AlaguideObjectSerializer(serializers.ModelSerializer):
             "image_url",
             "audio_url",
         )
-

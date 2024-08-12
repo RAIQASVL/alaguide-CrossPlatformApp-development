@@ -159,15 +159,6 @@ class Category(models.Model):
 
 class Landmark(models.Model):
     landmark_id = models.AutoField(primary_key=True, null=False, default=None)
-    landmark = models.CharField(max_length=255, unique=True)
-    description = models.TextField()
-    image_url = models.FileField(upload_to="landmarks", unique=True, null=True)
-    latitude = models.DecimalField(
-        max_digits=9, decimal_places=6, unique=True, null=True
-    )
-    longitude = models.DecimalField(
-        max_digits=9, decimal_places=6, unique=True, null=True
-    )
     country = models.ForeignKey(
         Country,
         db_column="country",
@@ -184,14 +175,13 @@ class Landmark(models.Model):
         null=False,
         default=None,
     )
-    category = models.ForeignKey(
-        Category,
-        db_column="category",
-        to_field="category",
-        on_delete=models.CASCADE,
-        null=False,
-        default=None,
-    )  # Category relationship
+    landmark = models.CharField(max_length=255, unique=True)
+    latitude = models.DecimalField(
+        max_digits=9, decimal_places=6, unique=True, null=True
+    )
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, unique=True, null=True
+    )
 
     def __str__(self):
         return format(self.landmark)
@@ -210,8 +200,9 @@ class AudioBook(models.Model):
         null=False,
         default=None,
     )
-    title = models.CharField(max_length=255)
-    description = models.TextField()
+    title = models.CharField(max_length=255, unique=True, null=False)
+    author = models.CharField(max_length=100, unique=False, null=False)
+    guide = models.CharField(max_length=100, unique=False, null=False)
     audio_url = models.FileField(upload_to="audio", unique=True)
 
     def __str__(self):
@@ -225,15 +216,6 @@ class AudioBook(models.Model):
 # Model for main objects
 class AlaguideObject(models.Model):
     ala_object_id = models.AutoField(primary_key=True)
-    landmark = models.ForeignKey(
-        Landmark,
-        db_column="landmark",
-        to_field="landmark",
-        related_name="alaguide_objects_landmark",
-        on_delete=models.CASCADE,
-        null=False,
-    )
-    description = models.TextField()
     country = models.ForeignKey(
         Country,
         db_column="country",
@@ -246,7 +228,7 @@ class AlaguideObject(models.Model):
         City,
         db_column="city",
         to_field="city",
-        related_name="alaguide_objects_city",
+        related_name="alaguide_object_city",
         on_delete=models.CASCADE,
         null=False,
     )
@@ -254,15 +236,35 @@ class AlaguideObject(models.Model):
         Category,
         db_column="category",
         to_field="category",
-        related_name="alaguide_objects_category",
+        on_delete=models.CASCADE,
+        null=False,
+        default=None,
+    )  # Category relationship
+    landmark = models.ForeignKey(
+        Landmark,
+        db_column="landmark",
+        to_field="landmark",
+        related_name="alaguide_object_landmark",
         on_delete=models.CASCADE,
         null=False,
     )
+    title = models.ForeignKey(
+        AudioBook,
+        db_column="title",
+        to_field="title",
+        related_name="alaguide_object_title",
+        on_delete=models.CASCADE,
+        null=False,
+        default=None,
+    )
+    author = models.CharField(max_length=100, unique=False, null=False)
+    guide = models.CharField(max_length=100, unique=False, null=False)
+    description = models.TextField(max_length=1000, null=True, blank=True)
     latitude = models.ForeignKey(
         Landmark,
         db_column="latitude",
         to_field="latitude",
-        related_name="alaguide_objects_latitude",
+        related_name="alaguide_object_latitude",
         on_delete=models.CASCADE,
         null=False,
     )
@@ -270,23 +272,18 @@ class AlaguideObject(models.Model):
         Landmark,
         db_column="longitude",
         to_field="longitude",
-        related_name="alaguide_objects_longitude",
+        related_name="alaguide_object_longitude",
         on_delete=models.CASCADE,
         null=False,
     )
-    image_url = models.ForeignKey(
-        Landmark,
-        db_column="image_url",
-        to_field="image_url",
-        related_name="alaguide_objects_image",
-        on_delete=models.CASCADE,
-        null=False,
+    image_url = models.FileField(
+        upload_to="landmarks", unique=False, null=True, blank=True
     )
     audio_url = models.ForeignKey(
         AudioBook,
         db_column="audio_url",
         to_field="audio_url",
-        related_name="alaguide_objects_audio",
+        related_name="alaguide_object_audio",
         on_delete=models.CASCADE,
         null=False,
     )
