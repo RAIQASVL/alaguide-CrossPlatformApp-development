@@ -24,34 +24,21 @@ class MapPage extends ConsumerStatefulWidget {
 class _MapPageState extends ConsumerState<MapPage> {
   late MapController _mapController;
   GoogleMapController? _googleMapController;
-  LatLng? _currentPosition;
+  LatLng _initialPosition = LatLng(43.2220, 76.8512); // Default to Almaty
 
   @override
   void initState() {
     super.initState();
     _mapController = MapController(ref);
     _mapController.init();
-
-    // Initialize current position asynchronously
-    _initializeCurrentPosition();
+    _initializeMap();
   }
 
-  Future<void> _initializeCurrentPosition() async {
-    try {
-      // Assuming currentPositionProvider returns a Future<LatLng?>
-      final position = await ref.read(currentPositionProvider);
-      setState(() {
-        _currentPosition = position as LatLng?;
-      });
-    } catch (e) {
-      // Handle error if needed
-      setState(() {
-        _currentPosition = null; // or handle the error state accordingly
-      });
-    }
+  Future<void> _initializeMap() async {
+    _initialPosition = await _mapController.getInitialPosition();
+    setState(() {});
   }
 
-  // Function for moving the camera to the coordinates of a specific city
   void _moveToCity(City city) {
     if (_googleMapController != null) {
       _googleMapController!.animateCamera(
@@ -65,82 +52,10 @@ class _MapPageState extends ConsumerState<MapPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final polylines = ref.watch(polylinesProvider);
-    final markers = ref.watch(markersProvider);
-    final selectedCity = ref.watch(selectedCityProvider);
-
-    return Scaffold(
-      key: _mapController.scaffoldKey,
-      drawer: _buildDrawer(),
-      body: _currentPosition == null
-          ? const Center(child: CircularProgressIndicator())
-          : Stack(
-              children: [
-                GoogleMap(
-                  onMapCreated: (GoogleMapController controller) {
-                    _googleMapController = controller;
-                    _mapController.onMapCreated(controller);
-
-                    // Move the camera to the selected city by default
-                    if (selectedCity != null) {
-                      _moveToCity(selectedCity);
-                    }
-                  },
-                  initialCameraPosition: CameraPosition(
-                    target: selectedCity?.coordinates ?? _currentPosition!,
-                    zoom: 13,
-                  ),
-                  markers: markers,
-                  polylines: Set<Polyline>.of(polylines.values),
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: false,
-                  zoomControlsEnabled: false,
-                ),
-                Positioned(
-                  top: 40,
-                  left: 16,
-                  child: AnimatedMenuButton(
-                    onPressed: () {
-                      _mapController.scaffoldKey.currentState?.openDrawer();
-                    },
-                  ),
-                ),
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: AnimatedLocationButton(
-                    onPressed: _goToMyLocation,
-                  ),
-                ),
-              ],
-            ),
-    );
-  }
-
-  // Function for moving the camera to the user's current location
   void _goToMyLocation() {
-    final currentPosition = ref.watch(currentPositionProvider);
-    if (currentPosition != null && _googleMapController != null) {
-      _googleMapController!.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: currentPosition,
-            zoom: 15,
-          ),
-        ),
-      );
-    }
+    _mapController.goToMyLocation();
   }
 
-  @override
-  void dispose() {
-    _googleMapController?.dispose();
-    super.dispose();
-  }
-
-  // Method for creating a side menu (Drawer)
   Widget _buildDrawer() {
     final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
     final theme = Theme.of(context);
@@ -251,5 +166,64 @@ class _MapPageState extends ConsumerState<MapPage> {
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final polylines = ref.watch(polylinesProvider);
+    final markers = ref.watch(markersProvider);
+    final selectedCity = ref.watch(selectedCityProvider);
+
+    ref.listen<City?>(selectedCityProvider, (previous, next) {
+      if (next != null) {
+        _moveToCity(next);
+      }
+    });
+
+    return Scaffold(
+      key: _mapController.scaffoldKey,
+      drawer: _buildDrawer(),
+      body: Stack(
+        children: [
+          GoogleMap(
+            onMapCreated: (GoogleMapController controller) {
+              _googleMapController = controller;
+              _mapController.onMapCreated(controller);
+            },
+            initialCameraPosition: CameraPosition(
+              target: selectedCity?.coordinates ?? _initialPosition,
+              zoom: 13,
+            ),
+            markers: markers,
+            polylines: Set<Polyline>.of(polylines.values),
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
+          ),
+          Positioned(
+            top: 40,
+            left: 16,
+            child: AnimatedMenuButton(
+              onPressed: () {
+                _mapController.scaffoldKey.currentState?.openDrawer();
+              },
+            ),
+          ),
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: AnimatedLocationButton(
+              onPressed: _goToMyLocation,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _googleMapController?.dispose();
+    super.dispose();
   }
 }
