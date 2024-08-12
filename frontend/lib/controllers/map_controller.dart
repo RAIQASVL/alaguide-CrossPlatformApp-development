@@ -12,12 +12,12 @@ class MapController {
   final WidgetRef ref;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final Location _locationController = Location();
-  final Completer<GoogleMapController> mapController = Completer<GoogleMapController>();
+  final Completer<GoogleMapController> mapController =
+      Completer<GoogleMapController>();
 
   MapController(this.ref);
 
   void init() {
-    getLocationUpdates();
     ref.read(landmarksProvider.notifier).fetchLandmarks();
   }
 
@@ -25,7 +25,18 @@ class MapController {
     mapController.complete(controller);
   }
 
-  Future<void> getLocationUpdates() async {
+  Future<LatLng> getInitialPosition() async {
+    await getCurrentLocation();
+    final currentPosition = ref.read(currentPositionProvider);
+    if (currentPosition != null) {
+      return currentPosition;
+    } else {
+      // Default to Almaty City coordinates if current location is not available
+      return LatLng(43.2220, 76.8512); // Almaty coordinates
+    }
+  }
+
+  Future<void> getCurrentLocation() async {
     bool serviceEnabled;
     PermissionStatus permissionGranted;
 
@@ -41,13 +52,12 @@ class MapController {
       if (permissionGranted != PermissionStatus.granted) return;
     }
 
-    _locationController.onLocationChanged.listen((LocationData currentLocation) {
-      if (currentLocation.latitude != null && currentLocation.longitude != null) {
-        ref.read(currentPositionProvider.notifier).state =
-            LatLng(currentLocation.latitude!, currentLocation.longitude!);
-        updateCameraPosition(LatLng(currentLocation.latitude!, currentLocation.longitude!));
-      }
-    });
+    final LocationData currentLocation =
+        await _locationController.getLocation();
+    if (currentLocation.latitude != null && currentLocation.longitude != null) {
+      ref.read(currentPositionProvider.notifier).state =
+          LatLng(currentLocation.latitude!, currentLocation.longitude!);
+    }
   }
 
   Future<void> updateCameraPosition(LatLng pos) async {
@@ -56,7 +66,8 @@ class MapController {
       target: pos,
       zoom: 13,
     );
-    await controller.animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
+    await controller
+        .animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
   }
 
   void updateMarkers() {
@@ -80,7 +91,9 @@ class MapController {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(landmark.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text(landmark.name,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Text(landmark.description),
               const SizedBox(height: 16),
@@ -129,11 +142,17 @@ class MapController {
 
   Future<void> showRoute(Landmark destination) async {
     final currentPosition = ref.read(currentPositionProvider);
-    if (currentPosition == null) return;
+    if (currentPosition == null) {
+      // If current position is not available, get it first
+      await getCurrentLocation();
+    }
+
+    final updatedCurrentPosition = ref.read(currentPositionProvider);
+    if (updatedCurrentPosition == null) return;
 
     try {
       List<LatLng> polylineCoordinates = await getPolylinePoints(
-        currentPosition,
+        updatedCurrentPosition,
         LatLng(destination.latitude, destination.longitude),
       );
       generatePolyLineFromPoints(polylineCoordinates);
@@ -178,6 +197,7 @@ class MapController {
   }
 
   void goToMyLocation() async {
+    await getCurrentLocation();
     final currentPosition = ref.read(currentPositionProvider);
     if (currentPosition != null) {
       updateCameraPosition(currentPosition);
