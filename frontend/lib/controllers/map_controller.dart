@@ -5,8 +5,10 @@ import 'package:location/location.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'dart:async';
 import 'package:frontend/providers/logic_providers.dart';
-import 'package:frontend/models/landmark.dart';
+import 'package:frontend/providers/alaguide_object_providers.dart';
+import 'package:frontend/models/alaguide_object_model.dart';
 import 'package:frontend/constants/google_maps_api_key.dart';
+import 'package:frontend/controllers/alaguideObjectControllerProvider.dart';
 
 class MapController {
   final WidgetRef ref;
@@ -18,7 +20,8 @@ class MapController {
   MapController(this.ref);
 
   void init() {
-    ref.read(landmarksProvider.notifier).fetchLandmarks();
+    // Предполагаем, что у вас есть отдельный провайдер для управления загрузкой данных
+    ref.read(alaguideObjectControllerProvider).fetchAlaguideObjects();
   }
 
   void onMapCreated(GoogleMapController controller) {
@@ -31,8 +34,7 @@ class MapController {
     if (currentPosition != null) {
       return currentPosition;
     } else {
-      // Default to Almaty City coordinates if current location is not available
-      return LatLng(43.2220, 76.8512); // Almaty coordinates
+      return const LatLng(43.2220, 76.8512); // Almaty coordinates
     }
   }
 
@@ -71,18 +73,19 @@ class MapController {
   }
 
   void updateMarkers() {
-    final landmarks = ref.read(landmarksProvider);
-    ref.read(markersProvider.notifier).state = landmarks
-        .map((landmark) => Marker(
-              markerId: MarkerId(landmark.id.toString()),
-              position: LatLng(landmark.latitude, landmark.longitude),
-              infoWindow: InfoWindow(title: landmark.name),
-              onTap: () => showLandmarkInfo(landmark),
+    final alaguideObjects = ref.read(alaguideObjectProvider).value ?? [];
+    ref.read(markersProvider.notifier).state = alaguideObjects
+        .map((alaguideObject) => Marker(
+              markerId: MarkerId(alaguideObject.ala_object_id.toString()),
+              position: LatLng(alaguideObject.coordinates.latitude,
+                  alaguideObject.coordinates.longitude),
+              infoWindow: InfoWindow(title: alaguideObject.title ?? ''),
+              onTap: () => showAlaguideObjectInfo(alaguideObject),
             ))
         .toSet();
   }
 
-  Future<void> showLandmarkInfo(Landmark landmark) async {
+  Future<void> showAlaguideObjectInfo(AlaguideObject alaguideObject) async {
     showModalBottomSheet(
       context: scaffoldKey.currentContext!,
       builder: (BuildContext context) {
@@ -91,14 +94,14 @@ class MapController {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(landmark.name,
+              Text(alaguideObject.title ?? '',
                   style: const TextStyle(
                       fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Text(landmark.description),
+              Text(alaguideObject.description ?? ''),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => playAudio(landmark),
+                onPressed: () => playAudio(alaguideObject),
                 child: const Text('Play Audio Guide'),
               ),
             ],
@@ -108,13 +111,12 @@ class MapController {
     );
   }
 
-  void playAudio(Landmark landmark) {
-    // Implement audio playback logic here
-    print('Playing audio for ${landmark.name}');
+  void playAudio(AlaguideObject alaguideObject) {
+    print('Playing audio for ${alaguideObject.landmark ?? ''}');
   }
 
-  Future<void> showLandmarksList() async {
-    final landmarks = ref.read(landmarksProvider);
+  Future<void> showAlaguideObjectsList() async {
+    final alaguideObjectsAsyncValue = ref.read(alaguideObjectProvider);
     showDialog(
       context: scaffoldKey.currentContext!,
       builder: (BuildContext context) {
@@ -122,67 +124,25 @@ class MapController {
           title: const Text('Content'),
           content: SizedBox(
             width: double.maxFinite,
-            child: ListView.builder(
-              itemCount: landmarks.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(landmarks[index].name),
-                  onTap: () {
-                    Navigator.pop(context);
-                    showRoute(landmarks[index]);
-                  },
-                );
-              },
+            child: alaguideObjectsAsyncValue.when(
+              data: (alaguideObjects) => ListView.builder(
+                itemCount: alaguideObjects.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(alaguideObjects[index].landmark ?? ''),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              ),
+              loading: () => const CircularProgressIndicator(),
+              error: (error, stack) => Text('Error: $error'),
             ),
           ),
         );
       },
     );
-  }
-
-  Future<void> showRoute(Landmark destination) async {
-    final currentPosition = ref.read(currentPositionProvider);
-    if (currentPosition == null) {
-      // If current position is not available, get it first
-      await getCurrentLocation();
-    }
-
-    final updatedCurrentPosition = ref.read(currentPositionProvider);
-    if (updatedCurrentPosition == null) return;
-
-    try {
-      List<LatLng> polylineCoordinates = await getPolylinePoints(
-        updatedCurrentPosition,
-        LatLng(destination.latitude, destination.longitude),
-      );
-      generatePolyLineFromPoints(polylineCoordinates);
-      updateCameraPosition(LatLng(destination.latitude, destination.longitude));
-    } catch (e) {
-      print('Error getting route: $e');
-      // Show error message to user
-    }
-  }
-
-  Future<List<LatLng>> getPolylinePoints(LatLng start, LatLng end) async {
-    List<LatLng> polylineCoordinates = [];
-    PolylinePoints polylinePoints = PolylinePoints();
-    PolylineRequest request = PolylineRequest(
-      origin: PointLatLng(start.latitude, start.longitude),
-      destination: PointLatLng(end.latitude, end.longitude),
-      mode: TravelMode.walking,
-    );
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      request: request,
-      googleApiKey: GOOGLE_MAPS_API_KEY,
-    );
-    if (result.points.isNotEmpty) {
-      for (var point in result.points) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      }
-    } else {
-      throw Exception(result.errorMessage);
-    }
-    return polylineCoordinates;
   }
 
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) {
