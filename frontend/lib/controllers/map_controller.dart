@@ -4,11 +4,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'dart:async';
-import 'package:frontend/providers/logic_providers.dart';
-import 'package:frontend/providers/alaguide_object_providers.dart';
+import 'package:frontend/providers/map_logic_provider.dart';
+import 'package:frontend/providers/content_provider.dart';
 import 'package:frontend/models/alaguide_object_model.dart';
 import 'package:frontend/constants/google_maps_api_key.dart';
-import 'package:frontend/controllers/alaguideObjectControllerProvider.dart';
 
 class MapController {
   final WidgetRef ref;
@@ -20,8 +19,7 @@ class MapController {
   MapController(this.ref);
 
   void init() {
-    // Предполагаем, что у вас есть отдельный провайдер для управления загрузкой данных
-    ref.read(alaguideObjectControllerProvider).fetchAlaguideObjects();
+    ref.read(contentServiceProvider).fetchAlaguideObjects();
   }
 
   void onMapCreated(GoogleMapController controller) {
@@ -73,7 +71,7 @@ class MapController {
   }
 
   void updateMarkers() {
-    final alaguideObjects = ref.read(alaguideObjectProvider).value ?? [];
+    final alaguideObjects = ref.read(contentProvider).value ?? [];
     ref.read(markersProvider.notifier).state = alaguideObjects
         .map((alaguideObject) => Marker(
               markerId: MarkerId(alaguideObject.ala_object_id.toString()),
@@ -116,7 +114,7 @@ class MapController {
   }
 
   Future<void> showAlaguideObjectsList() async {
-    final alaguideObjectsAsyncValue = ref.read(alaguideObjectProvider);
+    final alaguideObjectsAsyncValue = ref.read(contentProvider);
     showDialog(
       context: scaffoldKey.currentContext!,
       builder: (BuildContext context) {

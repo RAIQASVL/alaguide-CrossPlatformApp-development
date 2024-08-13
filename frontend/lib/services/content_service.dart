@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:frontend/models/alaguide_object_model.dart';
 
-class AlaguideObjectService {
+class ContentService {
   static const String baseUrl = 'http://192.168.1.235:8000/api/v1';
 
   Future<List<AlaguideObject>> fetchAlaguideObjects() async {

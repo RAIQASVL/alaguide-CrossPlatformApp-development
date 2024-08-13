@@ -54,17 +54,3 @@ class AlaguideObject {
     );
   }
 }
-
-  // "ala_object_id": 1,
-  // "image_url": "http://localhost:8000/media/landmarks/coffeeshop_4a_M4kWXYK.jpeg",
-  // "audio_url": "http://localhost:8000/media/audio/Coffee_Shop_4A.mp3",
-  // "author": "Chingiz Tibey",
-  // "guide": "Lily Kalaus",
-  // "description": "There is a place in Almaty where crowds of different people go back and forth, where there are real concerts and various political rallies take place! It's always loud, always noisy...\r\nAnd few people know that in the bustle of Arbat there is a magical place “4 A”... This is a coffee shop where you will always feel good, where you will always feel at home... and if you are lonely and you are alone... . and if you are having fun and there is a whole company with you... you can always wander here... and be happy...",
-  // "country": "Kazakhstan",
-  // "city": "Almaty",
-  // "category": "Gastronomic Attractions",
-  // "landmark": "Coffee Shop 4A",
-  // "title": "Coffee Shop 4A",
-  // "latitude": 43.239124,
-  // "longitude": 76.954988
