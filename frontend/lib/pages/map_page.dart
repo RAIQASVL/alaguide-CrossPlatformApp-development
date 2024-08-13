@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/pages/content_page.dart';
 import 'package:frontend/pages/current_city_page.dart';
 import 'package:frontend/pages/language_selection_page.dart';
 import 'package:frontend/models/city_model.dart';
@@ -127,7 +128,10 @@ class _MapPageState extends ConsumerState<MapPage> {
             leading: const Icon(Icons.collections_bookmark),
             title: Text(AppLocalizations.of(context)!.content),
             onTap: () {
-              _mapController.showLandmarksList();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ContentPage()),
+              );
             },
           ),
           ListTile(
