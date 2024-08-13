@@ -11,9 +11,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:frontend/providers/language_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/controllers/map_controller.dart';
-import 'package:frontend/providers/logic_providers.dart';
+import 'package:frontend/providers/map_logic_provider.dart';
 import 'package:frontend/providers/theme_provider.dart';
 import 'package:frontend/controllers/animation_controller.dart';
+import 'package:frontend/controllers/map_marker_controller.dart';
 
 class MapPage extends ConsumerStatefulWidget {
   const MapPage({super.key});
@@ -25,19 +26,34 @@ class MapPage extends ConsumerStatefulWidget {
 class _MapPageState extends ConsumerState<MapPage> {
   late MapController _mapController;
   GoogleMapController? _googleMapController;
-  LatLng _initialPosition = LatLng(43.2220, 76.8512); // Default to Almaty
+  LatLng _initialPosition = LatLng(43.2220, 76.8512);
 
   @override
   void initState() {
     super.initState();
+    // Initialize MapController and load markers
     _mapController = MapController(ref);
     _mapController.init();
     _initializeMap();
+
+    // Load the markers from the provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(mapMarkerControllerProvider.notifier).createMarkers();
+    });
   }
 
   Future<void> _initializeMap() async {
     _initialPosition = await _mapController.getInitialPosition();
     setState(() {});
+  }
+
+  Future<void> _initializeMarkers() async {
+    try {
+      await ref.read(mapMarkerControllerProvider.notifier).createMarkers();
+      print('Markers initialized'); // Debug print
+    } catch (e) {
+      print('Error initializing markers: $e'); // Debug print
+    }
   }
 
   void _moveToCity(City city) {
@@ -174,9 +190,11 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    final polylines = ref.watch(polylinesProvider);
-    final markers = ref.watch(markersProvider);
     final selectedCity = ref.watch(selectedCityProvider);
+    final polylines = ref.watch(polylinesProvider);
+    final markers = ref.watch(mapMarkerControllerProvider);
+    print('Building MapPage with ${markers.length} markers'); // Debug print
+    final scaffoldKey = _mapController.scaffoldKey;
 
     ref.listen<City?>(selectedCityProvider, (previous, next) {
       if (next != null) {

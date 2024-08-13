@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/models/alaguide_object_model.dart';
-import 'package:frontend/providers/alaguide_object_providers.dart';
+import 'package:frontend/providers/content_provider.dart';
 
 class ContentPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final alaguideObjectsAsyncValue = ref.watch(alaguideObjectProvider);
+    final alaguideObjectsAsyncValue = ref.watch(contentProvider);
 
     return Scaffold(
       appBar: AppBar(

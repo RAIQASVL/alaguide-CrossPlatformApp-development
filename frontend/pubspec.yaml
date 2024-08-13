@@ -66,6 +66,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   shared_preferences: ^2.3.1
+  just_audio: ^0.9.39
 dev_dependencies:
   flutter_test:
     sdk: flutter
