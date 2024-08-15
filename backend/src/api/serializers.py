@@ -76,29 +76,15 @@ class AlaguideObjectSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         if obj.image_url:
-            return (
-                obj.image_url.image_url.url
-            )  # access the actual image_url field in the Landmark model
-        else:
-            return None
+            return self.context["request"].build_absolute_uri(obj.image_url.url)
+        return None
 
     def get_audio_url(self, obj):
-        if obj.audio_url:
-            request = self.context.get("request")
+        request = self.context.get("request")
+        if obj.audio_url and obj.audio_url.audio_url:
             return request.build_absolute_uri(obj.audio_url.audio_url.url)
-        else:
-            return None
+        return None
 
     class Meta:
         model = AlaguideObject
-        fields = (
-            "ala_object_id",
-            "landmark",
-            "description",
-            "city",
-            "category",
-            "latitude",
-            "longitude",
-            "image_url",
-            "audio_url",
-        )
+        fields = "__all__"
