@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AudioPlayerWidget extends StatefulWidget {
-  final String audio_url;
+  final String audioUrl;
 
-  const AudioPlayerWidget({Key? key, required this.audio_url})
-      : super(key: key);
+  const AudioPlayerWidget({Key? key, required this.audioUrl}) : super(key: key);
 
   @override
   _AudioPlayerWidgetState createState() => _AudioPlayerWidgetState();
@@ -14,6 +13,7 @@ class AudioPlayerWidget extends StatefulWidget {
 class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
+  String? _error;
 
   @override
   void initState() {
@@ -23,18 +23,29 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   }
 
   Future<void> _initAudioPlayer() async {
-    await _audioPlayer.setUrl(widget.audio_url);
-    _audioPlayer.playerStateStream.listen((state) {
-      if (state.playing != _isPlaying) {
+    try {
+      print('Loading audio from: ${widget.audioUrl}');
+      await _audioPlayer.setUrl(widget.audioUrl);
+      _audioPlayer.playerStateStream.listen((state) {
         setState(() {
           _isPlaying = state.playing;
         });
-      }
-    });
+      });
+    } catch (e) {
+      print('Error loading audio: $e');
+      setState(() {
+        _error = 'Error loading audio. Please try again later.';
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_error != null) {
+      return Text(_error!,
+          style: TextStyle(color: Colors.red, fontSize: 16));
+    }
+
     return Column(
       children: [
         StreamBuilder<Duration?>(
