@@ -5,7 +5,8 @@ import 'package:frontend/pages/current_city_page.dart';
 import 'package:frontend/pages/language_selection_page.dart';
 import 'package:frontend/models/city_model.dart';
 import 'package:frontend/providers/city_provider.dart';
-import 'package:frontend/services/city_service.dart';
+import 'package:frontend/providers/content_provider.dart';
+import 'package:frontend/widgets/bottom_sheet_info_audioplayer.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:frontend/providers/language_provider.dart';
@@ -15,6 +16,7 @@ import 'package:frontend/providers/map_logic_provider.dart';
 import 'package:frontend/providers/theme_provider.dart';
 import 'package:frontend/controllers/animation_controller.dart';
 import 'package:frontend/controllers/map_marker_controller.dart';
+import 'package:frontend/models/alaguide_object_model.dart';
 
 class MapPage extends ConsumerStatefulWidget {
   const MapPage({super.key});
@@ -188,12 +190,30 @@ class _MapPageState extends ConsumerState<MapPage> {
     );
   }
 
+  Set<Marker> _createAnimatedMarkers(List<AlaguideObject> objects) {
+    return objects.map((obj) {
+      return Marker(
+        markerId: MarkerId(obj.ala_object_id.toString()),
+        position: obj.coordinates,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+        onTap: () => _showObjectInfo(obj),
+      );
+    }).toSet();
+  }
+
+  void _showObjectInfo(AlaguideObject obj) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => BottomSheetInfo(object: obj),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedCity = ref.watch(selectedCityProvider);
     final polylines = ref.watch(polylinesProvider);
-    final markers = ref.watch(mapMarkerControllerProvider);
-    print('Building MapPage with ${markers.length} markers'); // Debug print
+    final alaguideObjectsAsync = ref.watch(contentProvider);
+    // final markers = ref.watch(mapMarkerControllerProvider);
     final scaffoldKey = _mapController.scaffoldKey;
 
     ref.listen<City?>(selectedCityProvider, (previous, next) {
@@ -216,7 +236,16 @@ class _MapPageState extends ConsumerState<MapPage> {
               target: selectedCity?.coordinates ?? _initialPosition,
               zoom: 13,
             ),
-            markers: markers,
+            markers: alaguideObjectsAsync.when(
+              data: (alaguideObjects) =>
+                  _createAnimatedMarkers(alaguideObjects),
+              loading: () =>
+                  {}, // Optionally display a loading marker or empty set
+              error: (err, stack) {
+                print('Error loading markers: $err');
+                return {};
+              },
+            ),
             polylines: Set<Polyline>.of(polylines.values),
             myLocationEnabled: true,
             myLocationButtonEnabled: false,

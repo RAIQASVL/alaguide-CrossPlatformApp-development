@@ -1,3 +1,5 @@
+// UNUSED !!!
+
 import 'package:flutter/material.dart';
 import 'package:frontend/models/city_model.dart';
 
@@ -5,13 +7,15 @@ class AnimatedMarker extends StatefulWidget {
   final City city;
   final VoidCallback onTap;
 
-  const AnimatedMarker({Key? key, required this.city, required this.onTap}) : super(key: key);
+  const AnimatedMarker({Key? key, required this.city, required this.onTap})
+      : super(key: key);
 
   @override
   _AnimatedMarkerState createState() => _AnimatedMarkerState();
 }
 
-class _AnimatedMarkerState extends State<AnimatedMarker> with SingleTickerProviderStateMixin {
+class _AnimatedMarkerState extends State<AnimatedMarker>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -28,7 +32,7 @@ class _AnimatedMarkerState extends State<AnimatedMarker> with SingleTickerProvid
     ));
 
     // Periodic animation
-    Future.delayed(Duration(seconds: (widget.city.id * 2) % 10), () {
+    Future.delayed(Duration(seconds: (widget.city.cityId * 2) % 10), () {
       _controller.repeat(reverse: true);
     });
   }
