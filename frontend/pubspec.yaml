@@ -99,6 +99,8 @@ flutter:
     - assets/animations/alaguide_splash_screen.json
     - assets/images/alaguide_icon_graphic.svg
     - assets/images/alaguide_ui_icon.svg
+    - assets/images/location_pin_icon.svg
+    - assets/images/arrow_right_icon.svg
     - assets/images/alaguide_snake_graphic.svg
     - assets/images/custom_marker.svg
     - assets/images/custom_marker.png

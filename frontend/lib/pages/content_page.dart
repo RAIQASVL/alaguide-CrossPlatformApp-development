@@ -1,33 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/l10n/l10n.dart';
 import 'package:frontend/models/alaguide_object_model.dart';
+import 'package:frontend/models/city_model.dart';
 import 'package:frontend/providers/content_provider.dart';
+import 'package:frontend/providers/city_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:frontend/widgets/audioplayer_widget.dart';
 
 class ContentPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final alaguideObjectsAsyncValue = ref.watch(contentProvider);
+    final citiesAsyncValue = ref.watch(citiesProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Content'),
+        title: Text(AppLocalizations.of(context)!.selectCityFromContentPage),
+      ),
+      body: citiesAsyncValue.when(
+        data: (cities) => ListView.builder(
+          itemCount: cities.length,
+          itemBuilder: (context, index) =>
+              _buildCityListTile(context, ref, cities[index]),
+        ),
+        loading: () => Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+      ),
+    );
+  }
+
+  Widget _buildCityListTile(BuildContext context, WidgetRef ref, City city) {
+    final selectedCity = ref.watch(selectedCityProvider);
+    final bool isSelected = selectedCity?.cityId == city.cityId;
+    final Color customColor = Color(0xFF5AD1E5);
+    final String cityKey = city.cityId.toString();
+
+    return ListTile(
+      leading: SvgPicture.asset('assets/images/alaguide_ui_icon.svg',
+          color: isSelected ? customColor : Colors.grey),
+      title: Text(city.name ?? 'Unknown',
+          style: TextStyle(
+              color: isSelected ? customColor : Colors.black,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+      subtitle: Text(city.country ?? 'Unknown',
+          style: TextStyle(
+            color: isSelected ? Colors.black : Colors.grey,
+          )),
+      trailing: SvgPicture.asset('assets/images/arrow_right_icon.svg'),
+      onTap: () {
+        print('Selected city: ${city.toString()}');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CityContentPage(city: city, cityKey: cityKey),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class CityContentPage extends ConsumerWidget {
+  final City city;
+  final String cityKey;
+
+  CityContentPage({required this.city, required this.cityKey});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final alaguideObjectsAsyncValue = ref.watch(contentProvider);
+    String? cityName = AppLocalizations.of(context)!.getCityName(cityKey);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          '${AppLocalizations.of(context)!.contentPageOfCity} ${cityName ?? 'Unknown City'}',
+        ),
       ),
       body: alaguideObjectsAsyncValue.when(
         data: (alaguideObjects) {
-          if (alaguideObjects.isEmpty) {
-            return Center(child: Text('No content available.'));
+          final cityObjects =
+              alaguideObjects.where((obj) => obj.city == city.name).toList();
+
+          if (cityObjects.isEmpty) {
+            return Center(child: Text('No content available or ${city.name}.'));
           }
           return ListView.builder(
-            itemCount: alaguideObjects.length,
+            itemCount: cityObjects.length,
             itemBuilder: (context, index) {
-              final alaguideObject = alaguideObjects[index];
+              final alaguideObject = cityObjects[index];
               return ListTile(
-                leading: alaguideObject.image_url != null
-                    ? Image.network(alaguideObject.image_url!,
-                        width: 50, height: 50, fit: BoxFit.cover)
-                    : Icon(Icons.image_not_supported),
+                // leading: alaguideObject.image_url != null
+                //     ? Image.network(alaguideObject.image_url!,
+                //         width: 50, height: 50, fit: BoxFit.cover)
+                //     : Icon(Icons.image_not_supported),
                 title: Text(alaguideObject.title ?? 'Unknown'),
-                subtitle: Text(alaguideObject.description ?? ''),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Author: ${alaguideObject.author ?? 'N/A'}'),
+                    Text('Guide: ${alaguideObject.guide ?? 'N/A'}'),
+                  ],
+                ),
+                trailing: IconButton(
+                  icon: Icon(Icons.play_arrow),
+                  onPressed: () {
+                    if (alaguideObject.audio_url != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullScreenPlayerPage(
+                              audioUrl: alaguideObject.audio_url!),
+                        ),
+                      );
+                    } else {
+                      // Handle the null case, e.g., show an error message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Audio URL is not available.')),
+                      );
+                    }
+                  },
+                ),
                 onTap: () {
                   _showDetailDialog(context, alaguideObject);
                 },
@@ -54,9 +148,9 @@ class ContentPage extends ConsumerWidget {
               children: [
                 if (object.image_url != null) Image.network(object.image_url!),
                 SizedBox(height: 16),
-                Text('Description: ${object.description ?? ''}'),
                 Text('Author: ${object.author ?? ''}'),
                 Text('Guide: ${object.guide ?? ''}'),
+                Text('Description: ${object.description ?? ''}'),
                 Text('Category: ${object.category ?? ''}'),
                 Text(
                     'Location: ${object.landmark}, ${object.city}, ${object.country}'),
@@ -68,17 +162,35 @@ class ContentPage extends ConsumerWidget {
               child: Text('Close'),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            if (object.audio_url != null)
-              TextButton(
-                child: Text('Play Audio'),
-                onPressed: () {
-                  // Implement audio playback logic here
-                  print('Playing audio: ${object.audio_url}');
-                },
-              ),
           ],
         );
       },
+    );
+  }
+}
+
+class FullScreenPlayerPage extends StatelessWidget {
+  final String audioUrl;
+
+  FullScreenPlayerPage({required this.audioUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Audio Player'),
+      ),
+      body: Center(
+        child: audioUrl.isNotEmpty
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Playing audio from: $audioUrl'),
+                  AudioPlayerWidget(audioUrl: audioUrl),
+                ],
+              )
+            : Text('No audio URL provided.'),
+      ),
     );
   }
 }

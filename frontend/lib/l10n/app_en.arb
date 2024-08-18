@@ -43,8 +43,18 @@
   "favorites": "Favorites",
   "explore": "Explore",
   "history": "History",
-  "settings": "Settings"
+  "settings": "Settings",
 
+  "selectCityFromContentPage": "Content / Cities",
+  "contentPageOfCity": "Content /",
+
+  "almaty": "Almaty",
+  "moscow": "Moscow",
+  "london": "London",
+
+  "kazakhstan": "Kazakhstan",
+  "russia": "Russia",
+  "uk": "United Kingdom"
 
 
 }

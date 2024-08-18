@@ -43,5 +43,16 @@
   "favorites": "Құпиялар",  
   "explore": "Зерттеу",  
   "history": "Тарих",  
-  "settings": "Параметрлер" 
-}  
+  "settings": "Параметрлер",
+
+  "selectCityFromContentPage": "Мазмұн / Қалалар",  
+  "contentPageOfCity": "Мазмұн /",  
+
+  "almaty": "Алматы",  
+  "moscow": "Москва",  
+  "london": "Лондон",
+
+  "kazakhstan": "Қазақстан",  
+  "russia": "Россия",  
+  "uk": "Ұлыбритания"
+}
