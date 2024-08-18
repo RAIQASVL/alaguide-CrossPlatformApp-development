@@ -6,7 +6,11 @@ import 'package:frontend/widgets/audioplayer_widget.dart';
 class BottomSheetInfo extends ConsumerWidget {
   final AlaguideObject object;
 
-  const BottomSheetInfo({Key? key, required this.object}) : super(key: key);
+  const BottomSheetInfo(
+      {Key? key,
+      required this.object,
+      required ScrollController scrollController})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
