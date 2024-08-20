@@ -8,10 +8,17 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# VS CODE
+.vscode
+
+# Firebase 
+firebase-adminsdk.json
+firebase.json
+
 # Static & Media
-# static/
-# staticfiles/
-# media/
+# static/ - this dir include some special frontend files for backend (like socialproviders images)
+staticfiles/
+
 
 # Ignore all .wav files in media/audio
 media/audio/*.wav
