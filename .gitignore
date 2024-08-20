@@ -11,6 +11,10 @@ __pycache__/
 # VS CODE
 .vscode
 
+
+#Google
+google-services.json
+
 # Firebase 
 firebase-adminsdk.json
 firebase.json
