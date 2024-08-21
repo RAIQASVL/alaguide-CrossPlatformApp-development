@@ -37,11 +37,11 @@ SECRET_KEY = SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-APP_URL_SCHEME = "http://192.168.1.235:8000/"
+APP_URL_SCHEME = 'http://localhost:8000/'
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "*", "192.168.1.216"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "*", "192.168.1.216", "10.0.2.2", "192.168.1.235"]
 
-FRONTEND_URL = "http://192.168.1.235:8000/"
+FRONTEND_URL = "http://localhost:8000/"
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -321,9 +321,9 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     BASE_DIR / "static" / "admin",
-    BASE_DIR / "static" / "assets",
+    # BASE_DIR / "static" / "assets",
     BASE_DIR / "static" / "images",
-    BASE_DIR / "static" / "images" / "landmarks",
+    # BASE_DIR / "static" / "images" / "landmarks",
     BASE_DIR / "static" / "images" / "socialproviders",
     BASE_DIR / "static" / "rest_framework",
 ]

@@ -4,7 +4,7 @@ import "package:frontend/models/city_model.dart";
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CityService {
-  static const String baseUrl = 'http://192.168.1.235:8000/api/v1';
+  static const String baseUrl = 'http://localhost:8000/api/v1';
 
   Future<List<City>> fetchCities() async {
     try {
