@@ -154,4 +154,8 @@ cython_debug/
 
 # Zero | Bin 
 zero/
+
+
+# DJ - AUTH
+.venv/lib/python3.10/site-packages/dj_rest_auth/
 >>>>>>> Stashed changes
