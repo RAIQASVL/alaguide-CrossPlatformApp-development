@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:frontend/services/api_service.dart';
 import 'package:frontend/models/alaguide_object_model.dart';
 
@@ -24,10 +26,11 @@ class ContentService {
 
   Future<int> fetchObjectCount(int ala_object_id) async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/alaguideobjects/'));
+      final response =
+          await _apiService.get('/api/v1/alaguideobjects/', headers: {});
 
       if (response.statusCode == 200) {
-        List<dynamic> objectsJson = json.decode(response.body);
+        List<dynamic> objectsJson = json.decode(response.data);
 
         return objectsJson.length;
       } else {

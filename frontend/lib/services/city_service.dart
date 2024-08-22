@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:frontend/services/api_service.dart';
 import 'package:frontend/models/city_model.dart';
 
@@ -23,14 +25,14 @@ class CityService {
 
   Future<int> fetchObjectCount(String name) async {
     try {
-      final response =
-          await http.get(Uri.parse('$baseUrl/alaguideobjects/?city=$name'));
-      print('Request URL: $baseUrl/alaguideobjects/?city=$name');
+      final response = await _apiService
+          .get('/api/v1/alaguideobjects/?city=$name', headers: {});
+      print('Request URL: $_apiService/api/v1/alaguideobjects/?city=$name');
       print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      print('Response body: ${response.data}');
 
       if (response.statusCode == 200) {
-        List<dynamic> objectsJson = json.decode(response.body);
+        List<dynamic> objectsJson = response.data;
         return objectsJson.length;
       } else {
         throw Exception(
