@@ -20,4 +20,25 @@ class CityService {
       rethrow;
     }
   }
+
+  Future<int> fetchObjectCount(String name) async {
+    try {
+      final response =
+          await http.get(Uri.parse('$baseUrl/alaguideobjects/?city=$name'));
+      print('Request URL: $baseUrl/alaguideobjects/?city=$name');
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        List<dynamic> objectsJson = json.decode(response.body);
+        return objectsJson.length;
+      } else {
+        throw Exception(
+            'Failed to load objects for city $name: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching object count for city $name: $e');
+      throw Exception('Failed to load object count for city $name: $e');
+    }
+  }
 }

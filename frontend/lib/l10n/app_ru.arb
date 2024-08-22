@@ -43,5 +43,16 @@
   "favorites": "Избранное",  
   "explore": "Изучить",  
   "history": "История",  
-  "settings": "Настройки"  
+  "settings": "Настройки",
+
+  "selectCityFromContentPage": "Содержание / Города",  
+  "contentPageOfCity": "Содержание /",  
+
+  "almaty": "Алматы",  
+  "moscow": "Москва",  
+  "london": "Лондон",
+
+  "kazakhstan": "Казахстан",  
+  "russia": "Россия",  
+  "uk": "Великобритания"
 }
