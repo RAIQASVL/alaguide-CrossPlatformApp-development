@@ -15,8 +15,9 @@ import 'package:frontend/controllers/map_controller.dart';
 import 'package:frontend/providers/map_logic_provider.dart';
 import 'package:frontend/providers/theme_provider.dart';
 import 'package:frontend/controllers/animation_controller.dart';
-import 'package:frontend/controllers/map_marker_controller.dart';
 import 'package:frontend/models/alaguide_object_model.dart';
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart' show rootBundle;
 
 class MapPage extends ConsumerStatefulWidget {
   const MapPage({super.key});
@@ -29,19 +30,15 @@ class _MapPageState extends ConsumerState<MapPage> {
   late MapController _mapController;
   GoogleMapController? _googleMapController;
   LatLng _initialPosition = LatLng(43.2220, 76.8512);
+  Set<Marker> _markers = {};
 
   @override
   void initState() {
     super.initState();
-    // Initialize MapController and load markers
     _mapController = MapController(ref);
     _mapController.init();
     _initializeMap();
-
-    // Load the markers from the provider
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(mapMarkerControllerProvider.notifier).createMarkers();
-    });
+    _loadMarkers();
   }
 
   Future<void> _initializeMap() async {
@@ -49,13 +46,36 @@ class _MapPageState extends ConsumerState<MapPage> {
     setState(() {});
   }
 
-  Future<void> _initializeMarkers() async {
+  Future<void> _loadMarkers() async {
     try {
-      await ref.read(mapMarkerControllerProvider.notifier).createMarkers();
-      print('Markers initialized'); // Debug print
+      final alaguideObjects = await ref.read(contentProvider.future);
+      final customMarkerIcon = await _createCustomMarkerIcon();
+
+      setState(() {
+        _markers = alaguideObjects
+            .map((obj) => Marker(
+                  markerId: MarkerId(obj.ala_object_id.toString()),
+                  position: obj.coordinates,
+                  icon: customMarkerIcon,
+                  onTap: () => _showObjectInfo(obj),
+                ))
+            .toSet();
+      });
+
+      print('Markers loaded: ${_markers.length}');
     } catch (e) {
-      print('Error initializing markers: $e'); // Debug print
+      print('Error loading markers: $e');
     }
+  }
+
+  Future<BitmapDescriptor> _createCustomMarkerIcon() async {
+    final svgString =
+        await rootBundle.loadString('assets/images/custom_marker.svg');
+    final pictureInfo = await vg.loadPicture(SvgStringLoader(svgString), null);
+    final image =
+        await pictureInfo.picture.toImage(70, 100); // Adjust size here
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
   }
 
   void _moveToCity(City city) {
@@ -76,10 +96,8 @@ class _MapPageState extends ConsumerState<MapPage> {
   }
 
   Widget _buildDrawer() {
-    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
     final theme = Theme.of(context);
     final logoColor = theme.appBarTheme.iconTheme?.color ?? Colors.white;
-    final currentLanguage = ref.watch(languageProvider);
 
     return Drawer(
       child: ListView(
@@ -123,88 +141,71 @@ class _MapPageState extends ConsumerState<MapPage> {
               ),
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: Text(AppLocalizations.of(context)!.home),
-            onTap: () {
-              Navigator.pushNamed(context, '/home');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.pin_drop_sharp),
-            title: Text(AppLocalizations.of(context)!.currentCity),
-            onTap: () {
-              Navigator.push(
+          _buildDrawerItem(Icons.home, AppLocalizations.of(context)!.home, () {
+            Navigator.pushNamed(context, '/home');
+          }),
+          _buildDrawerItem(
+              Icons.pin_drop_sharp, AppLocalizations.of(context)!.currentCity,
+              () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => CurrentCityPage()));
+          }),
+          _buildDrawerItem(
+              Icons.collections_bookmark, AppLocalizations.of(context)!.content,
+              () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ContentPage()));
+          }),
+          _buildDrawerItem(
+              Icons.language, AppLocalizations.of(context)!.language, () {
+            Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CurrentCityPage(),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.collections_bookmark),
-            title: Text(AppLocalizations.of(context)!.content),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ContentPage()),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.language),
-            title: Text(AppLocalizations.of(context)!.language),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LanguageSelectionPage(),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: Text(AppLocalizations.of(context)!.aboutProject),
-            onTap: () {
-              Navigator.pushNamed(context, '/');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.attach_money_outlined),
-            title: Text(AppLocalizations.of(context)!.supportProject),
-            onTap: () {
-              // Handle navigation
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.markunread_rounded),
-            title: Text(AppLocalizations.of(context)!.feedback),
-            onTap: () {
-              // Handle navigation
-            },
-          ),
+                    builder: (context) => LanguageSelectionPage()));
+          }),
+          _buildDrawerItem(
+              Icons.info_outline, AppLocalizations.of(context)!.aboutProject,
+              () {
+            Navigator.pushNamed(context, '/');
+          }),
+          _buildDrawerItem(Icons.attach_money_outlined,
+              AppLocalizations.of(context)!.supportProject, () {
+            // Handle navigation
+          }),
+          _buildDrawerItem(
+              Icons.markunread_rounded, AppLocalizations.of(context)!.feedback,
+              () {
+            // Handle navigation
+          }),
         ],
       ),
     );
   }
 
-  Set<Marker> _createAnimatedMarkers(List<AlaguideObject> objects) {
-    return objects.map((obj) {
-      return Marker(
-        markerId: MarkerId(obj.ala_object_id.toString()),
-        position: obj.coordinates,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-        onTap: () => _showObjectInfo(obj),
-      );
-    }).toSet();
+  Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      onTap: onTap,
+    );
   }
 
   void _showObjectInfo(AlaguideObject obj) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => BottomSheetInfo(object: obj),
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.2,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (_, controller) {
+          return BottomSheetInfo(
+            object: obj,
+            scrollController: controller,
+          );
+        },
+      ),
     );
   }
 
@@ -212,9 +213,6 @@ class _MapPageState extends ConsumerState<MapPage> {
   Widget build(BuildContext context) {
     final selectedCity = ref.watch(selectedCityProvider);
     final polylines = ref.watch(polylinesProvider);
-    final alaguideObjectsAsync = ref.watch(contentProvider);
-    // final markers = ref.watch(mapMarkerControllerProvider);
-    final scaffoldKey = _mapController.scaffoldKey;
 
     ref.listen<City?>(selectedCityProvider, (previous, next) {
       if (next != null) {
@@ -236,16 +234,7 @@ class _MapPageState extends ConsumerState<MapPage> {
               target: selectedCity?.coordinates ?? _initialPosition,
               zoom: 13,
             ),
-            markers: alaguideObjectsAsync.when(
-              data: (alaguideObjects) =>
-                  _createAnimatedMarkers(alaguideObjects),
-              loading: () =>
-                  {}, // Optionally display a loading marker or empty set
-              error: (err, stack) {
-                print('Error loading markers: $err');
-                return {};
-              },
-            ),
+            markers: _markers,
             polylines: Set<Polyline>.of(polylines.values),
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
