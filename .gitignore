@@ -152,8 +152,8 @@ cython_debug/
 # MacOs
 .DS_Store
 
-# Zero | Bin 
-zero/
+# Bin / BFG - global deleting commit history (for secrets)
+bfg-1.14.0.jar
 
 
 >>>>>>> Stashed changes
