@@ -1,35 +1,23 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import "package:frontend/models/city_model.dart";
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:frontend/services/api_service.dart';
+import 'package:frontend/models/city_model.dart';
 
 class CityService {
-  static const String baseUrl = 'http://localhost:8000/api/v1';
+  final ApiService _apiService = ApiService();
 
   Future<List<City>> fetchCities() async {
     try {
-      print('Fetching cities from: $baseUrl/cities/');
-      final response = await http.get(Uri.parse('$baseUrl/cities/'));
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      final response = await _apiService.get('/api/v1/cities', headers: {});
 
       if (response.statusCode == 200) {
-        List<dynamic> citiesJson = json.decode(response.body);
-        print('Parsed JSON: $citiesJson');
-
-        List<City> cities = citiesJson.map((cityJson) {
-          print('Processing city: $cityJson');
-          return City.fromJson(cityJson);
-        }).toList();
-
-        print('Processed cities: $cities');
-        return cities;
+        final List<dynamic> citiesJson = response.data;
+        return citiesJson.map((cityJson) => City.fromJson(cityJson)).toList();
       } else {
-        throw Exception('Failed to load cities: ${response.statusCode}');
+        throw Exception(
+            'Failed to load cities: ${response.statusCode} - ${response.statusMessage}');
       }
     } catch (e) {
       print('Error fetching cities: $e');
-      throw Exception('Failed to load cities: $e');
+      rethrow;
     }
   }
 }

@@ -19,6 +19,7 @@ from decouple import config
 # Import local variables from local_vars.py
 from server.local_vars import (
     SECRET_KEY,
+    BASE_URL,
     MYSQL_NAME,
     MYSQL_TEST_NAME,
     MYSQL_USER,
@@ -37,11 +38,11 @@ SECRET_KEY = SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-APP_URL_SCHEME = 'http://localhost:8000/'
+ALLOWED_HOSTS = [BASE_URL, "localhost", "127.0.0.1", "0.0.0.0", "10.0.2.2", "*"]
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "*", "192.168.1.216", "10.0.2.2", "192.168.1.235"]
+APP_URL_SCHEME = BASE_URL
 
-FRONTEND_URL = "http://localhost:8000/"
+FRONTEND_URL = BASE_URL
 
 CORS_ALLOW_ALL_ORIGINS = True
 

@@ -13,7 +13,7 @@ class AuthService {
       final response = await _apiService.post(
         '/account/login/',
         {'email': email, 'password': password},
-        headers: null,
+        headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
@@ -42,7 +42,7 @@ class AuthService {
           'last_name': lastName,
           'username': username,
         },
-        headers: null,
+        headers: {'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 201) {
@@ -63,7 +63,7 @@ class AuthService {
       await _apiService.post(
         '/account/password/reset/',
         {'email': email},
-        headers: null,
+        headers: {'Content-Type': 'application/json'},
       );
     } catch (e) {
       throw Exception('Password reset failed: ${e.toString()}');
@@ -79,7 +79,7 @@ class AuthService {
           'new_password1': newPassword,
           'new_password2': newPassword,
         },
-        headers: null,
+        headers: {'Content-Type': 'application/json'},
       );
     } catch (e) {
       throw Exception('Password reset confirmation failed: ${e.toString()}');
@@ -95,7 +95,10 @@ class AuthService {
         await _apiService.post(
           '/account/logout/',
           {},
-          headers: {'Authorization': 'Token $token'},
+          headers: {
+            'Authorization': 'Token $token',
+            'Content-Type': 'application/json'
+          },
         );
         await box.delete('token');
       }

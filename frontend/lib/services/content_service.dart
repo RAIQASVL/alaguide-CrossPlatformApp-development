@@ -1,18 +1,24 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:frontend/services/api_service.dart';
 import 'package:frontend/models/alaguide_object_model.dart';
 
 class ContentService {
-  static const String baseUrl = 'http://localhost:8000/api/v1';
+  final ApiService _apiService = ApiService();
 
   Future<List<AlaguideObject>> fetchAlaguideObjects() async {
-    final response = await http.get(Uri.parse('$baseUrl/alaguideobjects'));
+    try {
+      final response =
+          await _apiService.get('/api/v1/alaguideobjects', headers: {});
 
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = json.decode(response.body);
-      return jsonData.map((json) => AlaguideObject.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load Alaguide objects');
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = response.data;
+        return jsonData.map((json) => AlaguideObject.fromJson(json)).toList();
+      } else {
+        throw Exception(
+            'Failed to load Alaguide objects: ${response.statusCode} - ${response.statusMessage}');
+      }
+    } catch (e) {
+      print('Error fetching Alaguide objects: $e');
+      rethrow;
     }
   }
 }

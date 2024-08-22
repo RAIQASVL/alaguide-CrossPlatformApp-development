@@ -1,32 +1,36 @@
 import 'package:dio/dio.dart';
+import 'package:frontend/constants/api_url_constants.dart';
 
 class ApiService {
-  late final Dio _dio;
+  late Dio _dio;
 
   ApiService() {
     _dio = Dio(BaseOptions(
-      // baseUrl: 'http://10.0.2.2:8000', // Use this for Android emulator
-      baseUrl: 'http://localhost:8000', // Use this for iOS simulator or web
+      baseUrl: ApiConstants.baseUrl,
       connectTimeout: const Duration(seconds: 20),
       receiveTimeout: const Duration(seconds: 20),
     ));
   }
 
-  Future<Response> get(String path,
+  Future<Response<dynamic>> get(String path,
       {required Map<String, String> headers}) async {
     try {
       final response = await _dio.get(path, options: Options(headers: headers));
       return response;
     } catch (e) {
+      print('Error in GET request: $e');
       rethrow;
     }
   }
 
-  Future<Response> post(String path, dynamic data, {required headers}) async {
+  Future<Response<dynamic>> post(String path, dynamic data,
+      {required Map<String, String> headers}) async {
     try {
-      final response = await _dio.post(path, data: data);
+      final response =
+          await _dio.post(path, data: data, options: Options(headers: headers));
       return response;
     } catch (e) {
+      print('Error in POST request: $e');
       rethrow;
     }
   }
