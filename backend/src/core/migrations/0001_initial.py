@@ -42,7 +42,9 @@ class Migration(migrations.Migration):
                 ("title", models.CharField(max_length=255, unique=True)),
                 ("author", models.CharField(max_length=100)),
                 ("guide", models.CharField(max_length=100)),
-                ("audio_url", models.FileField(unique=True, upload_to="audio")),
+                ("audio_rus_url", models.FileField(unique=True, upload_to="audio")),
+                ("audio_eng_url", models.FileField(unique=True, upload_to="audio")),
+                ("audio_kz_url", models.FileField(unique=True, upload_to="audio")),
             ],
             options={
                 "db_table": "AudioBooks",

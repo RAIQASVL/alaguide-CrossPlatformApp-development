@@ -203,7 +203,9 @@ class AudioBook(models.Model):
     title = models.CharField(max_length=255, unique=True, null=False)
     author = models.CharField(max_length=100, unique=False, null=False)
     guide = models.CharField(max_length=100, unique=False, null=False)
-    audio_url = models.FileField(upload_to="audio", unique=True)
+    audio_rus_url = models.FileField(upload_to="audio", unique=True)
+    audio_eng_url = models.FileField(upload_to="audio", unique=True)
+    audio_kz_url = models.FileField(upload_to="audio", unique=True)
 
     def __str__(self):
         return self.title
@@ -279,13 +281,29 @@ class AlaguideObject(models.Model):
     image_url = models.FileField(
         upload_to="landmarks", unique=False, null=True, blank=True
     )
-    audio_url = models.ForeignKey(
+    audio_rus_url = models.ForeignKey(
         AudioBook,
-        db_column="audio_url",
-        to_field="audio_url",
-        related_name="alaguide_object_audio",
+        db_column="audio_rus_url",
+        to_field="audio_rus_url",
+        related_name="alaguide_object_audio_rus",
         on_delete=models.CASCADE,
-        null=False,
+        null=True,
+    )
+    audio_eng_url = models.ForeignKey(
+        AudioBook,
+        db_column="audio_eng_url",
+        to_field="audio_eng_url",
+        related_name="alaguide_object_audio_eng",
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    audio_kz_url = models.ForeignKey(
+        AudioBook,
+        db_column="audio_kz_url",
+        to_field="audio_kz_url",
+        related_name="alaguide_object_audio_kz",
+        on_delete=models.CASCADE,
+        null=True,
     )
 
     def __str__(self):
