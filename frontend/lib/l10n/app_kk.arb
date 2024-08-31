@@ -47,6 +47,7 @@
 
   "selectCityFromContentPage": "Мазмұн / Қалалар",  
   "contentPageOfCity": "Мазмұн /",  
+  "noContentAvailableForCity": "Мазмұн қолжетімді емес",
 
   "almaty": "Алматы",  
   "moscow": "Москва",  
@@ -54,5 +55,8 @@
 
   "kazakhstan": "Қазақстан",  
   "russia": "Россия",  
-  "uk": "Ұлыбритания"
+  "uk": "Ұлыбритания",
+
+  "audioPlayerTitle": "Аудио Ойнатқыш",
+  "audioNotAvailableInCurrentLanguage": "Аудио нұсқаулық жақында шығады :)"
 }

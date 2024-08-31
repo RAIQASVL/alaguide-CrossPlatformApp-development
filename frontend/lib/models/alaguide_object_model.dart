@@ -3,7 +3,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class AlaguideObject {
   final int? ala_object_id;
   final String? image_url;
-  final String? audio_url;
+  final String? audio_rus_url;
+  final String? audio_eng_url;
+  final String? audio_kz_url;
   final String? author;
   final String? guide;
   final String? description;
@@ -17,7 +19,9 @@ class AlaguideObject {
   AlaguideObject({
     required this.ala_object_id,
     required this.image_url,
-    required this.audio_url,
+    required this.audio_rus_url,
+    required this.audio_eng_url,
+    required this.audio_kz_url,
     required this.author,
     required this.guide,
     required this.description,
@@ -33,7 +37,9 @@ class AlaguideObject {
     return AlaguideObject(
       ala_object_id: json['ala_object_id'],
       image_url: json['image_url'],
-      audio_url: json['audio_url'],
+      audio_rus_url: json['audio_rus_url'],
+      audio_eng_url: json['audio_eng_url'],
+      audio_kz_url: json['audio_kz_url'],
       author: json['author'],
       guide: json['guide'],
       description: json['description'],

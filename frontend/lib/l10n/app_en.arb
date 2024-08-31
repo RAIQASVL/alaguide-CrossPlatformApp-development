@@ -47,6 +47,7 @@
 
   "selectCityFromContentPage": "Content / Cities",
   "contentPageOfCity": "Content /",
+  "noContentAvailableForCity": "No content available",
 
   "almaty": "Almaty",
   "moscow": "Moscow",
@@ -54,8 +55,10 @@
 
   "kazakhstan": "Kazakhstan",
   "russia": "Russia",
-  "uk": "United Kingdom"
+  "uk": "United Kingdom",
 
+  "audioPlayerTitle": "Audio Player",
+  "audioNotAvailableInCurrentLanguage": "Audio Guide Coming Soon :)"
 
 }
 

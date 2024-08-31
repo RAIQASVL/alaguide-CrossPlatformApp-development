@@ -46,7 +46,8 @@
   "settings": "Настройки",
 
   "selectCityFromContentPage": "Содержание / Города",  
-  "contentPageOfCity": "Содержание /",  
+  "contentPageOfCity": "Содержание /", 
+  "noContentAvailableForCity": "Нет доступного контента",
 
   "almaty": "Алматы",  
   "moscow": "Москва",  
@@ -54,5 +55,8 @@
 
   "kazakhstan": "Казахстан",  
   "russia": "Россия",  
-  "uk": "Великобритания"
+  "uk": "Великобритания",
+
+  "audioPlayerTitle": "Аудио Проигрыватель",
+  "audioNotAvailableInCurrentLanguage": "Аудио Гид Скоро Добавиться :)"
 }

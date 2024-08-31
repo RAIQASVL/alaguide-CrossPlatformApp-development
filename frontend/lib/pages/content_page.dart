@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/l10n/l10n.dart';
 import 'package:frontend/models/alaguide_object_model.dart';
 import 'package:frontend/models/city_model.dart';
+import 'package:frontend/providers/audio_url_provider.dart';
 import 'package:frontend/providers/city_object_count_provider.dart';
 import 'package:frontend/providers/content_provider.dart';
 import 'package:frontend/providers/city_provider.dart';
@@ -126,12 +127,18 @@ class CityContentPage extends ConsumerWidget {
               alaguideObjects.where((obj) => obj.city == city.name).toList();
 
           if (cityObjects.isEmpty) {
-            return Center(child: Text('No content available or ${city.name}.'));
+            return Center(
+              child: Text(
+                '${AppLocalizations.of(context)!.noContentAvailableForCity} ${cityName ?? 'Unknown City'}',
+              ),
+            );
           }
           return ListView.builder(
             itemCount: cityObjects.length,
             itemBuilder: (context, index) {
               final alaguideObject = cityObjects[index];
+              final audioUrl = ref.watch(audioInfoProvider(alaguideObject));
+
               return ListTile(
                 // leading: alaguideObject.image_url != null
                 //     ? Image.network(alaguideObject.image_url!,
@@ -148,12 +155,12 @@ class CityContentPage extends ConsumerWidget {
                 trailing: IconButton(
                   icon: Icon(Icons.play_arrow),
                   onPressed: () {
-                    if (alaguideObject.audio_url != null) {
+                    if (alaguideObject.audio_rus_url != null) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FullScreenPlayerPage(
-                              audioUrl: alaguideObject.audio_url!),
+                          builder: (context) =>
+                              FullScreenPlayerPage(object: alaguideObject),
                         ),
                       );
                     } else {
@@ -211,27 +218,29 @@ class CityContentPage extends ConsumerWidget {
   }
 }
 
-class FullScreenPlayerPage extends StatelessWidget {
-  final String audioUrl;
+class FullScreenPlayerPage extends ConsumerWidget {
+  final AlaguideObject object;
 
-  FullScreenPlayerPage({required this.audioUrl});
+  const FullScreenPlayerPage({Key? key, required this.object})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final audioUrl = ref.watch(audioInfoProvider(object));
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Audio Player'),
       ),
       body: Center(
-        child: audioUrl.isNotEmpty
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Playing audio from: $audioUrl'),
-                  AudioPlayerWidget(audioUrl: audioUrl),
-                ],
-              )
-            : Text('No audio URL provided.'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Playing audio from: $audioUrl'),
+            SizedBox(height: 20),
+            AudioPlayerWidget(object: object),
+          ],
+        ),
       ),
     );
   }
