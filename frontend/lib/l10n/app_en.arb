@@ -58,7 +58,10 @@
   "uk": "United Kingdom",
 
   "audioPlayerTitle": "Audio Player",
-  "audioNotAvailableInCurrentLanguage": "Audio Guide Coming Soon :)"
+  "audioNotAvailableInCurrentLanguage": "Audio Guide on This Language Coming Soon :)",
+  "errorLoadingAudio": "Error loading audio",
+  "readingGuide": "Reading",
+  "audioGuideLanguageSelection": "Audio Guide Language"
 
 }
 

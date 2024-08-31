@@ -58,5 +58,8 @@
   "uk": "Великобритания",
 
   "audioPlayerTitle": "Аудио Проигрыватель",
-  "audioNotAvailableInCurrentLanguage": "Аудио Гид Скоро Добавиться :)"
+  "audioNotAvailableInCurrentLanguage": "Аудио Гид на Этом Языке Скоро Будет Доступен :)",
+  "errorLoadingAudio": "Ошибка загрузки аудио",
+  "readingGuide": "Читает",
+  "audioGuideLanguageSelection": "Язык Aудио Гида"
 }

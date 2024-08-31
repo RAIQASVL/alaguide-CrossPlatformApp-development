@@ -19,6 +19,7 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
   bool _isPlaying = false;
   String? _error;
   String? _currentLanguage;
+  List<String> _availableLanguages = [];
 
   @override
   void initState() {
@@ -29,24 +30,40 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
 
   Future<void> _initAudioPlayer() async {
     final audioInfo = ref.read(audioInfoProvider(widget.object));
-    final availableLanguages = audioInfo.audioUrls.entries
+    _availableLanguages = audioInfo.audioUrls.entries
         .where((entry) => entry.value != null)
         .map((entry) => entry.key)
         .toList();
 
-    if (availableLanguages.isNotEmpty) {
-      if (availableLanguages.contains(audioInfo.currentLanguage)) {
+    if (_availableLanguages.isNotEmpty) {
+      if (_availableLanguages.contains(audioInfo.currentLanguage)) {
         _currentLanguage = audioInfo.currentLanguage;
       } else {
-        _currentLanguage = availableLanguages.first;
+        _currentLanguage = _availableLanguages.first;
       }
       await _loadAudio(_currentLanguage!);
     } else {
       setState(() {
-        _error = 'No audio available for this content';
+        _error =
+            AppLocalizations.of(context)!.audioNotAvailableInCurrentLanguage;
       });
     }
   }
+
+  // void _checkAudioAvailability() {
+  //   final audioInfo = ref.read(audioInfoProvider(widget.object));
+  //   final audioUrl = audioInfo.audioUrls[_currentLanguage];
+  //   setState(() {
+  //     _audioAvailable = audioUrl != null;
+  //     if (!_audioAvailable) {
+  //       _error =
+  //           AppLocalizations.of(context)!.audioNotAvailableInCurrentLanguage;
+  //     } else {
+  //       _error = null;
+  //       _loadAudio(_currentLanguage!);
+  //     }
+  //   });
+  // }
 
   Future<void> _loadAudio(String language) async {
     try {
@@ -55,7 +72,6 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
       if (audioUrl != null) {
         print('Loading audio from: $audioUrl');
         await _audioPlayer.setUrl(audioUrl);
-
         _audioPlayer.playerStateStream.listen((state) {
           if (mounted) {
             setState(() {
@@ -65,16 +81,19 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
         });
         setState(() {
           _error = null;
+          _audioPlayer.stop();
         });
       } else {
         setState(() {
-          _error = 'No audio available for the selected language';
+          _error =
+              AppLocalizations.of(context)!.audioNotAvailableInCurrentLanguage;
+          _audioPlayer.stop();
         });
       }
     } catch (e) {
       print('Error loading audio: $e');
       setState(() {
-        _error = 'Error loading audio. Please try again later.';
+        _error = AppLocalizations.of(context)!.errorLoadingAudio;
       });
     }
   }
@@ -82,105 +101,155 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
   @override
   Widget build(BuildContext context) {
     final audioInfo = ref.watch(audioInfoProvider(widget.object));
-    final availableLanguages = audioInfo.audioUrls.entries
-        .where((entry) => entry.value != null)
-        .map((entry) => entry.key)
-        .toList();
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (_currentLanguage != audioInfo.currentLanguage)
-          Text(
-            AppLocalizations.of(context)!.audioNotAvailableInCurrentLanguage,
-            style: TextStyle(color: Color(0xFF5AD1E5)),
-          ),
-        DropdownButton<String>(
-          value: _currentLanguage,
-          items: availableLanguages
-              .map((lang) => DropdownMenuItem(
-                    value: lang,
-                    child: Text(getLanguageName(lang)),
-                  ))
-              .toList(),
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              setState(() {
-                _currentLanguage = newValue;
-              });
-              _loadAudio(newValue);
-            }
-          },
+        Text(
+          widget.object.author ?? '',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
-        if (_error != null)
-          Text(_error!, style: TextStyle(color: Colors.red))
-        else
-          Column(
-            children: [
-              StreamBuilder<Duration>(
-                stream: _audioPlayer.positionStream,
-                builder: (context, snapshot) {
-                  final position = snapshot.data ?? Duration.zero;
-                  final duration = _audioPlayer.duration ?? Duration.zero;
-                  return Column(
-                    children: [
-                      Slider(
-                        value: position.inSeconds.toDouble(),
-                        max: duration.inSeconds.toDouble(),
-                        onChanged: (value) {
-                          _audioPlayer.seek(Duration(seconds: value.toInt()));
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(_formatDuration(position)),
-                            Text(_formatDuration(duration)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                },
+        Text(
+          widget.object.title ?? '',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: Color(0xFF5AD1E5),
+                fontWeight: FontWeight.bold,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                    onPressed: () {
-                      if (_isPlaying) {
-                        _audioPlayer.pause();
-                      } else {
-                        _audioPlayer.play();
-                      }
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.stop),
-                    onPressed: () {
-                      _audioPlayer.stop();
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.replay_10),
-                    onPressed: () {
-                      _audioPlayer.seek(Duration(
-                          seconds: _audioPlayer.position.inSeconds - 10));
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.forward_10),
-                    onPressed: () {
-                      _audioPlayer.seek(Duration(
-                          seconds: _audioPlayer.position.inSeconds + 10));
-                    },
-                  ),
-                ],
+          textAlign: TextAlign.center,
+        ),
+        Text(
+          '${AppLocalizations.of(context)!.readingGuide} ${widget.object.guide ?? ''}',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        SizedBox(height: 16),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
               ),
             ],
           ),
+          child: IconButton(
+            icon: Icon(Icons.language, color: Color(0xFF5AD1E5)),
+            iconSize: 30,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    title: Text(
+                        AppLocalizations.of(context)!
+                            .audioGuideLanguageSelection,
+                        textAlign: TextAlign.center),
+                    content: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        shape: BoxShape.rectangle,
+                        color: Colors.white,
+                      ),
+                      padding: EdgeInsets.all(10),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _currentLanguage,
+                          isExpanded: true,
+                          icon: Icon(Icons.language, color: Color(0xFF5AD1E5)),
+                          items: ['en', 'ru', 'kk']
+                              .map((lang) => DropdownMenuItem(
+                                    value: lang,
+                                    child: Text(getLanguageName(lang)),
+                                  ))
+                              .toList(),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                _currentLanguage = newValue;
+                              });
+                              _loadAudio(newValue);
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        SizedBox(height: 10),
+        if (_error != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(_error!, style: TextStyle(color: Color(0xFF5AD1E5))),
+          ),
+        StreamBuilder<Duration>(
+          stream: _audioPlayer.positionStream,
+          builder: (context, snapshot) {
+            final position = snapshot.data ?? Duration.zero;
+            final duration = _audioPlayer.duration ?? Duration.zero;
+            return Column(
+              children: [
+                Slider(
+                  value: position.inSeconds.toDouble(),
+                  max: duration.inSeconds.toDouble(),
+                  onChanged: (value) {
+                    _audioPlayer.seek(Duration(seconds: value.toInt()));
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(_formatDuration(position)),
+                      Text(_formatDuration(duration)),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: Icon(Icons.replay_10),
+              onPressed: () {
+                _audioPlayer.seek(
+                    Duration(seconds: _audioPlayer.position.inSeconds - 10));
+              },
+            ),
+            IconButton(
+              icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
+              onPressed: () {
+                if (_isPlaying) {
+                  _audioPlayer.pause();
+                } else {
+                  _audioPlayer.play();
+                }
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.forward_10),
+              onPressed: () {
+                _audioPlayer.seek(
+                    Duration(seconds: _audioPlayer.position.inSeconds + 10));
+              },
+            ),
+          ],
+        ),
       ],
     );
   }

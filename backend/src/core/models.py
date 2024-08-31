@@ -288,6 +288,7 @@ class AlaguideObject(models.Model):
         related_name="alaguide_object_audio_rus",
         on_delete=models.CASCADE,
         null=True,
+        blank=True,
     )
     audio_eng_url = models.ForeignKey(
         AudioBook,
@@ -296,6 +297,7 @@ class AlaguideObject(models.Model):
         related_name="alaguide_object_audio_eng",
         on_delete=models.CASCADE,
         null=True,
+        blank=True,
     )
     audio_kz_url = models.ForeignKey(
         AudioBook,
@@ -304,6 +306,7 @@ class AlaguideObject(models.Model):
         related_name="alaguide_object_audio_kz",
         on_delete=models.CASCADE,
         null=True,
+        blank=True,
     )
 
     def __str__(self):

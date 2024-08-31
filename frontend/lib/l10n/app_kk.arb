@@ -58,5 +58,8 @@
   "uk": "Ұлыбритания",
 
   "audioPlayerTitle": "Аудио Ойнатқыш",
-  "audioNotAvailableInCurrentLanguage": "Аудио нұсқаулық жақында шығады :)"
+  "audioNotAvailableInCurrentLanguage": "Бұл Тілдегі Аудио Гид Жақында Пайда Болады :)",
+  "errorLoadingAudio": "Аудионы жүктеу қателігі",
+  "readingGuide": "Оқиды",
+  "audioGuideLanguageSelection": "Аудиогидтің тілі"
 }
