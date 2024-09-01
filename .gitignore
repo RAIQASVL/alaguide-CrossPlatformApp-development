@@ -149,6 +149,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# Service - Keys
+service/
+alaguide-app-9bbc887994aa.json
+
 # MacOs
 .DS_Store
 

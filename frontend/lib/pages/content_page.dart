@@ -9,6 +9,7 @@ import 'package:frontend/providers/city_object_count_provider.dart';
 import 'package:frontend/providers/content_provider.dart';
 import 'package:frontend/providers/city_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:frontend/providers/theme_provider.dart';
 import 'package:frontend/widgets/audioplayer_widget.dart';
 
 class ContentPage extends ConsumerWidget {
@@ -33,6 +34,7 @@ class ContentPage extends ConsumerWidget {
   }
 
   Widget _buildCityListTile(BuildContext context, WidgetRef ref, City city) {
+    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
     final selectedCity = ref.watch(selectedCityProvider);
     final bool isSelected = selectedCity?.cityId == city.cityId;
     final Color customColor = Color(0xFF5AD1E5);
@@ -54,11 +56,15 @@ class ContentPage extends ConsumerWidget {
           color: isSelected ? customColor : Colors.grey),
       title: Text(localizedCityName ?? city.name ?? 'Unknown',
           style: TextStyle(
-              color: isSelected ? customColor : Colors.black,
+              color: isSelected
+                  ? customColor
+                  : (isDarkMode ? Colors.white : Colors.black),
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
       subtitle: Text(localizedCountryName ?? city.country ?? 'Unknown',
           style: TextStyle(
-            color: isSelected ? Colors.black : Colors.grey,
+            color: isSelected
+                ? (isDarkMode ? Colors.white : Colors.black)
+                : Colors.grey,
           )),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -130,50 +136,77 @@ class CityContentPage extends ConsumerWidget {
             return Center(
               child: Text(
                 '${AppLocalizations.of(context)!.noContentAvailableForCity} ${cityName ?? 'Unknown City'}',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             );
           }
           return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
             itemCount: cityObjects.length,
             itemBuilder: (context, index) {
               final alaguideObject = cityObjects[index];
-              final audioUrl = ref.watch(audioInfoProvider(alaguideObject));
 
-              return ListTile(
-                // leading: alaguideObject.image_url != null
-                //     ? Image.network(alaguideObject.image_url!,
-                //         width: 50, height: 50, fit: BoxFit.cover)
-                //     : Icon(Icons.image_not_supported),
-                title: Text(alaguideObject.title ?? 'Unknown'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Author: ${alaguideObject.author ?? 'N/A'}'),
-                    Text('Guide: ${alaguideObject.guide ?? 'N/A'}'),
-                  ],
+              return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                trailing: IconButton(
-                  icon: Icon(Icons.play_arrow),
-                  onPressed: () {
-                    if (alaguideObject.audio_rus_url != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              FullScreenPlayerPage(object: alaguideObject),
+                elevation: 5,
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: Text(
+                          alaguideObject.title ?? 'Unknown',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      );
-                    } else {
-                      // Handle the null case, e.g., show an error message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Audio URL is not available.')),
-                      );
-                    }
-                  },
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 8),
+                            Text(
+                              'Author: ${alaguideObject.author ?? 'N/A'}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Guide: ${alaguideObject.guide ?? 'N/A'}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.play_arrow, color: Colors.blue),
+                          onPressed: () {
+                            if (alaguideObject.audio_rus_url != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FullScreenPlayerPage(
+                                      object: alaguideObject),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content:
+                                        Text('Audio URL is not available.')),
+                              );
+                            }
+                          },
+                        ),
+                        onTap: () {
+                          _showDetailDialog(context, alaguideObject);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                onTap: () {
-                  _showDetailDialog(context, alaguideObject);
-                },
               );
             },
           );
@@ -236,7 +269,6 @@ class FullScreenPlayerPage extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Playing audio from: $audioUrl'),
             SizedBox(height: 20),
             AudioPlayerWidget(object: object),
           ],

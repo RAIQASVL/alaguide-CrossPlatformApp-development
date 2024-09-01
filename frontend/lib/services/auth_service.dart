@@ -5,8 +5,18 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class AuthService {
   final ApiService _apiService = ApiService();
+  final String _boxName = 'tokenBox';
+  late Box<String> _tokenBox;
 
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  AuthService() {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    _tokenBox = await Hive.openBox<String>(_boxName);
+  }
 
   Future<User?> signIn(String email, String password) async {
     try {
@@ -18,8 +28,7 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final token = response.data['key'];
-        var box = await Hive.openBox('tokenBox');
-        await box.put('token', token);
+        await _tokenBox.put('token', token);
 
         return await getUser(token);
       }
@@ -47,8 +56,7 @@ class AuthService {
 
       if (response.statusCode == 201) {
         final djangoToken = response.data['key'];
-        var box = await Hive.openBox('tokenBox');
-        await box.put('token', djangoToken);
+        await _tokenBox.put('token', djangoToken);
 
         return await getUser(djangoToken);
       }
@@ -88,9 +96,7 @@ class AuthService {
 
   Future<void> signOut() async {
     try {
-      var box = await Hive.openBox('tokenBox');
-      final token = box.get('token');
-
+      final token = _tokenBox.get('token');
       if (token != null) {
         await _apiService.post(
           '/account/logout/',
@@ -100,7 +106,7 @@ class AuthService {
             'Content-Type': 'application/json'
           },
         );
-        await box.delete('token');
+        await _tokenBox.delete('token');
       }
     } catch (e) {
       throw Exception('Logout failed: ${e.toString()}');
@@ -121,6 +127,32 @@ class AuthService {
       }
     } catch (e) {
       throw Exception('Failed to get user: ${e.toString()}');
+    }
+    return null;
+  }
+
+  Future<User?> updateUser(User updatedUser) async {
+    try {
+      final token = _tokenBox.get('token');
+      if (token == null) {
+        throw Exception('User is not authenticated');
+      }
+
+      final response = await _apiService.put(
+        '/account/user/',
+        updatedUser.toJson(),
+        headers: {
+          'Authorization': 'Token $token',
+          'Content-Type': 'application/json'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final updatedUserData = User.fromJson(response.data);
+        return updatedUserData;
+      }
+    } catch (e) {
+      throw Exception('Failed to update user: ${e.toString()}');
     }
     return null;
   }

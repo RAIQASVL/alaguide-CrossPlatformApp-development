@@ -38,4 +38,18 @@ extension AppLocalizationsX on AppLocalizations {
         return null; // Return null or a default value if cityKey doesn't match
     }
   }
+
+  // String? getTitleName(String titleKey) {
+  //   switch (titleKey) {
+  //     case 'en':
+  //       return title_en_1;
+  //     case 'ru':
+  //       return title_ru_1;
+  //     case 'kk':
+  //       return title_kk_1:
+
+  //     default:
+  //       return null;
+  //   }
+  // }
 }

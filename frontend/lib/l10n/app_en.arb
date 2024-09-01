@@ -11,8 +11,8 @@
   "feedback": "Feedback",
 
   "heyThere": "Hey there,",
-  "createAccount" : "Create an Account",
-  "welcomeBack" : "Welcome Back",
+  "createAccount" : "You Can Create an Account Here",
+  "welcomeBack" : "Welcome Back!",
   "firstName" : "First Name",
   "invalidFirstName": "Invalid first name",
   "lastName": "Last Name",
@@ -25,7 +25,7 @@
   "invalidPassword": "Password must be at least 6 characters long",
   "confirmPassword": "Confirm Password",
   "matchPass": "Password must match",
-  "termsAndConditions": "By creating an account, you agree to our Terms & Conditions",
+  "termsAndConditions": "By creating an account, you agree to our terms & conditions",
   "register": "Register",
   "login": "Login",
   "acceptTermsAndConditions": "Please accept the terms and conditions",
@@ -38,8 +38,15 @@
   "logoutSuccessfully": "Logout out successfully",
   "logout": "Logout",
   "loginAndRegister" : "Login / Register",
+  "myAccount": "My Account",
+  "goodMorning": "Good Morning, {firstName} and\nHave a Nice Trip!",
+  "goodAfternoon": "Good Afternoon, {firstName} and\nHave a Great Time!",
+  "goodEvening":  "Good Evening, {firstName},\nI Hope You Already\nHave Plans for The Evening!",
+
   "quickActions": "Quick Actions",
   "editProfile": "Edit Profile",
+  "profileUpdated": "Profile updated successfully!",
+  "saveChanges": "Save Changes",
   "favorites": "Favorites",
   "explore": "Explore",
   "history": "History",
@@ -56,6 +63,27 @@
   "kazakhstan": "Kazakhstan",
   "russia": "Russia",
   "uk": "United Kingdom",
+
+  "title": "Title",
+
+  "title_1": "Coffee Shop 4A",
+  "title_2": "Apple Letter",
+  "title_3": "Ascension Cathedral",
+  "title_4": "If You Sit on the Shore for a Long Time",
+  "title_5": "Border",
+
+
+
+  "author": "Author",
+
+
+
+  "guide": "Guide",
+
+
+
+  "description": "Description",
+
 
   "audioPlayerTitle": "Audio Player",
   "audioNotAvailableInCurrentLanguage": "Audio Guide on This Language Coming Soon :)",

@@ -20,12 +20,25 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json["pk"],
+      token: json['token'],
       username: json["username"],
       email: json["email"],
       firstName: json["first_name"],
       lastName: json["last_name"],
-      avatarUrl: json["avatar_url"],
+      avatarUrl: json["avatar"],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'token': token,
+      'username': username,
+      'email': email,
+      'first_name': firstName,
+      'last_name': lastName,
+      'avatar': avatarUrl,
+    };
   }
 
   User copyWith({

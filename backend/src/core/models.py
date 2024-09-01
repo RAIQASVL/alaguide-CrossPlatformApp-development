@@ -51,6 +51,7 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     user_id = models.AutoField(primary_key=True)
+    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
     username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -62,7 +63,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     default_country_id = models.IntegerField(default=1, null=True)
     default_city_id = models.IntegerField(default=1, null=True)
     preferred_language = models.CharField(max_length=10, default="en", null=True)
-
     is_staff = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
@@ -76,7 +76,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
 
+    def clean(self):
+        super().clean()
+        if self.avatar:
+            max_size = 2 * 1024 * 1024
+            if self.avatar.size > max_size:
+                raise ValidationError("The file size must not exceed 2 MB")
+
     def save(self, *args, **kwargs):
+        self.full_clean()
         super().save(*args, **kwargs)
 
     class Meta:
