@@ -73,16 +73,42 @@
   "title_5": "Border",
 
 
-
   "author": "Author",
 
+  "author_1": "Chingiz Tibey",
+  "author_2": "Aliya Jimran",
+  "author_3": "Talgat Dairov",
+  "author_4": "Lily Kalaus",
 
 
-  "guide": "Guide",
+  "guide": "Reading",
 
+  "guide_1": "Lily Kalaus",
 
 
   "description": "Description",
+
+  "description_1": "<p>There is a place in Almaty where crowds of different people go back and forth, where there are real concerts and various political rallies take place! It's always loud, always noisy... And few people know that in the bustle of Arbat there is a magical place '4A'... This is a coffee shop where you will always feel good, where you will always feel at home... and if you are lonely and you are alone... and if you are having fun and there is a whole company with you... you can always wander here... and be happy...</p>",
+  "description_2": "",
+  "description_3": "<p>The Ascension Cathedral, also known as Zenkov Cathedral, is a Russian Orthodox cathedral located in Panfilov Park in Almaty, Kazakhstan. Completed in 1907, the cathedral is made out of wood but without nails. Its height is 56 meters tall, and is claimed to be the second tallest wooden church in the world.</p>",
+  "description_4": "",
+  "description_5": "",
+
+
+  "category": "Category",
+
+  "category_1": "Historical Sites and Monuments",
+  "category_2": "Natural Landmarks",
+  "category_3": "Cultural Institutions and Museums",
+  "category_4": "Religious Places",
+  "category_5": "Architectural Landmarks and Structures",
+  "category_6": "Entertainment Complexes and Parks",
+  "category_7": "Recreational and Sports Facilities",
+  "category_8": "Gastronomic Attractions",
+
+  
+
+  "location": "Locations",
 
 
   "audioPlayerTitle": "Audio Player",

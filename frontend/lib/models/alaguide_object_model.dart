@@ -1,4 +1,7 @@
+import 'package:frontend/l10n/localization_mapper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:frontend/l10n/l10n.dart';
 
 class AlaguideObject {
   final int? ala_object_id;
@@ -58,5 +61,41 @@ class AlaguideObject {
             : double.parse(json['longitude'].toString()),
       ),
     );
+  }
+
+  String? getLocalizedTitle(AppLocalizations localizations) {
+    return localizations.getLocalizedTitle(title ?? '') ?? title;
+  }
+
+  String? getLocalizedAuthor(AppLocalizations localizations) {
+    return localizations.getLocalizedAuthor(author ?? '') ?? author;
+  }
+
+  String? getLocalizedGuide(AppLocalizations localizations) {
+    return localizations.getLocalizedGuide(guide ?? '') ?? guide;
+  }
+
+  String? getLocalizedCategory(AppLocalizations localizations) {
+    return localizations.getLocalizedCategory(category ?? '') ?? category;
+  }
+
+  String? getLocalizedDescription(AppLocalizations localizations) {
+    String? mappedKey = LocalizationMapper.mapDescription(ala_object_id);
+    print('Mapped key for object ID $ala_object_id: $mappedKey');
+
+    if (mappedKey != null) {
+      String? localizedDescription =
+          localizations.getLocalizedDescription(mappedKey);
+      print(
+          'Localized description for key $mappedKey: $localizedDescription'); // Отладка: что возвращает локализация?
+
+      if (localizedDescription != null) {
+        return localizedDescription;
+      }
+    }
+
+    print('Description from JSON: $description');
+
+    return description?.isNotEmpty == true ? description : '';
   }
 }

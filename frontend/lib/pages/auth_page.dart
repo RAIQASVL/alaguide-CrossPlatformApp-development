@@ -40,7 +40,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     bool isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -68,7 +68,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 20),
                         Text(
                           AppLocalizations.of(context)!.heyThere,
                           style: GoogleFonts.poppins(
@@ -93,7 +93,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                           ),
                           textAlign: TextAlign.center,
                         ).animate().fadeIn().slideY(),
-                        const SizedBox(height: 35),
+                        const SizedBox(height: 16),
                         if (register) ...[
                           buildTextField(
                               AppLocalizations.of(context)!.firstName,
@@ -340,6 +340,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                               ),
                             ),
                           ),
+                        const SizedBox(height: 30),
                       ],
                     ),
                   ),
@@ -388,7 +389,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
           ),
           border: InputBorder.none,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
         ),
       ),
     );

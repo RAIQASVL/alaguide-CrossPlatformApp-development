@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/widgets/processed_image.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:frontend/models/alaguide_object_model.dart';
 import 'package:frontend/providers/audio_url_provider.dart';
@@ -46,24 +48,11 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
       setState(() {
         _error =
             AppLocalizations.of(context)!.audioNotAvailableInCurrentLanguage;
+        style:
+        TextStyle(color: Color(0xFF5AD1E5));
       });
     }
   }
-
-  // void _checkAudioAvailability() {
-  //   final audioInfo = ref.read(audioInfoProvider(widget.object));
-  //   final audioUrl = audioInfo.audioUrls[_currentLanguage];
-  //   setState(() {
-  //     _audioAvailable = audioUrl != null;
-  //     if (!_audioAvailable) {
-  //       _error =
-  //           AppLocalizations.of(context)!.audioNotAvailableInCurrentLanguage;
-  //     } else {
-  //       _error = null;
-  //       _loadAudio(_currentLanguage!);
-  //     }
-  //   });
-  // }
 
   Future<void> _loadAudio(String language) async {
     try {
@@ -105,20 +94,34 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Padding(padding: const EdgeInsets.all(5)),
+        if (widget.object.image_url != null)
+          ProcessedImage(
+            imageUrl: widget.object.image_url!,
+            width: 120,
+            height: 120,
+            opacity: 0.9,
+            isCircular: true,
+            fit: BoxFit.cover,
+            isNetwork: true,
+          ),
+        SizedBox(height: 16),
         Text(
-          widget.object.author ?? '',
+          widget.object.getLocalizedAuthor(AppLocalizations.of(context)!) ?? '',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
+        // SizedBox(height: 6),
         Text(
-          widget.object.title ?? '',
+          widget.object.getLocalizedTitle(AppLocalizations.of(context)!) ?? '',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: Color(0xFF5AD1E5),
                 fontWeight: FontWeight.bold,
               ),
           textAlign: TextAlign.center,
         ),
+        SizedBox(height: 6),
         Text(
-          '${AppLocalizations.of(context)!.readingGuide} ${widget.object.guide ?? ''}',
+          '${AppLocalizations.of(context)!.readingGuide} ${widget.object.getLocalizedGuide(AppLocalizations.of(context)!) ?? ''}',
           style: Theme.of(context).textTheme.bodySmall,
         ),
         SizedBox(height: 16),
@@ -250,6 +253,31 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
             ),
           ],
         ),
+        const SizedBox(height: 4),
+        if (widget.object
+                    .getLocalizedDescription(AppLocalizations.of(context)!) !=
+                null &&
+            widget.object
+                .getLocalizedDescription(AppLocalizations.of(context)!)!
+                .trim()
+                .isNotEmpty)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Html(
+                data: widget.object.getLocalizedDescription(
+                        AppLocalizations.of(context)!) ??
+                    '',
+                style: {
+                  "p": Style(
+                    textAlign: TextAlign.center,
+                    fontSize: FontSize(15),
+                    margin: Margins.all(3),
+                  ),
+                },
+              ),
+            ],
+          ),
       ],
     );
   }

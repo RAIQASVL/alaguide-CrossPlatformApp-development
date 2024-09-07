@@ -88,29 +88,18 @@ class _HomePageState extends ConsumerState<HomePage>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                _getGreeting(),
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
-              ).animate().fadeIn().slideY(),
-              const SizedBox(height: 20),
               if (user != null) ...[
-                UserProfileWidget(user: user),
-              ] else ...[
                 Text(
-                  AppLocalizations.of(context)!.welcome,
+                  _getGreeting(),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
                       ),
                 ).animate().fadeIn().slideY(),
-              ],
-              const SizedBox(height: 40),
-              if (user != null) ...[
+                const SizedBox(height: 20),
+                UserProfileWidget(user: user),
+                const SizedBox(height: 40),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/my_account');
@@ -130,7 +119,46 @@ class _HomePageState extends ConsumerState<HomePage>
                     ),
                   ),
                 ).animate().fadeIn().slideY(),
+                const SizedBox(height: 40),
+              ] else ...[
+                Text(
+                  AppLocalizations.of(context)!.welcome,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                ).animate().fadeIn().slideY(),
+                const SizedBox(height: 20),
+                Text(
+                  AppLocalizations.of(context)!.discover,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                ).animate().fadeIn().slideY(),
+                const SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/auth');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 164, 246, 238),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.loginAndRegister,
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.black : Colors.black,
+                    ),
+                  ),
+                ).animate().fadeIn().slideY(),
               ],
+              if (user != null) ...[],
             ],
           ),
         ),
