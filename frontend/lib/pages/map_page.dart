@@ -6,6 +6,7 @@ import 'package:frontend/pages/language_selection_page.dart';
 import 'package:frontend/models/city_model.dart';
 import 'package:frontend/providers/city_provider.dart';
 import 'package:frontend/providers/content_provider.dart';
+import 'package:frontend/themes/google_map_theme.dart';
 import 'package:frontend/widgets/bottom_sheet_info_audioplayer.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -27,7 +28,7 @@ class MapPage extends ConsumerStatefulWidget {
 }
 
 class _MapPageState extends ConsumerState<MapPage> {
-  late MapController _mapController;
+  late MapController mapController;
   GoogleMapController? _googleMapController;
   LatLng _initialPosition = LatLng(43.2220, 76.8512);
   Set<Marker> _markers = {};
@@ -35,14 +36,14 @@ class _MapPageState extends ConsumerState<MapPage> {
   @override
   void initState() {
     super.initState();
-    _mapController = MapController(ref);
-    _mapController.init();
+    mapController = MapController(ref);
+    mapController.init();
     _initializeMap();
     _loadMarkers();
   }
 
   Future<void> _initializeMap() async {
-    _initialPosition = await _mapController.getInitialPosition();
+    _initialPosition = await mapController.getInitialPosition();
     setState(() {});
   }
 
@@ -92,7 +93,11 @@ class _MapPageState extends ConsumerState<MapPage> {
   }
 
   void _goToMyLocation() {
-    _mapController.goToMyLocation();
+    if (mapController != null) {
+      mapController.goToMyLocation();
+    } else {
+      print('mapController is not initialized');
+    }
   }
 
   Widget _buildDrawer() {
@@ -213,6 +218,13 @@ class _MapPageState extends ConsumerState<MapPage> {
   Widget build(BuildContext context) {
     final selectedCity = ref.watch(selectedCityProvider);
     final polylines = ref.watch(polylinesProvider);
+    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
+    mapController.init();
+
+    // Listen for theme changes
+    ref.listen(themeProvider, (_, __) {
+      mapController.updateMapStyle();
+    });
 
     ref.listen<City?>(selectedCityProvider, (previous, next) {
       if (next != null) {
@@ -221,31 +233,35 @@ class _MapPageState extends ConsumerState<MapPage> {
     });
 
     return Scaffold(
-      key: _mapController.scaffoldKey,
+      key: mapController.scaffoldKey,
       drawer: _buildDrawer(),
       body: Stack(
         children: [
-          GoogleMap(
-            onMapCreated: (GoogleMapController controller) {
-              _googleMapController = controller;
-              _mapController.onMapCreated(controller);
+          GoogleMapTheme(
+            builder: (context, mapStyle) {
+              return GoogleMap(
+                onMapCreated: (GoogleMapController controller) {
+                  _googleMapController = controller;
+                  mapController.onMapCreated(controller);
+                },
+                initialCameraPosition: CameraPosition(
+                  target: selectedCity?.coordinates ?? _initialPosition,
+                  zoom: 13,
+                ),
+                markers: _markers,
+                polylines: Set<Polyline>.of(polylines.values),
+                myLocationEnabled: true,
+                myLocationButtonEnabled: false,
+                zoomControlsEnabled: false,
+              );
             },
-            initialCameraPosition: CameraPosition(
-              target: selectedCity?.coordinates ?? _initialPosition,
-              zoom: 13,
-            ),
-            markers: _markers,
-            polylines: Set<Polyline>.of(polylines.values),
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
           ),
           Positioned(
             top: 40,
             left: 16,
             child: AnimatedMenuButton(
               onPressed: () {
-                _mapController.scaffoldKey.currentState?.openDrawer();
+                mapController.scaffoldKey.currentState?.openDrawer();
               },
             ),
           ),
