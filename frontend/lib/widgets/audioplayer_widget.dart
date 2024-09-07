@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/providers/theme_provider.dart';
 import 'package:frontend/widgets/processed_image.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:frontend/models/alaguide_object_model.dart';
@@ -89,42 +90,46 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
     final audioInfo = ref.watch(audioInfoProvider(widget.object));
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Padding(padding: const EdgeInsets.all(5)),
+        const SizedBox(height: 16),
         if (widget.object.image_url != null)
-          ProcessedImage(
-            imageUrl: widget.object.image_url!,
+          SizedBox(
             width: 120,
             height: 120,
-            opacity: 0.9,
-            isCircular: true,
-            fit: BoxFit.cover,
-            isNetwork: true,
+            child: ProcessedImage(
+              imageUrl: widget.object.image_url!,
+              width: 120,
+              height: 120,
+              opacity: 0.9,
+              isCircular: true,
+              fit: BoxFit.cover,
+              isNetwork: true,
+            ),
           ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Text(
           widget.object.getLocalizedAuthor(AppLocalizations.of(context)!) ?? '',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        // SizedBox(height: 6),
         Text(
           widget.object.getLocalizedTitle(AppLocalizations.of(context)!) ?? '',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Color(0xFF5AD1E5),
+                color: const Color(0xFF5AD1E5),
                 fontWeight: FontWeight.bold,
               ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         Text(
           '${AppLocalizations.of(context)!.readingGuide} ${widget.object.getLocalizedGuide(AppLocalizations.of(context)!) ?? ''}',
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -134,12 +139,12 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
                 color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 2,
                 blurRadius: 5,
-                offset: Offset(0, 3),
+                offset: const Offset(0, 3),
               ),
             ],
           ),
           child: IconButton(
-            icon: Icon(Icons.language, color: Color(0xFF5AD1E5)),
+            icon: const Icon(Icons.language, color: Color(0xFF5AD1E5)),
             iconSize: 30,
             onPressed: () {
               showDialog(
@@ -150,25 +155,34 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     title: Text(
-                        AppLocalizations.of(context)!
-                            .audioGuideLanguageSelection,
-                        textAlign: TextAlign.center),
+                      AppLocalizations.of(context)!.audioGuideLanguageSelection,
+                      textAlign: TextAlign.center,
+                    ),
                     content: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
-                        shape: BoxShape.rectangle,
-                        color: Colors.white,
+                        color: isDarkMode ? Colors.grey[850] : Colors.white,
                       ),
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: _currentLanguage,
                           isExpanded: true,
-                          icon: Icon(Icons.language, color: Color(0xFF5AD1E5)),
+                          icon: const Icon(
+                            Icons.language,
+                            color: Color(0xFF5AD1E5),
+                          ),
+                          dropdownColor:
+                              isDarkMode ? Colors.grey[850] : Colors.white,
                           items: ['en', 'ru', 'kk']
                               .map((lang) => DropdownMenuItem(
                                     value: lang,
-                                    child: Text(getLanguageName(lang)),
+                                    child: Text(getLanguageName(lang),
+                                        style: TextStyle(
+                                          color: isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        )),
                                   ))
                               .toList(),
                           onChanged: (String? newValue) {
@@ -180,7 +194,6 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
                               Navigator.of(context).pop();
                             }
                           },
-                          borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                     ),
@@ -190,11 +203,14 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
             },
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         if (_error != null)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(_error!, style: TextStyle(color: Color(0xFF5AD1E5))),
+            child: Text(
+              _error!,
+              style: const TextStyle(color: Color(0xFF5AD1E5)),
+            ),
           ),
         StreamBuilder<Duration>(
           stream: _audioPlayer.positionStream,
@@ -228,7 +244,7 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              icon: Icon(Icons.replay_10),
+              icon: const Icon(Icons.replay_10),
               onPressed: () {
                 _audioPlayer.seek(
                     Duration(seconds: _audioPlayer.position.inSeconds - 10));
@@ -245,7 +261,7 @@ class _AudioPlayerWidgetState extends ConsumerState<AudioPlayerWidget> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.forward_10),
+              icon: const Icon(Icons.forward_10),
               onPressed: () {
                 _audioPlayer.seek(
                     Duration(seconds: _audioPlayer.position.inSeconds + 10));
