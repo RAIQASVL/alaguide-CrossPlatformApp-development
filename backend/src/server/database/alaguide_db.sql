@@ -63,10 +63,14 @@ CREATE TABLE
         title VARCHAR(255) UNIQUE NOT NULL,
         author VARCHAR(100) NOT NULL,
         guide VARCHAR(100) NOT NULL,
-        audio_url VARCHAR(255) UNIQUE NOT NULL,
+        audio_rus_url VARCHAR(255) UNIQUE NOT NULL,
+        audio_eng_url VARCHAR(255) UNIQUE,
+        audio_kz_url VARCHAR(255) UNIQUE,
         FOREIGN KEY (landmark_id) REFERENCES Landmarks (landmark_id) ON DELETE CASCADE,
         INDEX idx_title (title),
-        INDEX idx_audio_url (audio_url)
+        INDEX idx_audio_rus_url (audio_rus_url),
+        INDEX idx_audio_eng_url (audio_eng_url),
+        INDEX idx_audio_kz_url (audio_kz_url)
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table for landmarks with audio
@@ -84,13 +88,17 @@ CREATE TABLE
         latitude DECIMAL(9, 6),
         longitude DECIMAL(9, 6),
         image_url VARCHAR(255),
-        audio_url VARCHAR(255),
+        audio_rus_url VARCHAR(255),
+        audio_eng_url VARCHAR(255),
+        audio_kz_url VARCHAR(255),
         FOREIGN KEY (country) REFERENCES Countries (country) ON DELETE CASCADE,
         FOREIGN KEY (city) REFERENCES Cities (city) ON DELETE CASCADE,
         FOREIGN KEY (category) REFERENCES LandmarksCategory (category) ON DELETE CASCADE,
         FOREIGN KEY (landmark) REFERENCES Landmarks (landmark) ON DELETE CASCADE,
         FOREIGN KEY (title) REFERENCES AudioBooks (title) ON DELETE CASCADE,
-        FOREIGN KEY (audio_url) REFERENCES AudioBooks (audio_url) ON DELETE CASCADE,
+        FOREIGN KEY (audio_rus_url) REFERENCES AudioBooks (audio_rus_url) ON DELETE CASCADE,
+        FOREIGN KEY (audio_eng_url) REFERENCES AudioBooks (audio_eng_url) ON DELETE CASCADE,
+        FOREIGN KEY (audio_kz_url) REFERENCES AudioBooks (audio_kz_url) ON DELETE CASCADE,
         FOREIGN KEY (latitude) REFERENCES Landmarks (latitude) ON DELETE CASCADE,
         FOREIGN KEY (longitude) REFERENCES Landmarks (longitude) ON DELETE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;

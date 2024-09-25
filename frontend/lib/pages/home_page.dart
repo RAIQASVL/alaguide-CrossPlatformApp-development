@@ -1,14 +1,11 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:frontend/providers/theme_provider.dart';
 import 'package:frontend/providers/auth_providers.dart';
 import 'package:frontend/models/user_models.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -44,6 +41,18 @@ class _HomePageState extends ConsumerState<HomePage>
     final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
     final isLoggedIn = ref.watch(authStateProvider);
 
+    String _getGreeting() {
+      final hour = DateTime.now().hour;
+      final firstName = user?.firstName ?? '';
+      if (hour < 12) {
+        return AppLocalizations.of(context)!.goodMorning(firstName);
+      } else if (hour < 18) {
+        return AppLocalizations.of(context)!.goodAfternoon(firstName);
+      } else {
+        return AppLocalizations.of(context)!.goodEvening(firstName);
+      }
+    }
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -56,14 +65,14 @@ class _HomePageState extends ConsumerState<HomePage>
           ),
         ),
         leading: BackButton(
-          color: isDarkMode ? Colors.white : const Color(0xff1D1617),
+          color: isDarkMode ? Colors.white : Colors.black,
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: IconButton(
               icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
-              color: isDarkMode ? Colors.white : const Color(0xff1D1617),
+              color: isDarkMode ? Colors.white : Colors.black,
               onPressed: () {
                 ref.read(themeProvider.notifier).toggleTheme();
                 _controller.forward(from: 0);
@@ -73,84 +82,85 @@ class _HomePageState extends ConsumerState<HomePage>
         ],
       ),
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (user != null) ...[
-                        UserProfileWidget(user: user),
-                      ] else ...[
-                        Text(
-                          AppLocalizations.of(context)!.welcome,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ).animate().fadeIn().slideY(),
-                        const SizedBox(height: 20),
-                        Text(
-                          AppLocalizations.of(context)!.discover,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ).animate().fadeIn().slideY(),
-                      ],
-                      const SizedBox(height: 40),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (!isLoggedIn) {
-                            Navigator.pushNamed(context, '/auth');
-                          } else {
-                            ref.read(authProvider.notifier).clearUser();
-                            ref.read(authStateProvider.notifier).state = false;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(AppLocalizations.of(context)!
-                                      .logoutSuccessfully)),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isLoggedIn
-                              ? const Color.fromARGB(255, 151, 204, 248)
-                              : const Color.fromARGB(255, 164, 246, 238),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: Text(
-                          isLoggedIn
-                              ? AppLocalizations.of(context)!.logout
-                              : AppLocalizations.of(context)!.loginAndRegister,
-                          selectionColor: Colors.black,
-                        ),
-                      ).animate().fadeIn().slideY(),
-                      if (isLoggedIn) ...[
-                        const SizedBox(height: 40),
-                        Text(
-                          AppLocalizations.of(context)!.quickActions,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 20),
-                        const QuickActionGrid(),
-                      ],
-                    ],
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (user != null) ...[
+                Text(
+                  _getGreeting(),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                ).animate().fadeIn().slideY(),
+                const SizedBox(height: 20),
+                UserProfileWidget(user: user),
+                const SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/my_account');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 151, 204, 248),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
-                ),
-              ),
-            );
-          },
+                  child: Text(
+                    AppLocalizations.of(context)!.myAccount,
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.black : Colors.black,
+                    ),
+                  ),
+                ).animate().fadeIn().slideY(),
+                const SizedBox(height: 40),
+              ] else ...[
+                Text(
+                  AppLocalizations.of(context)!.welcome,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                ).animate().fadeIn().slideY(),
+                const SizedBox(height: 20),
+                Text(
+                  AppLocalizations.of(context)!.discover,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                ).animate().fadeIn().slideY(),
+                const SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/auth');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 164, 246, 238),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.loginAndRegister,
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.black : Colors.black,
+                    ),
+                  ),
+                ).animate().fadeIn().slideY(),
+              ],
+              if (user != null) ...[],
+            ],
+          ),
         ),
       ),
     );
@@ -164,122 +174,28 @@ class UserProfileWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: [
         CircleAvatar(
           radius: 50,
           backgroundImage: user.avatarUrl != null
               ? NetworkImage(user.avatarUrl!)
-              : const AssetImage('assets/default_avatar.png') as ImageProvider,
+              : const AssetImage('assets/images/default_avatar.png')
+                  as ImageProvider,
+          backgroundColor: isDarkMode ? Colors.white : Colors.white,
         ),
         const SizedBox(height: 20),
         Text(
           '${user.firstName} ${user.lastName}',
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: isDarkMode ? Colors.white : Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 10),
-        Text(
-          user.email ?? '',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/edit-profile');
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromARGB(255, 247, 233, 106),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-          child: Text(
-            AppLocalizations.of(context)!.editProfile,
-            selectionColor: Colors.black,
-          ),
-        ).animate().fadeIn().slideY(),
       ],
     );
-  }
-}
-
-class QuickActionGrid extends StatelessWidget {
-  const QuickActionGrid({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 15,
-      crossAxisSpacing: 15,
-      childAspectRatio: 1.5,
-      children: [
-        QuickActionItem(
-          icon: Icons.favorite,
-          label: AppLocalizations.of(context)!.favorites,
-          onTap: () => Navigator.pushNamed(context, '/favorites'),
-        ),
-        QuickActionItem(
-          icon: Icons.map,
-          label: AppLocalizations.of(context)!.explore,
-          onTap: () => Navigator.pushNamed(context, '/explore'),
-        ),
-        QuickActionItem(
-          icon: Icons.history,
-          label: AppLocalizations.of(context)!.history,
-          onTap: () => Navigator.pushNamed(context, '/history'),
-        ),
-        QuickActionItem(
-          icon: Icons.settings,
-          label: AppLocalizations.of(context)!.settings,
-          onTap: () => Navigator.pushNamed(context, '/settings'),
-        ),
-      ],
-    );
-  }
-}
-
-class QuickActionItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const QuickActionItem({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 3,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 30),
-            const SizedBox(height: 5),
-            Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          ],
-        ),
-      ),
-    ).animate().fadeIn().scale();
   }
 }

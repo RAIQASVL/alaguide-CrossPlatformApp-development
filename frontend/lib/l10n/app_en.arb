@@ -11,8 +11,8 @@
   "feedback": "Feedback",
 
   "heyThere": "Hey there,",
-  "createAccount" : "Create an Account",
-  "welcomeBack" : "Welcome Back",
+  "createAccount" : "You Can Create an Account Here",
+  "welcomeBack" : "Welcome Back!",
   "firstName" : "First Name",
   "invalidFirstName": "Invalid first name",
   "lastName": "Last Name",
@@ -25,7 +25,7 @@
   "invalidPassword": "Password must be at least 6 characters long",
   "confirmPassword": "Confirm Password",
   "matchPass": "Password must match",
-  "termsAndConditions": "By creating an account, you agree to our Terms & Conditions",
+  "termsAndConditions": "By creating an account, you agree to our terms & conditions",
   "register": "Register",
   "login": "Login",
   "acceptTermsAndConditions": "Please accept the terms and conditions",
@@ -38,8 +38,15 @@
   "logoutSuccessfully": "Logout out successfully",
   "logout": "Logout",
   "loginAndRegister" : "Login / Register",
+  "myAccount": "My Account",
+  "goodMorning": "Good Morning, {firstName} and\nHave a Nice Trip!",
+  "goodAfternoon": "Good Afternoon, {firstName} and\nHave a Great Time!",
+  "goodEvening":  "Good Evening, {firstName},\nI Hope You Already\nHave Plans for The Evening!",
+
   "quickActions": "Quick Actions",
   "editProfile": "Edit Profile",
+  "profileUpdated": "Profile updated successfully!",
+  "saveChanges": "Save Changes",
   "favorites": "Favorites",
   "explore": "Explore",
   "history": "History",
@@ -47,6 +54,7 @@
 
   "selectCityFromContentPage": "Content / Cities",
   "contentPageOfCity": "Content /",
+  "noContentAvailableForCity": "No content available",
 
   "almaty": "Almaty",
   "moscow": "Moscow",
@@ -54,8 +62,60 @@
 
   "kazakhstan": "Kazakhstan",
   "russia": "Russia",
-  "uk": "United Kingdom"
+  "uk": "United Kingdom",
 
+  "title": "Title",
+
+  "title_1": "Coffee Shop 4A",
+  "title_2": "Apple Letter",
+  "title_3": "Ascension Cathedral",
+  "title_4": "If You Sit on the Shore for a Long Time",
+  "title_5": "Border",
+
+
+  "author": "Author",
+
+  "author_1": "Chingiz Tibey",
+  "author_2": "Aliya Jimran",
+  "author_3": "Talgat Dairov",
+  "author_4": "Lily Kalaus",
+
+
+  "guide": "Reading",
+
+  "guide_1": "Lily Kalaus",
+
+
+  "description": "Description",
+
+  "description_1": "<p>There is a place in Almaty where crowds of different people go back and forth, where there are real concerts and various political rallies take place! It's always loud, always noisy... And few people know that in the bustle of Arbat there is a magical place '4A'... This is a coffee shop where you will always feel good, where you will always feel at home... and if you are lonely and you are alone... and if you are having fun and there is a whole company with you... you can always wander here... and be happy...</p>",
+  "description_2": "",
+  "description_3": "<p>The Ascension Cathedral, also known as Zenkov Cathedral, is a Russian Orthodox cathedral located in Panfilov Park in Almaty, Kazakhstan. Completed in 1907, the cathedral is made out of wood but without nails. Its height is 56 meters tall, and is claimed to be the second tallest wooden church in the world.</p>",
+  "description_4": "",
+  "description_5": "",
+
+
+  "category": "Category",
+
+  "category_1": "Historical Sites and Monuments",
+  "category_2": "Natural Landmarks",
+  "category_3": "Cultural Institutions and Museums",
+  "category_4": "Religious Places",
+  "category_5": "Architectural Landmarks and Structures",
+  "category_6": "Entertainment Complexes and Parks",
+  "category_7": "Recreational and Sports Facilities",
+  "category_8": "Gastronomic Attractions",
+
+  
+
+  "location": "Locations",
+
+
+  "audioPlayerTitle": "Audio Player",
+  "audioNotAvailableInCurrentLanguage": "Audio Guide on This Language Coming Soon :)",
+  "errorLoadingAudio": "Error loading audio",
+  "readingGuide": "Reading",
+  "audioGuideLanguageSelection": "Audio Guide Language"
 
 }
 

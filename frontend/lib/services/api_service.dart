@@ -35,5 +35,17 @@ class ApiService {
     }
   }
 
-  // Add other methods (put, delete, etc.) as needed
+  Future<Response<dynamic>> put(String path, dynamic data,
+      {required Map<String, String> headers}) async {
+    try {
+      final response =
+          await _dio.put(path, data: data, options: Options(headers: headers));
+      return response;
+    } catch (e) {
+      print('Error in PUT request: $e');
+      rethrow;
+    }
+  }
+
+  // Add other methods (delete, etc.) as needed
 }

@@ -1,9 +1,14 @@
+import 'package:frontend/l10n/localization_mapper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:frontend/l10n/l10n.dart';
 
 class AlaguideObject {
   final int? ala_object_id;
   final String? image_url;
-  final String? audio_url;
+  final String? audio_rus_url;
+  final String? audio_eng_url;
+  final String? audio_kz_url;
   final String? author;
   final String? guide;
   final String? description;
@@ -17,7 +22,9 @@ class AlaguideObject {
   AlaguideObject({
     required this.ala_object_id,
     required this.image_url,
-    required this.audio_url,
+    required this.audio_rus_url,
+    required this.audio_eng_url,
+    required this.audio_kz_url,
     required this.author,
     required this.guide,
     required this.description,
@@ -33,7 +40,9 @@ class AlaguideObject {
     return AlaguideObject(
       ala_object_id: json['ala_object_id'],
       image_url: json['image_url'],
-      audio_url: json['audio_url'],
+      audio_rus_url: json['audio_rus_url'],
+      audio_eng_url: json['audio_eng_url'],
+      audio_kz_url: json['audio_kz_url'],
       author: json['author'],
       guide: json['guide'],
       description: json['description'],
@@ -52,5 +61,41 @@ class AlaguideObject {
             : double.parse(json['longitude'].toString()),
       ),
     );
+  }
+
+  String? getLocalizedTitle(AppLocalizations localizations) {
+    return localizations.getLocalizedTitle(title ?? '') ?? title;
+  }
+
+  String? getLocalizedAuthor(AppLocalizations localizations) {
+    return localizations.getLocalizedAuthor(author ?? '') ?? author;
+  }
+
+  String? getLocalizedGuide(AppLocalizations localizations) {
+    return localizations.getLocalizedGuide(guide ?? '') ?? guide;
+  }
+
+  String? getLocalizedCategory(AppLocalizations localizations) {
+    return localizations.getLocalizedCategory(category ?? '') ?? category;
+  }
+
+  String? getLocalizedDescription(AppLocalizations localizations) {
+    String? mappedKey = LocalizationMapper.mapDescription(ala_object_id);
+    print('Mapped key for object ID $ala_object_id: $mappedKey');
+
+    if (mappedKey != null) {
+      String? localizedDescription =
+          localizations.getLocalizedDescription(mappedKey);
+      print(
+          'Localized description for key $mappedKey: $localizedDescription'); // Отладка: что возвращает локализация?
+
+      if (localizedDescription != null) {
+        return localizedDescription;
+      }
+    }
+
+    print('Description from JSON: $description');
+
+    return description?.isNotEmpty == true ? description : '';
   }
 }

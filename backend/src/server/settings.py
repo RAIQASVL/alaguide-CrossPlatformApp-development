@@ -14,6 +14,7 @@ import sys
 import os
 from pathlib import Path
 from decouple import config
+from google.oauth2 import service_account
 
 
 # Import local variables from local_vars.py
@@ -73,6 +74,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap4",
     "googlemaps",
+    "storages",
     # Local apps
     "api.apps.ApiConfig",
     "core.apps.CoreConfig",
@@ -332,6 +334,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
+# Google Cloud Storage
+DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+GS_BUCKET_NAME = "alaguide-bucket"
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    os.path.join(BASE_DIR, "service/alaguide-app-9bbc887994aa.json")
+)
 
 # Media files settings
 MEDIA_URL = "/media/"

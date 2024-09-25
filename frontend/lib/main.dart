@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/pages/my_account_page.dart';
 import 'package:frontend/themes/app_theme.dart';
 import 'package:frontend/pages/splash_screen.dart';
 import 'package:frontend/pages/map_page.dart';
@@ -51,6 +51,7 @@ class MyApp extends ConsumerWidget {
         '/auth': (context) => const AuthPage(),
         '/forgot_password': (context) => const ForgotPasswordPage(),
         '/home': (context) => const HomePage(),
+        '/my_account': (context) => const MyAccountPage(),
         '/reset_password': (context) => ResetPasswordConfirmPage(),
       },
     );

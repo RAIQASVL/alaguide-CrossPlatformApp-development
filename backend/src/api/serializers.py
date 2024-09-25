@@ -64,25 +64,59 @@ class AudioBookSerializer(serializers.ModelSerializer):
         model = AudioBook
         fields = "__all__"
 
-    def get_audio_url(self, obj):
+    def get_audio_rus_url(self, obj):
         request = self.context.get("request")
-        return request.build_absolute_uri(obj.audio_url.url) if obj.audio_url else None
+        return (
+            request.build_absolute_uri(obj.audio_rus_url.url)
+            if obj.audio_rus_url
+            else None
+        )
+
+    def get_audio_eng_url(self, obj):
+        request = self.context.get("request")
+        return (
+            request.build_absolute_uri(obj.audio_eng_url.url)
+            if obj.audio_eng_url
+            else None
+        )
+
+    def get_audio_kz_url(self, obj):
+        request = self.context.get("request")
+        return (
+            request.build_absolute_uri(obj.audio_kz_url.url)
+            if obj.audio_kz_url
+            else None
+        )
 
 
 # The Main AlaguideObject ("guideObjectList/") & ("guideObjectList/<int:pk>/")
 class AlaguideObjectSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
-    audio_url = serializers.SerializerMethodField()
+    audio_rus_url = serializers.SerializerMethodField()
+    audio_eng_url = serializers.SerializerMethodField()
+    audio_kz_url = serializers.SerializerMethodField()
 
     def get_image_url(self, obj):
         if obj.image_url:
             return self.context["request"].build_absolute_uri(obj.image_url.url)
         return None
 
-    def get_audio_url(self, obj):
+    def get_audio_rus_url(self, obj):
         request = self.context.get("request")
-        if obj.audio_url and obj.audio_url.audio_url:
-            return request.build_absolute_uri(obj.audio_url.audio_url.url)
+        if obj.audio_rus_url and obj.audio_rus_url.audio_rus_url:
+            return request.build_absolute_uri(obj.audio_rus_url.audio_rus_url.url)
+        return None
+
+    def get_audio_eng_url(self, obj):
+        request = self.context.get("request")
+        if obj.audio_eng_url and obj.audio_eng_url.audio_eng_url:
+            return request.build_absolute_uri(obj.audio_eng_url.audio_eng_url.url)
+        return None
+
+    def get_audio_kz_url(self, obj):
+        request = self.context.get("request")
+        if obj.audio_kz_url and obj.audio_kz_url.audio_kz_url:
+            return request.build_absolute_uri(obj.audio_kz_url.audio_kz_url.url)
         return None
 
     class Meta:

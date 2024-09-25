@@ -63,6 +63,9 @@ dependencies:
   shared_preferences: ^2.3.1
   just_audio: ^0.9.39
   vector_graphics: ^1.1.11+1
+  cached_network_image: ^3.4.1
+  flutter_html: ^3.0.0-beta.2
+  image_picker: ^1.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -99,6 +102,7 @@ flutter:
     - assets/images/alaguide_snake_graphic.svg
     - assets/images/custom_marker.svg
     - assets/images/custom_marker.png
+    - assets/images/default_avatar.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

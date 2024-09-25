@@ -60,6 +60,18 @@ class AuthNotifier extends StateNotifier<User?> {
     }
   }
 
+  Future<User?> updateUser(User updatedUser) async {
+    try {
+      final user = await _authService.updateUser(updatedUser);
+      if (user != null) {
+        state = user;
+      }
+      return user;
+    } catch (e) {
+      throw Exception('Update failed: ${e.toString()}');
+    }
+  }
+
   Future<void> signOut() async {
     try {
       await _authService.signOut();
