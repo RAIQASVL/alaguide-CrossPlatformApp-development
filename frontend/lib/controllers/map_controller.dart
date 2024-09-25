@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/providers/theme_provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -22,8 +24,19 @@ class MapController {
     ref.read(contentServiceProvider).fetchAlaguideObjects();
   }
 
-  void onMapCreated(GoogleMapController controller) {
+  void onMapCreated(GoogleMapController controller) async {
     mapController.complete(controller);
+    await updateMapStyle();
+  }
+
+  Future<void> updateMapStyle() async {
+    final controller = await mapController.future;
+    final isDarkMode = ref.read(themeProvider) == ThemeMode.dark;
+    final stylePath = isDarkMode
+        ? 'assets/map_styles/night_theme.json'
+        : 'assets/map_styles/retro_theme.json';
+    final style = await rootBundle.loadString(stylePath);
+    await controller.setMapStyle(style);
   }
 
   Future<LatLng> getInitialPosition() async {

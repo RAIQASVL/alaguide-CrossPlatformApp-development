@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/l10n/l10n.dart';
 import 'package:frontend/pages/map_page.dart';
+import 'package:frontend/providers/theme_provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:frontend/models/alaguide_object_model.dart';
 import 'package:frontend/providers/audio_url_provider.dart';
@@ -47,8 +48,6 @@ class _FullScreenAudioPlayerState extends ConsumerState<FullScreenAudioPlayer> {
       setState(() {
         _error =
             AppLocalizations.of(context)!.audioNotAvailableInCurrentLanguage;
-        style:
-        TextStyle(color: Color(0xFF5AD1E5));
       });
     }
   }
@@ -73,8 +72,6 @@ class _FullScreenAudioPlayerState extends ConsumerState<FullScreenAudioPlayer> {
         setState(() {
           _error =
               AppLocalizations.of(context)!.audioNotAvailableInCurrentLanguage;
-          style:
-          TextStyle(color: Color(0xFF5AD1E5));
         });
       }
     } catch (e) {
@@ -86,9 +83,13 @@ class _FullScreenAudioPlayerState extends ConsumerState<FullScreenAudioPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.object.title ?? ''),
+        title: Text(
+            widget.object.getLocalizedTitle(AppLocalizations.of(context)!) ??
+                ''),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -167,7 +168,8 @@ class _FullScreenAudioPlayerState extends ConsumerState<FullScreenAudioPlayer> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
                               shape: BoxShape.rectangle,
-                              color: Colors.white,
+                              color:
+                                  isDarkMode ? Colors.grey[850] : Colors.white,
                             ),
                             padding: EdgeInsets.all(10),
                             child: DropdownButtonHideUnderline(
@@ -176,10 +178,18 @@ class _FullScreenAudioPlayerState extends ConsumerState<FullScreenAudioPlayer> {
                                 isExpanded: true,
                                 icon: Icon(Icons.language,
                                     color: Color(0xFF5AD1E5)),
+                                dropdownColor: isDarkMode
+                                    ? Colors.grey[850]
+                                    : Colors.white,
                                 items: ['en', 'ru', 'kk']
                                     .map((lang) => DropdownMenuItem(
                                           value: lang,
-                                          child: Text(getLanguageName(lang)),
+                                          child: Text(getLanguageName(lang),
+                                              style: TextStyle(
+                                                color: isDarkMode
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              )),
                                         ))
                                     .toList(),
                                 onChanged: (String? newValue) {
@@ -290,26 +300,15 @@ class _FullScreenAudioPlayerState extends ConsumerState<FullScreenAudioPlayer> {
                   ],
                 ),
               SizedBox(height: 16),
-              Positioned(
-                right: 10,
-                top: 20,
-                child: IconButton(
-                  icon: Icon(Icons.close_fullscreen_rounded,
-                      color: Color(0xFF5AD1E5)),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => MapPage(),
-                      ),
-                    );
-                  },
-                ),
-              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  String _formatDuration(Duration duration) {
+    return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
   String getLanguageName(String languageCode) {
@@ -325,10 +324,9 @@ class _FullScreenAudioPlayerState extends ConsumerState<FullScreenAudioPlayer> {
     }
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$minutes:$seconds';
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
   }
 }

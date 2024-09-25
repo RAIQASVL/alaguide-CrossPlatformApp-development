@@ -103,6 +103,8 @@ flutter:
     - assets/images/custom_marker.svg
     - assets/images/custom_marker.png
     - assets/images/default_avatar.png
+    - assets/map_styles/night_theme.json
+    - assets/map_styles/retro_theme.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
