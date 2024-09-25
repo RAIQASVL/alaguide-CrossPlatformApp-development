@@ -300,6 +300,21 @@ class _FullScreenAudioPlayerState extends ConsumerState<FullScreenAudioPlayer> {
                   ],
                 ),
               SizedBox(height: 16),
+              Positioned(
+                right: 10,
+                top: 20,
+                child: IconButton(
+                  icon: Icon(Icons.close_fullscreen_rounded,
+                      color: Color(0xFF5AD1E5)),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MapPage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
